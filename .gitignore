@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# Django
+backend/db.sqlite3
+backend/staticfiles/
+
+# Env/secrets
+.env
+*.env.local
+
+# OS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+
+# Local-only notes (not shared with the team)
+docs/PLAN.md
