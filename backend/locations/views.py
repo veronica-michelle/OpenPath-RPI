@@ -6,12 +6,10 @@ from .serializers import LocationSerializer, RouteRequestSerializer
 
 
 class LocationListView(APIView):
-    """Temporary sample locations for testing the API."""
+    """GET /api/locations/ — verified entrances available for routing."""
 
     def get(self, request):
-        serializer = LocationSerializer(LOCATIONS, many=True)
-        return Response(serializer.data)
-
+        return Response([])
 
 class RouteView(APIView):
     """POST /api/route/ — return a route only when verified paths exist."""
