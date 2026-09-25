@@ -14,12 +14,13 @@ class PointSerializer(serializers.Serializer):
 
 
 class RouteRequestSerializer(serializers.Serializer):
-    origin = PointSerializer()
+    start_id = serializers.CharField()
     destination_id = serializers.CharField()
-    accessible = serializers.BooleanField(required=False, default=False)
+    avoid_stairs = serializers.BooleanField(required=False, default=False)
 
 
 class RouteResponseSerializer(serializers.Serializer):
-    path = PointSerializer(many=True)
-    distance_meters = serializers.FloatField()
-    accessible = serializers.BooleanField()
+    route_points = PointSerializer(many=True)
+    total_distance_m = serializers.FloatField()
+    directions = serializers.ListField(child=serializers.CharField())
+    accessibility_notes = serializers.ListField(child=serializers.CharField())
