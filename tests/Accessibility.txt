@@ -1,17 +1,15 @@
 In accordance with Section 508 of the Rehabilitation Act of 1973, our
-information must be comparably accessible and usable between disabled 
-and able-bodied members of the public. 
+information must be comparably accessible and usable between disabled
+and able-bodied members of the public.
 This list will also take inspiration from the Web Content Accessibility
 Guidelines (WCAG) 2 requirements, despite our project not being an official
 government project.
-Reference website for 508 Guidelines: 
+Reference website for 508 Guidelines:
 https://www.ada.gov/resources/small-entity-compliance-guide/#1-archived-web-content
-Reference website for WCAG 2: 
+Reference website for WCAG 2:
 https://www.w3.org/WAI/WCAG22/quickref/
 ----------------Ease of information access------------------------------------
-- We will ensure that the Google read-aloud functions properly on our website.
-This includes a verbal transcription of the optimal route determined by our
-program.
+- Check that a screen reader can read the route directions.
 - Visuals should use text cues alongside color cues in a consistent, non-
 conditional manner.
 - Proper alternative text should be available for all non-text content. This
@@ -23,9 +21,9 @@ text on client end. Recommend avoiding exceptions due to this nebulous nature
 regarding a normally stable color palette). Proper color contrast ratio checkers
 can be found online.
 - Our website should also be able to scale reasonably with page zoom and
-text-size adjustment features for computer and mobile devices respectively. The
-ideal maximum page zoom is 200%.
-- All user input must be given a title describing its purpose.
+text-size adjustment features for computer and mobile devices respectively.
+Check that the page remains usable at 200% zoom.
+- All user inputs must have a clear label describing their purpose.
 - All site functions must be accessible with keyboard alone. For example, the
 specification of disabilities/unusable traversal methods must be achievable
 without a mouse.
@@ -36,7 +34,7 @@ markup language and Accessible Rich Internet Applications(ARIA). Only use ARIA
 if the behavior cannot be performed in base HTML.
 - Ensure that all instructions to press a certain button offer means of
 identifying said button without any knowledge of its shape, size, or relative
-position. Avoid terms like "the green button on the right", try "the button 
+position. Avoid terms like "the green button on the right", try "the button
 that says 'go'".
 - Avoid flashing items on-screen (potential epileptic hazard).
 - If CAPTCHA is incorporated, provide modes for different disabilities.
