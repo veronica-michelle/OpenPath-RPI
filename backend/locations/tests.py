@@ -2,7 +2,7 @@ from rest_framework.test import APITestCase
 
 
 class LocationListViewTests(APITestCase):
-    def test_returns_all_mock_locations(self):
+    def test_returns_sample_locations(self):
         response = self.client.get("/api/locations/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 10)
@@ -10,25 +10,35 @@ class LocationListViewTests(APITestCase):
 
 
 class RouteViewTests(APITestCase):
-    def test_returns_straight_line_route_to_known_destination(self):
+    def test_known_locations_have_no_verified_route_yet(self):
         response = self.client.post(
             "/api/route/",
             {
-                "origin": {"lat": 42.7296, "lng": -73.6800},
+                "start_id": "carnegie",
+                "destination_id": "walker",
+                "avoid_stairs": True,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.data["code"], "no_verified_route")
+
+    def test_unknown_start_returns_404(self):
+        response = self.client.post(
+            "/api/route/",
+            {
+                "start_id": "not-a-real-place",
                 "destination_id": "carnegie",
             },
             format="json",
         )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data["path"]), 2)
-        self.assertGreater(response.data["distance_meters"], 0)
-        self.assertTrue(response.data["accessible"])
+        self.assertEqual(response.status_code, 404)
 
     def test_unknown_destination_returns_404(self):
         response = self.client.post(
             "/api/route/",
             {
-                "origin": {"lat": 42.7296, "lng": -73.6800},
+                "start_id": "carnegie",
                 "destination_id": "not-a-real-place",
             },
             format="json",
