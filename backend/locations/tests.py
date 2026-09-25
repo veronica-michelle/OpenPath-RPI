@@ -2,12 +2,10 @@ from rest_framework.test import APITestCase
 
 
 class LocationListViewTests(APITestCase):
-    def test_returns_sample_locations(self):
+    def test_returns_no_unverified_locations(self):
         response = self.client.get("/api/locations/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 10)
-        self.assertIn("carnegie", [loc["id"] for loc in response.data])
-
+        self.assertEqual(response.data, [])
 
 class RouteViewTests(APITestCase):
     def test_known_locations_have_no_verified_route_yet(self):
