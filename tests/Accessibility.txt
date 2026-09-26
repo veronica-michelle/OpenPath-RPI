@@ -1,6 +1,6 @@
 In accordance with Section 508 of the Rehabilitation Act of 1973, our
 information must be comparably accessible and usable between disabled
-and able-bodied members of the public. 
+and able-bodied members of the public.
 This list will also take inspiration from the Web Content Accessibility
 Guidelines (WCAG) 2 requirements, despite our project not being an official
 government project.
