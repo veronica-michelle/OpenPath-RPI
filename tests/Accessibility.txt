@@ -1,6 +1,6 @@
 In accordance with Section 508 of the Rehabilitation Act of 1973, our
 information must be comparably accessible and usable between disabled
-and able-bodied members of the public.
+and able-bodied members of the public. 
 This list will also take inspiration from the Web Content Accessibility
 Guidelines (WCAG) 2 requirements, despite our project not being an official
 government project.
@@ -16,7 +16,8 @@ mark, indicating them as optional. They will be bottom priority items until all
 previous accessibility goals and website functions are realized. They will be
 expanded upon below in the section titled "Optional Items".
 ---------------------Ease of information access-----------------------------------
-- Check that a screen reader can read the website.
+- Check that a screen reader can read the route directions.
+- Ensure that the Google read-aloud functions properly on our website.
 *- A verbal transcription option of the optimal route determined by our program.
 - Visuals should use text cues alongside color cues in a consistent, non-
   conditional manner.
@@ -30,8 +31,8 @@ expanded upon below in the section titled "Optional Items".
   can be found online.
 - Our website should also be able to scale reasonably with page zoom and
   text-size adjustment features for computer and mobile devices respectively.
-  Check that the page remains usable at 200% zoom.
-- All user inputs must have a clear label describing their purpose.
+- Check that the site remains usable up to and including 200% page zoom.
+- All user input must be given a title describing their purpose.
 - All site functions must be accessible with keyboard alone. For example, the
   specification of disabilities/unusable traversal methods must be achievable
   without a mouse.
@@ -42,7 +43,7 @@ expanded upon below in the section titled "Optional Items".
   if the behavior cannot be performed in base HTML.
 - Ensure that all instructions to press a certain button offer means of
   identifying said button without any knowledge of its shape, size, or relative
-  position. Avoid terms like "the green button on the right", try "the button 
+  position. Avoid terms like "the green button on the right", try "the button
   that says 'go'".
 - Avoid flashing items on-screen (potential epileptic hazard).
 - If CAPTCHA is incorporated, provide modes for different disabilities.
@@ -50,7 +51,6 @@ expanded upon below in the section titled "Optional Items".
   text.
 ----------------------------------------------------------------------------------
 Proper documentation will be required on how we account for disabilities.
-What parts of this checklist did we complete, what did we miss?
 ----------------------------Optional Items----------------------------------------
 * An audio transcription summarizing the current route displayed to the user by
   our program.
