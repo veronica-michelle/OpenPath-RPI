@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MapContainer, Marker, Polyline, TileLayer, useMap } from 'react-leaflet';
+import { Circle, MapContainer, Marker, Polyline, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { BUILDINGS, EDGES, JUNCTIONS, NODES } from '../data/board.js';
 import { pathLengthFeet, sampleAlongPathGeo } from '../utils/geo.js';
 import { buildManeuvers, currentInstruction } from '../utils/navigation.js';
 import InstructionBanner from './InstructionBanner.jsx';
+import LocateControl from './LocateControl.jsx';
 import ZoomControls from './ZoomControls.jsx';
 
 // Turn-by-turn camera: closer than any overview fit, puck held low so most
@@ -46,6 +47,15 @@ function buildPinIcon(kind, label) {
   return L.divIcon({ html, className: 'pin-icon-container', iconSize: [width, height], iconAnchor: [width / 2, height] });
 }
 
+const GPS_ICON = L.divIcon({
+  html: `<div class="gps-dot">
+      <span class="gps-dot-core"></span>
+    </div>`,
+  className: 'gps-dot-container',
+  iconSize: [22, 22],
+  iconAnchor: [11, 11],
+});
+
 const PUCK_ICON = L.divIcon({
   html: `<div class="nav-puck">
       <svg width="44" height="44" viewBox="-22 -22 44 44">
@@ -71,9 +81,19 @@ function MapInstanceBridge({ onReady }) {
   return null;
 }
 
-export default function BoardMap({ route, startId, endId, navigating, destinationName }) {
+export default function BoardMap({
+  route,
+  startId,
+  endId,
+  navigating,
+  destinationName,
+  userPosition,
+  locationStatus,
+  onRequestLocation,
+}) {
   const mapRef = useRef(null);
   const puckMarkerRef = useRef(null);
+  const pendingRecenter = useRef(false);
   const [instruction, setInstruction] = useState(null);
 
   const maneuvers = useMemo(() => (route ? buildManeuvers(route.points) : []), [route]);
@@ -114,9 +134,8 @@ export default function BoardMap({ route, startId, endId, navigating, destinatio
     return () => map.off('resize', handle);
   }, [fitOverview, navigating]);
 
-  // Turn-by-turn simulation: no real GPS, so walk the resolved route at a
-  // fixed demo pace, driving the follow camera, the puck, and the
-  // instruction countdown.
+  // Turn-by-turn simulation still walks the resolved route at a demo
+  // pace. Live GPS is a separate blue dot (hidden while this sim runs).
   const navRaf = useRef(null);
   useEffect(() => {
     const map = mapRef.current;
@@ -181,6 +200,24 @@ export default function BoardMap({ route, startId, endId, navigating, destinatio
   }, [navigating, fitOverview]);
 
   const initialCenter = [NODES.carnegie.lat, NODES.carnegie.lng];
+
+  const flyToUser = useCallback((pos) => {
+    const map = mapRef.current;
+    if (!map || !pos) return;
+    map.flyTo([pos.lat, pos.lng], 18, { duration: 0.8 });
+  }, []);
+
+  const handleLocate = useCallback(() => {
+    onRequestLocation?.();
+    if (userPosition) flyToUser(userPosition);
+    else pendingRecenter.current = true;
+  }, [flyToUser, onRequestLocation, userPosition]);
+
+  useEffect(() => {
+    if (!pendingRecenter.current || !userPosition) return;
+    pendingRecenter.current = false;
+    flyToUser(userPosition);
+  }, [flyToUser, userPosition]);
 
   return (
     <div className="board-viewport">
@@ -252,11 +289,31 @@ export default function BoardMap({ route, startId, endId, navigating, destinatio
         })}
 
         {navigating && route && <Marker ref={puckMarkerRef} position={[route.points[0].lat, route.points[0].lng]} icon={PUCK_ICON} interactive={false} />}
+
+        {userPosition && !navigating && (
+          <>
+            {Number.isFinite(userPosition.accuracy) && userPosition.accuracy > 0 && (
+              <Circle
+                center={[userPosition.lat, userPosition.lng]}
+                radius={userPosition.accuracy}
+                pathOptions={{
+                  color: 'var(--map-accent)',
+                  weight: 1,
+                  opacity: 0.35,
+                  fillColor: 'var(--map-accent)',
+                  fillOpacity: 0.12,
+                }}
+              />
+            )}
+            <Marker position={[userPosition.lat, userPosition.lng]} icon={GPS_ICON} interactive={false} />
+          </>
+        )}
       </MapContainer>
 
       {navigating && <InstructionBanner instruction={instruction} destinationName={destinationName} />}
 
       <div className="board-hud" data-no-pan>
+        <LocateControl onLocate={handleLocate} status={locationStatus} />
         <ZoomControls onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} />
       </div>
     </div>
