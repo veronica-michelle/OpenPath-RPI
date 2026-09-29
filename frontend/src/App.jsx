@@ -12,6 +12,7 @@ export default function App() {
   const [endId, setEndId] = useState(null);
   const [avoidStairs, setAvoidStairs] = useState(false);
   const [navigating, setNavigating] = useState(false);
+  const [liveTracking, setLiveTracking] = useState(false);
   const { position: userPosition, status: locationStatus, start: startLocation } = useGeolocation();
 
   const start = BUILDINGS.find((b) => b.id === startId) ?? null;
@@ -27,7 +28,10 @@ export default function App() {
   // the camera out from under a route that no longer exists — leave nav
   // mode instead of following a route that just vanished underneath it.
   useEffect(() => {
-    if (!route) setNavigating(false);
+    if (!route) {
+      setNavigating(false);
+      setLiveTracking(false);
+    }
   }, [route]);
 
   const noRouteWarning = Boolean(startId && endId && !sameBuilding && !route);
@@ -39,6 +43,7 @@ export default function App() {
         startId={startId}
         endId={endId}
         navigating={navigating}
+        liveTracking={liveTracking}
         destinationName={end?.name}
         userPosition={userPosition}
         locationStatus={locationStatus}
@@ -48,10 +53,18 @@ export default function App() {
         route={route}
         destinationName={end?.name}
         navigating={navigating}
+        liveTracking={liveTracking}
         onStart={() => setNavigating(true)}
-        onEnd={() => setNavigating(false)}
+        onStartLive={() => {
+          startLocation();
+          setLiveTracking(true);
+        }}
+        onEnd={() => {
+          setNavigating(false);
+          setLiveTracking(false);
+        }}
       />
-      {!navigating && (
+      {!navigating && !liveTracking && (
         <ControlPanel
           buildings={BUILDINGS}
           start={start}

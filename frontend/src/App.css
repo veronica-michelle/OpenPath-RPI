@@ -312,6 +312,8 @@
   line-height: 1.4;
   color: var(--ink-faint);
 }
+
+.control-panel-warning {
   margin: 0;
   font-size: 12.5px;
   line-height: 1.4;
@@ -523,6 +525,12 @@
 
 .route-summary-btn-start {
   background: var(--pin-start);
+}
+
+.route-summary-btn-live {
+  background: var(--map-accent, #2563eb);
+  color: #ffffff;
+  font-weight: 700;
 }
 
 .route-summary-btn-end {

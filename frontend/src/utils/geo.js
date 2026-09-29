@@ -82,3 +82,55 @@ export function boundsOfLatLng(points, padFt = 0) {
     [maxLat + latPad, maxLng + lngPad],
   ];
 }
+
+// Projects a raw GPS point onto the nearest spot on the route polyline,
+// and returns how far along the route (in feet) that spot is — this is
+// what lets real, noisy GPS fixes (which won't sit exactly on the line)
+// still drive progress along a known path.
+export function nearestPointOnRoute(userPos, points) {
+  let best = { distFt: Infinity, traveledFt: 0, snapped: points[0] };
+  let cumulativeFt = 0;
+
+  for (let i = 0; i < points.length - 1; i++) {
+    const a = points[i];
+    const b = points[i + 1];
+    const segLenFt = haversineFeet(a, b);
+
+    // Project userPos onto segment a→b using simple lat/lng as flat-plane
+    // approximation (fine at this scale — a few hundred feet).
+    const abLat = b.lat - a.lat;
+    const abLng = b.lng - a.lng;
+    const apLat = userPos.lat - a.lat;
+    const apLng = userPos.lng - a.lng;
+    const abLenSq = abLat * abLat + abLng * abLng;
+    let t = abLenSq === 0 ? 0 : (apLat * abLat + apLng * abLng) / abLenSq;
+    t = Math.max(0, Math.min(1, t));
+
+    const projected = { lat: a.lat + abLat * t, lng: a.lng + abLng * t };
+    const distFt = haversineFeet(userPos, projected);
+
+    if (distFt < best.distFt) {
+      best = {
+        distFt,
+        traveledFt: cumulativeFt + segLenFt * t,
+        snapped: projected,
+      };
+    }
+    cumulativeFt += segLenFt;
+  }
+
+  return best; // { distFt, traveledFt, snapped }
+}
+
+// Compass bearing (0-360, 0 = north) between two points — used as a
+// heading fallback since device compass heading is often null on foot.
+export function bearingBetween(from, to) {
+  const toRad = (d) => (d * Math.PI) / 180;
+  const toDeg = (r) => (r * 180) / Math.PI;
+  const dLng = toRad(to.lng - from.lng);
+  const y = Math.sin(dLng) * Math.cos(toRad(to.lat));
+  const x =
+    Math.cos(toRad(from.lat)) * Math.sin(toRad(to.lat)) -
+    Math.sin(toRad(from.lat)) * Math.cos(toRad(to.lat)) * Math.cos(dLng);
+  return (toDeg(Math.atan2(y, x)) + 360) % 360;
+}
