@@ -5,6 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import { BUILDINGS, EDGES, JUNCTIONS, NODES } from '../data/board.js';
 import { pathLengthFeet, sampleAlongPathGeo } from '../utils/geo.js';
 import { buildManeuvers, currentInstruction } from '../utils/navigation.js';
+import CompassIndicator from './CompassIndicator.jsx';
 import InstructionBanner from './InstructionBanner.jsx';
 import ZoomControls from './ZoomControls.jsx';
 
@@ -280,6 +281,8 @@ export default function BoardMap({ route, startId, endId, navigating, destinatio
       </MapContainer>
 
       {navigating && <InstructionBanner instruction={instruction} destinationName={destinationName} />}
+
+      <CompassIndicator />
 
       <div className="board-hud" data-no-pan>
         <ZoomControls onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} />
