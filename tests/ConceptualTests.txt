@@ -1,0 +1,16 @@
+Perform these tests BEFORE integration with the RPI data. "Construction blocks"
+refers to the data setting marking construction work on a pathway that makes said
+path inaccessible.
+1. Point A to Point A. Display an error message that the user isn't going anywhere.
+2. Find a route from Point A to Point B. Ensure this route is the same as the
+   route from Point B to Point A. Basic algorithm check.
+3. Run two adjacent points with an alternate route and construction in the way
+   of the shorter path. As a basic test of the contruction block modifier, this
+   should result in the alternate route being taken.
+4. Ensure that multiple construction blocks around destination point B will all be
+   accounted for in the pathfinding. A simple edge case check regarding multiple
+   inaccessible routes near the endpoint.
+5. Check for an impossible route due to the addition of construction blocks. Ensure
+   proper output conveys this to the user.
+6. Check for an impossible route without any construction blocks. Display an error
+   message conveying the failure to find an available route to the user.
