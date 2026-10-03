@@ -1,0 +1,113 @@
+{
+  "name": "RPI Student Union to '86 Field",
+  "coordinate_system": "WGS84",
+  "point_order": "Student Union to '86 Field",
+  "note": "Approximate campus path/polyline; not a surveyed or turn-by-turn routing trace.",
+  "points": [
+    {
+      "index": 0,
+      "lat": 42.729961,
+      "lng": -73.676558
+    },
+    {
+      "index": 1,
+      "lat": 42.729944,
+      "lng": -73.676735
+    },
+    {
+      "index": 2,
+      "lat": 42.729932,
+      "lng": -73.67693
+    },
+    {
+      "index": 3,
+      "lat": 42.729925,
+      "lng": -73.67713
+    },
+    {
+      "index": 4,
+      "lat": 42.729919,
+      "lng": -73.677335
+    },
+    {
+      "index": 5,
+      "lat": 42.729914,
+      "lng": -73.67754
+    },
+    {
+      "index": 6,
+      "lat": 42.72991,
+      "lng": -73.67775
+    },
+    {
+      "index": 7,
+      "lat": 42.729908,
+      "lng": -73.677965
+    },
+    {
+      "index": 8,
+      "lat": 42.729909,
+      "lng": -73.67818
+    },
+    {
+      "index": 9,
+      "lat": 42.729912,
+      "lng": -73.678395
+    },
+    {
+      "index": 10,
+      "lat": 42.729916,
+      "lng": -73.67861
+    },
+    {
+      "index": 11,
+      "lat": 42.72992,
+      "lng": -73.678825
+    },
+    {
+      "index": 12,
+      "lat": 42.729922,
+      "lng": -73.67904
+    },
+    {
+      "index": 13,
+      "lat": 42.729921,
+      "lng": -73.679255
+    },
+    {
+      "index": 14,
+      "lat": 42.729919,
+      "lng": -73.67947
+    },
+    {
+      "index": 15,
+      "lat": 42.729917,
+      "lng": -73.679685
+    },
+    {
+      "index": 16,
+      "lat": 42.729916,
+      "lng": -73.6799
+    },
+    {
+      "index": 17,
+      "lat": 42.729916,
+      "lng": -73.680115
+    },
+    {
+      "index": 18,
+      "lat": 42.729916,
+      "lng": -73.68033
+    },
+    {
+      "index": 19,
+      "lat": 42.729917,
+      "lng": -73.680545
+    },
+    {
+      "index": 20,
+      "lat": 42.729917,
+      "lng": -73.680814
+    }
+  ]
+}
