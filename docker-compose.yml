@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-openpath}
+      POSTGRES_USER: ${POSTGRES_USER:-openpath}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-openpath}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-openpath}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-openpath}
+      POSTGRES_USER: ${POSTGRES_USER:-openpath}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-openpath}
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
