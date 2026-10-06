@@ -5,6 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import { BUILDINGS, EDGES, JUNCTIONS, NODES } from '../data/board.js';
 import { pathLengthFeet, sampleAlongPathGeo } from '../utils/geo.js';
 import { buildManeuvers, currentInstruction } from '../utils/navigation.js';
+import CompassIndicator from './CompassIndicator.jsx';
 import InstructionBanner from './InstructionBanner.jsx';
 import ZoomControls from './ZoomControls.jsx';
 
@@ -21,6 +22,15 @@ const NAV_FT_PER_SEC = 65; // demo-compressed walking pace, not real-time
 const NAV_CAMERA_UPDATE_MS = 300;
 const INSTRUCTION_UPDATE_MS = 150;
 const OVERVIEW_PAD_FT = 60;
+
+// Leaflet's default scroll-wheel zoom accumulates every wheel event a
+// trackpad fires during one swipe (often a dozen+) and converts the total
+// into however many zoom levels that adds up to — which is why one swipe
+// could jump 3 levels at once. We replace it with a handler that treats an
+// entire swipe as exactly one step: the first wheel event fires it, a
+// cooldown window swallows the rest of that same gesture's events.
+const WHEEL_ZOOM_STEP = 0.5; // half a level per step — gentler than a full doubling
+const WHEEL_COOLDOWN_MS = 80;
 
 function escapeHtml(s) {
   return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -79,8 +89,21 @@ export default function BoardMap({ route, startId, endId, navigating, destinatio
   const maneuvers = useMemo(() => (route ? buildManeuvers(route.points) : []), [route]);
   const onNode = route ? new Set(route.nodeIds) : null;
 
+  const wheelCooldown = useRef(false);
   const handleMapReady = useCallback((map) => {
     mapRef.current = map;
+    const container = map.getContainer();
+    const onWheel = (e) => {
+      e.preventDefault();
+      if (wheelCooldown.current) return;
+      wheelCooldown.current = true;
+      const targetZoom = map.getZoom() + (e.deltaY < 0 ? WHEEL_ZOOM_STEP : -WHEEL_ZOOM_STEP);
+      map.setZoom(targetZoom, { animate: true });
+      setTimeout(() => {
+        wheelCooldown.current = false;
+      }, WHEEL_COOLDOWN_MS);
+    };
+    container.addEventListener('wheel', onWheel, { passive: false });
   }, []);
 
   // Fit the whole pilot area on mount, and fit the resolved route whenever
@@ -189,6 +212,9 @@ export default function BoardMap({ route, startId, endId, navigating, destinatio
         zoom={17}
         zoomControl={false}
         attributionControl={true}
+        scrollWheelZoom={false}
+        zoomSnap={WHEEL_ZOOM_STEP}
+        zoomDelta={WHEEL_ZOOM_STEP}
         className="board-map"
       >
         <MapInstanceBridge onReady={handleMapReady} />
@@ -255,6 +281,8 @@ export default function BoardMap({ route, startId, endId, navigating, destinatio
       </MapContainer>
 
       {navigating && <InstructionBanner instruction={instruction} destinationName={destinationName} />}
+
+      <CompassIndicator />
 
       <div className="board-hud" data-no-pan>
         <ZoomControls onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} />
