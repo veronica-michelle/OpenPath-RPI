@@ -57,6 +57,15 @@ public:
 
     ~Location(){
         // i need to design a proper deleter
+        id = "deleted";
+        int i = 0;
+        while(i < connected.size()){
+            if(id != "deleted"){
+                delete connected[i];
+            };
+            i++;
+        };
+
 
     };
 
