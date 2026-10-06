@@ -1,3 +1,4 @@
+import EntrancePicker from './EntrancePicker.jsx';
 import SearchField from './SearchField.jsx';
 import StairsToggle from './StairsToggle.jsx';
 
@@ -7,6 +8,10 @@ export default function ControlPanel({
   end,
   onStartChange,
   onEndChange,
+  startEntranceId,
+  onStartEntranceChange,
+  endEntranceId,
+  onEndEntranceChange,
   avoidStairs,
   onAvoidStairsChange,
   sameBuildingWarning,
@@ -29,6 +34,12 @@ export default function ControlPanel({
           excludeId={end?.id}
           placeholder="Choose starting point"
         />
+        <EntrancePicker
+          label="Start entrance"
+          entrances={start?.entrances}
+          selectedId={startEntranceId}
+          onChange={onStartEntranceChange}
+        />
         <SearchField
           label="Destination"
           dotClass="search-dot-end"
@@ -37,6 +48,12 @@ export default function ControlPanel({
           onChange={onEndChange}
           excludeId={start?.id}
           placeholder="Choose destination"
+        />
+        <EntrancePicker
+          label="Destination entrance"
+          entrances={end?.entrances}
+          selectedId={endEntranceId}
+          onChange={onEndEntranceChange}
         />
       </div>
 

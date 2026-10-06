@@ -100,6 +100,24 @@
   filter: drop-shadow(0 1px 2px rgba(26, 90, 58, 0.3));
 }
 
+.entrance-dot-container {
+  background: transparent !important;
+  border: none !important;
+}
+.entrance-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 2.5px solid #ffffff;
+  filter: drop-shadow(0 1px 3px rgba(20, 30, 45, 0.4));
+}
+.entrance-dot-start {
+  background: var(--pin-start);
+}
+.entrance-dot-end {
+  background: var(--pin-end);
+}
+
 /* ---------- Nav puck ---------- */
 
 .nav-puck-container {
@@ -290,8 +308,13 @@
   content: '';
   position: absolute;
   left: 24px;
-  top: 22px;
-  bottom: 22px;
+  /* Was hardcoded to 22px top/bottom, tuned for exactly two fixed-height
+     rows. The entrance pickers between them are variable height (0 or 1
+     rows depending on whether a building has more than one real door), so
+     a line anchored to the container's own edges degrades gracefully
+     instead of landing short or past the actual dots. */
+  top: 10px;
+  bottom: 10px;
   width: 1.5px;
   background: repeating-linear-gradient(to bottom, var(--map-border-strong) 0 3px, transparent 3px 6px);
 }
@@ -413,6 +436,50 @@
   transition: background 160ms var(--ease-board), color 160ms var(--ease-board), border-color 160ms var(--ease-board);
 }
 .stairs-chip.is-active {
+  background: var(--map-accent-soft);
+  color: var(--map-accent);
+  border-color: rgba(26, 115, 232, 0.28);
+}
+
+/* ---------- Entrance picker ---------- */
+
+.entrance-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 2px 0 2px 30px;
+  position: relative;
+  z-index: 1;
+}
+
+.entrance-picker-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.entrance-picker-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.entrance-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--map-field);
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-dim);
+  transition: background 160ms var(--ease-board), color 160ms var(--ease-board), border-color 160ms var(--ease-board);
+}
+.entrance-chip.is-active {
   background: var(--map-accent-soft);
   color: var(--map-accent);
   border-color: rgba(26, 115, 232, 0.28);
