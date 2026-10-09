@@ -2,9 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Circle, MapContainer, Marker, Polyline, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { BUILDINGS, EDGES, JUNCTIONS, NODES } from '../data/board.js';
 import { pathLengthFeet, sampleAlongPathGeo, nearestPointOnRoute, bearingBetween } from '../utils/geo.js';
-import { buildManeuvers, currentInstruction } from '../utils/navigation.js';
+import { currentInstruction } from '../utils/navigation.js';
 import CompassIndicator from './CompassIndicator.jsx';
 import InstructionBanner from './InstructionBanner.jsx';
 import LocateControl from './LocateControl.jsx';
@@ -22,7 +21,6 @@ const NAV_ANCHOR = { x: 0.5, y: 0.64 };
 const NAV_FT_PER_SEC = 65; // demo-compressed walking pace, not real-time
 const NAV_CAMERA_UPDATE_MS = 300;
 const INSTRUCTION_UPDATE_MS = 150;
-const OVERVIEW_PAD_FT = 60;
 
 // Leaflet's default scroll-wheel zoom accumulates every wheel event a
 // trackpad fires during one swipe (often a dozen+) and converts the total
@@ -97,6 +95,9 @@ function MapInstanceBridge({ onReady }) {
 
 export default function BoardMap({
   route,
+  buildings,
+  graphNodes,
+  graphEdges,
   startId,
   endId,
   navigating,
@@ -106,13 +107,14 @@ export default function BoardMap({
   locationStatus,
   onRequestLocation,
 }) {
+  const nodesById = useMemo(() => Object.fromEntries(graphNodes.map((node) => [node.id, node])), [graphNodes]);
   const mapRef = useRef(null);
   const puckMarkerRef = useRef(null);
   const pendingRecenter = useRef(false);
   const lastPosRef = useRef(null);
   const [instruction, setInstruction] = useState(null);
 
-  const maneuvers = useMemo(() => (route ? buildManeuvers(route.points) : []), [route]);
+  const maneuvers = useMemo(() => route?.maneuvers ?? [], [route]);
   const onNode = route ? new Set(route.nodeIds) : null;
 
   const wheelCooldown = useRef(false);
@@ -138,7 +140,7 @@ export default function BoardMap({
   const fitOverview = useCallback(() => {
     const map = mapRef.current;
     if (!map) return;
-    const points = route ? route.points : BUILDINGS;
+    const points = route ? route.points : buildings;
     const bounds = L.latLngBounds(points.map((p) => [p.lat, p.lng]));
     const mobile = map.getSize().x <= 640;
     map.fitBounds(bounds, {
@@ -146,7 +148,7 @@ export default function BoardMap({
       paddingBottomRight: mobile ? [76, 260] : [96, 16],
       animate: true,
     });
-  }, [route]);
+  }, [buildings, route]);
 
   useEffect(() => {
     if (!navigating && !liveTracking) fitOverview();
@@ -265,7 +267,8 @@ export default function BoardMap({
     wasNavigating.current = isNavLike;
   }, [navigating, liveTracking, fitOverview]);
 
-  const initialCenter = [NODES.carnegie.lat, NODES.carnegie.lng];
+  const initialNode = nodesById.carnegie ?? graphNodes[0];
+  const initialCenter = [initialNode.lat, initialNode.lng];
 
   const flyToUser = useCallback((pos) => {
     const map = mapRef.current;
@@ -320,18 +323,18 @@ export default function BoardMap({
         />
 
         {/* idle walkway network */}
-        {EDGES.map((edge) => (
+        {graphEdges.map((edge) => (
           <Polyline
             key={`${edge.a}-${edge.b}`}
             positions={[
-              [NODES[edge.a].lat, NODES[edge.a].lng],
-              [NODES[edge.b].lat, NODES[edge.b].lng],
+              [nodesById[edge.a].lat, nodesById[edge.a].lng],
+              [nodesById[edge.b].lat, nodesById[edge.b].lng],
             ]}
             pathOptions={{
-              color: edge.stairs ? 'var(--map-path-stairs)' : 'var(--map-accent)',
-              weight: edge.stairs ? 3 : 4,
-              opacity: edge.stairs ? 0.55 : 0.35,
-              dashArray: edge.stairs ? '1 9' : undefined,
+              color: edge.type === 'stairs' ? 'var(--map-path-stairs)' : 'var(--map-accent)',
+              weight: edge.type === 'stairs' ? 3 : 4,
+              opacity: edge.type === 'stairs' ? 0.55 : 0.35,
+              dashArray: edge.type === 'stairs' ? '1 9' : undefined,
               lineCap: 'round',
             }}
           />
@@ -379,7 +382,7 @@ export default function BoardMap({
         )}
 
         {/* junction dots, only where the route passes through */}
-        {JUNCTIONS.filter((j) => onNode?.has(j.id)).map((j) => (
+        {graphNodes.filter((node) => node.type === 'path' && onNode?.has(node.id)).map((j) => (
           <Marker
             key={j.id}
             position={[j.lat, j.lng]}
@@ -394,7 +397,7 @@ export default function BoardMap({
         ))}
 
         {/* building pins */}
-        {BUILDINGS.map((b) => {
+        {buildings.map((b) => {
           const kind = b.id === startId ? 'start' : b.id === endId ? 'end' : onNode?.has(b.id) ? 'transit' : 'idle';
           return <Marker key={b.id} position={[b.lat, b.lng]} icon={buildPinIcon(kind, b.name)} interactive={false} />;
         })}

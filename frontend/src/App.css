@@ -1,3 +1,23 @@
+.app-status {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  padding: 24px;
+  color: var(--ink);
+  text-align: center;
+}
+
+.app-status button {
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  background: var(--map-accent);
+  color: white;
+  cursor: pointer;
+}
+
 .app-shell {
   position: fixed;
   inset: 0;

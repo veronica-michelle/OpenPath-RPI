@@ -16,6 +16,8 @@ export default function ControlPanel({
   onAvoidStairsChange,
   sameBuildingWarning,
   noRouteWarning,
+  routeLoading,
+  routeError,
   userPosition,
   locationStatus,
   onNeedLocation,
@@ -87,6 +89,13 @@ export default function ControlPanel({
       )}
 
       <StairsToggle checked={avoidStairs} onChange={onAvoidStairsChange} />
+
+      {routeLoading && (
+        <p className="control-panel-hint" role="status">Finding a route…</p>
+      )}
+      {routeError && (
+        <p className="control-panel-warning" role="alert">Route request failed: {routeError}</p>
+      )}
 
       {sameBuildingWarning && (
         <p className="control-panel-warning" role="alert">
