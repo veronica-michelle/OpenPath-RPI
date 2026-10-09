@@ -1,6 +1,6 @@
 Log 1 - 10/6/2026: (NOTE: This log has only reviewed the website as seen from
 a standard Lenovo Laptop-K0UJR6QD, purchased from RPI. These notes may not
-reflect the potential phone experience.)
+reflect the potential phone experience. RELEVANT FOR FRONTEND!!!)
 Website frontend is coming along well. However, I failed to adequately define
 certain Accessibility constraints pertaining to color, resulting in some
 errors to note. The website's current design forgoes a proper border for the
