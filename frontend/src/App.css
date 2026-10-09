@@ -100,6 +100,24 @@
   filter: drop-shadow(0 1px 2px rgba(26, 90, 58, 0.3));
 }
 
+.entrance-dot-container {
+  background: transparent !important;
+  border: none !important;
+}
+.entrance-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 2.5px solid #ffffff;
+  filter: drop-shadow(0 1px 3px rgba(20, 30, 45, 0.4));
+}
+.entrance-dot-start {
+  background: var(--pin-start);
+}
+.entrance-dot-end {
+  background: var(--pin-end);
+}
+
 /* ---------- Nav puck ---------- */
 
 .nav-puck-container {
@@ -125,6 +143,24 @@
   }
 }
 
+.gps-dot-container {
+  background: transparent !important;
+  border: none !important;
+}
+.gps-dot {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gps-dot-core {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--map-accent);
+  border: 3px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(26, 115, 232, 0.45);
 /* ---------- Compass indicator ---------- */
 
 .compass-indicator {
@@ -170,6 +206,30 @@
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 6px rgba(30, 35, 40, 0.18), 0 1px 2px rgba(30, 35, 40, 0.12);
+}
+
+.locate-btn {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 8px;
+  background: var(--panel-bg);
+  color: var(--ink-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(30, 35, 40, 0.18), 0 1px 2px rgba(30, 35, 40, 0.12);
+  transition: background 140ms var(--ease-board), color 140ms var(--ease-board);
+}
+.locate-btn:hover {
+  background: var(--map-field);
+  color: var(--ink);
+}
+.locate-btn.is-locating {
+  color: var(--map-accent);
+}
+.locate-btn.is-denied {
+  color: var(--ink-faint);
 }
 
 .zoom-btn {
@@ -290,10 +350,22 @@
   content: '';
   position: absolute;
   left: 24px;
-  top: 22px;
-  bottom: 22px;
+  /* Was hardcoded to 22px top/bottom, tuned for exactly two fixed-height
+     rows. The entrance pickers between them are variable height (0 or 1
+     rows depending on whether a building has more than one real door), so
+     a line anchored to the container's own edges degrades gracefully
+     instead of landing short or past the actual dots. */
+  top: 10px;
+  bottom: 10px;
   width: 1.5px;
   background: repeating-linear-gradient(to bottom, var(--map-border-strong) 0 3px, transparent 3px 6px);
+}
+
+.control-panel-hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ink-faint);
 }
 
 .control-panel-warning {
@@ -386,14 +458,42 @@
 }
 
 .search-option {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
   padding: 8px 10px;
   border-radius: 6px;
   font-size: 13.5px;
   color: var(--ink-dim);
 }
+.search-option-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.search-option-title {
+  font-weight: 600;
+  color: var(--ink);
+}
+.search-option-meta {
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+.search-option-distance {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
 .search-option.is-active {
   background: var(--map-accent-soft);
   color: var(--ink);
+}
+.search-option.is-active .search-option-distance,
+.search-option.is-active .search-option-meta {
+  color: var(--map-accent);
 }
 
 /* ---------- Stairs chip ---------- */
@@ -413,6 +513,50 @@
   transition: background 160ms var(--ease-board), color 160ms var(--ease-board), border-color 160ms var(--ease-board);
 }
 .stairs-chip.is-active {
+  background: var(--map-accent-soft);
+  color: var(--map-accent);
+  border-color: rgba(26, 115, 232, 0.28);
+}
+
+/* ---------- Entrance picker ---------- */
+
+.entrance-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 2px 0 2px 30px;
+  position: relative;
+  z-index: 1;
+}
+
+.entrance-picker-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.entrance-picker-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.entrance-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--map-field);
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-dim);
+  transition: background 160ms var(--ease-board), color 160ms var(--ease-board), border-color 160ms var(--ease-board);
+}
+.entrance-chip.is-active {
   background: var(--map-accent-soft);
   color: var(--map-accent);
   border-color: rgba(26, 115, 232, 0.28);
@@ -480,6 +624,12 @@
 
 .route-summary-btn-start {
   background: var(--pin-start);
+}
+
+.route-summary-btn-live {
+  background: var(--map-accent, #2563eb);
+  color: #ffffff;
+  font-weight: 700;
 }
 
 .route-summary-btn-end {

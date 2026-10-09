@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MapContainer, Marker, Polyline, TileLayer, useMap } from 'react-leaflet';
+import { Circle, MapContainer, Marker, Polyline, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { BUILDINGS, EDGES, JUNCTIONS, NODES } from '../data/board.js';
-import { pathLengthFeet, sampleAlongPathGeo } from '../utils/geo.js';
+import { pathLengthFeet, sampleAlongPathGeo, nearestPointOnRoute, bearingBetween } from '../utils/geo.js';
 import { buildManeuvers, currentInstruction } from '../utils/navigation.js';
 import CompassIndicator from './CompassIndicator.jsx';
 import InstructionBanner from './InstructionBanner.jsx';
+import LocateControl from './LocateControl.jsx';
 import ZoomControls from './ZoomControls.jsx';
 
 // Turn-by-turn camera: closer than any overview fit, puck held low so most
@@ -30,7 +31,11 @@ const OVERVIEW_PAD_FT = 60;
 // entire swipe as exactly one step: the first wheel event fires it, a
 // cooldown window swallows the rest of that same gesture's events.
 const WHEEL_ZOOM_STEP = 0.5; // half a level per step — gentler than a full doubling
-const WHEEL_COOLDOWN_MS = 80;
+// 80ms let a fast scroll fire ~12 tile-fetch bursts/sec at the public OSM
+// tile server, which can't keep up — tiles failed to land before the next
+// burst cancelled them, showing a blank gap. The TileLayer settings below
+// are the main fix; this is backed off slightly too, as the other half of it.
+const WHEEL_COOLDOWN_MS = 110;
 
 function escapeHtml(s) {
   return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -55,6 +60,15 @@ function buildPinIcon(kind, label) {
     </div>`;
   return L.divIcon({ html, className: 'pin-icon-container', iconSize: [width, height], iconAnchor: [width / 2, height] });
 }
+
+const GPS_ICON = L.divIcon({
+  html: `<div class="gps-dot">
+      <span class="gps-dot-core"></span>
+    </div>`,
+  className: 'gps-dot-container',
+  iconSize: [22, 22],
+  iconAnchor: [11, 11],
+});
 
 const PUCK_ICON = L.divIcon({
   html: `<div class="nav-puck">
@@ -81,9 +95,21 @@ function MapInstanceBridge({ onReady }) {
   return null;
 }
 
-export default function BoardMap({ route, startId, endId, navigating, destinationName }) {
+export default function BoardMap({
+  route,
+  startId,
+  endId,
+  navigating,
+  liveTracking,
+  destinationName,
+  userPosition,
+  locationStatus,
+  onRequestLocation,
+}) {
   const mapRef = useRef(null);
   const puckMarkerRef = useRef(null);
+  const pendingRecenter = useRef(false);
+  const lastPosRef = useRef(null);
   const [instruction, setInstruction] = useState(null);
 
   const maneuvers = useMemo(() => (route ? buildManeuvers(route.points) : []), [route]);
@@ -123,23 +149,22 @@ export default function BoardMap({ route, startId, endId, navigating, destinatio
   }, [route]);
 
   useEffect(() => {
-    if (!navigating) fitOverview();
+    if (!navigating && !liveTracking) fitOverview();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [route, navigating]);
+  }, [route, navigating, liveTracking]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return undefined;
     const handle = () => {
-      if (!navigating) fitOverview();
+      if (!navigating && !liveTracking) fitOverview();
     };
     map.on('resize', handle);
     return () => map.off('resize', handle);
-  }, [fitOverview, navigating]);
+  }, [fitOverview, navigating, liveTracking]);
 
-  // Turn-by-turn simulation: no real GPS, so walk the resolved route at a
-  // fixed demo pace, driving the follow camera, the puck, and the
-  // instruction countdown.
+  // Turn-by-turn simulation still walks the resolved route at a demo
+  // pace. Live GPS is a separate blue dot (hidden while this sim runs).
   const navRaf = useRef(null);
   useEffect(() => {
     const map = mapRef.current;
@@ -196,14 +221,69 @@ export default function BoardMap({ route, startId, endId, navigating, destinatio
     };
   }, [navigating, route, maneuvers]);
 
-  // Leaving navigation: re-fit the overview.
-  const wasNavigating = useRef(navigating);
+  // Live tracking: drive the puck from real GPS instead of the simulated
+  // walk above. Snaps the raw fix onto the route so noisy GPS still
+  // produces smooth progress, and falls back to a computed bearing when
+  // the device doesn't report a compass heading (common on foot).
   useEffect(() => {
-    if (wasNavigating.current && !navigating) fitOverview();
-    wasNavigating.current = navigating;
-  }, [navigating, fitOverview]);
+    if (!liveTracking || !route || !userPosition || !puckMarkerRef.current) return;
+
+    const { lat, lng } = userPosition;
+    puckMarkerRef.current.setLatLng([lat, lng]);
+
+    let heading = userPosition.heading;
+    if (heading == null && lastPosRef.current) {
+      heading = bearingBetween(lastPosRef.current, { lat, lng });
+    }
+    lastPosRef.current = { lat, lng };
+
+    const el = puckMarkerRef.current.getElement();
+    const arrow = el?.querySelector('.puck-arrow');
+    if (arrow && heading != null) {
+      arrow.setAttribute('transform', `rotate(${heading})`);
+    }
+
+    const map = mapRef.current;
+    if (map) {
+      const size = map.getSize();
+      const puckPoint = map.project([lat, lng], NAV_ZOOM);
+      const dx = size.x / 2 - size.x * NAV_ANCHOR.x;
+      const dy = size.y / 2 - size.y * NAV_ANCHOR.y;
+      const virtualCenter = map.unproject(puckPoint.subtract([dx, dy]), NAV_ZOOM);
+      map.setView(virtualCenter, NAV_ZOOM, { animate: true, duration: 0.3 });
+    }
+
+    const { traveledFt } = nearestPointOnRoute({ lat, lng }, route.points);
+    setInstruction(currentInstruction(maneuvers, traveledFt));
+  }, [liveTracking, userPosition, route, maneuvers]);
+
+  // Leaving navigation: re-fit the overview.
+  const wasNavigating = useRef(navigating || liveTracking);
+  useEffect(() => {
+    const isNavLike = navigating || liveTracking;
+    if (wasNavigating.current && !isNavLike) fitOverview();
+    wasNavigating.current = isNavLike;
+  }, [navigating, liveTracking, fitOverview]);
 
   const initialCenter = [NODES.carnegie.lat, NODES.carnegie.lng];
+
+  const flyToUser = useCallback((pos) => {
+    const map = mapRef.current;
+    if (!map || !pos) return;
+    map.flyTo([pos.lat, pos.lng], 18, { duration: 0.8 });
+  }, []);
+
+  const handleLocate = useCallback(() => {
+    onRequestLocation?.();
+    if (userPosition) flyToUser(userPosition);
+    else pendingRecenter.current = true;
+  }, [flyToUser, onRequestLocation, userPosition]);
+
+  useEffect(() => {
+    if (!pendingRecenter.current || !userPosition) return;
+    pendingRecenter.current = false;
+    flyToUser(userPosition);
+  }, [flyToUser, userPosition]);
 
   return (
     <div className="board-viewport">
@@ -221,7 +301,22 @@ export default function BoardMap({ route, startId, endId, navigating, destinatio
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maxZoom={20}
+          // The standard OSM tile server's real max zoom is 19 — confirmed
+          // by requesting a z20 tile directly and getting back HTTP 400.
+          // maxZoom was set to 20, one past what the source actually
+          // serves, so every tile at full zoom-in failed to load and the
+          // map showed nothing but its background color.
+          maxZoom={19}
+          // Don't fetch new tiles mid-zoom-gesture — only once it settles.
+          // Fast repeated zoom steps (our wheel handler fires one roughly
+          // every 80ms) were cancelling each tile batch before it finished
+          // loading, leaving a visible gap that shows through to the map's
+          // background color until the next batch lands.
+          updateWhenZooming={false}
+          // Keep more already-loaded tiles around instead of pruning them
+          // immediately, so a gap is far more likely to show the previous
+          // zoom level's tiles (briefly scaled) than nothing at all.
+          keepBuffer={6}
         />
 
         {/* idle walkway network */}
@@ -256,6 +351,33 @@ export default function BoardMap({ route, startId, endId, navigating, destinatio
           </>
         )}
 
+        {/* entrance markers — the route's actual first/last point, which is
+            the chosen door, not the building's center */}
+        {route && (
+          <>
+            <Marker
+              position={[route.points[0].lat, route.points[0].lng]}
+              icon={L.divIcon({
+                html: '<div class="entrance-dot entrance-dot-start"></div>',
+                className: 'entrance-dot-container',
+                iconSize: [14, 14],
+                iconAnchor: [7, 7],
+              })}
+              interactive={false}
+            />
+            <Marker
+              position={[route.points[route.points.length - 1].lat, route.points[route.points.length - 1].lng]}
+              icon={L.divIcon({
+                html: '<div class="entrance-dot entrance-dot-end"></div>',
+                className: 'entrance-dot-container',
+                iconSize: [14, 14],
+                iconAnchor: [7, 7],
+              })}
+              interactive={false}
+            />
+          </>
+        )}
+
         {/* junction dots, only where the route passes through */}
         {JUNCTIONS.filter((j) => onNode?.has(j.id)).map((j) => (
           <Marker
@@ -277,14 +399,36 @@ export default function BoardMap({ route, startId, endId, navigating, destinatio
           return <Marker key={b.id} position={[b.lat, b.lng]} icon={buildPinIcon(kind, b.name)} interactive={false} />;
         })}
 
-        {navigating && route && <Marker ref={puckMarkerRef} position={[route.points[0].lat, route.points[0].lng]} icon={PUCK_ICON} interactive={false} />}
+        {(navigating || liveTracking) && route && (
+          <Marker ref={puckMarkerRef} position={[route.points[0].lat, route.points[0].lng]} icon={PUCK_ICON} interactive={false} />
+        )}
+
+        {userPosition && !navigating && !liveTracking && (
+          <>
+            {Number.isFinite(userPosition.accuracy) && userPosition.accuracy > 0 && (
+              <Circle
+                center={[userPosition.lat, userPosition.lng]}
+                radius={userPosition.accuracy}
+                pathOptions={{
+                  color: 'var(--map-accent)',
+                  weight: 1,
+                  opacity: 0.35,
+                  fillColor: 'var(--map-accent)',
+                  fillOpacity: 0.12,
+                }}
+              />
+            )}
+            <Marker position={[userPosition.lat, userPosition.lng]} icon={GPS_ICON} interactive={false} />
+          </>
+        )}
       </MapContainer>
 
-      {navigating && <InstructionBanner instruction={instruction} destinationName={destinationName} />}
+      {(navigating || liveTracking) && <InstructionBanner instruction={instruction} destinationName={destinationName} />}
 
       <CompassIndicator />
 
       <div className="board-hud" data-no-pan>
+        <LocateControl onLocate={handleLocate} status={locationStatus} />
         <ZoomControls onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} />
       </div>
     </div>
