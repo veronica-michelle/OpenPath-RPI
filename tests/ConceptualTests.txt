@@ -1,4 +1,4 @@
-Use the practice data as described in ConceptGraph.jpg for these tests
+Use the practice data as described in ConceptualGraph.jpg for these tests
 Perform these tests BEFORE integration with the RPI data. "Construction blocks"
 refers to the data setting marking construction work on a pathway that makes said
 path inaccessible. Look at map.jpg as the map for the data file.

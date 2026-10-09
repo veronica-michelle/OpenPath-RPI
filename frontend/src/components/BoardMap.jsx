@@ -30,7 +30,11 @@ const OVERVIEW_PAD_FT = 60;
 // entire swipe as exactly one step: the first wheel event fires it, a
 // cooldown window swallows the rest of that same gesture's events.
 const WHEEL_ZOOM_STEP = 0.5; // half a level per step — gentler than a full doubling
-const WHEEL_COOLDOWN_MS = 80;
+// 80ms let a fast scroll fire ~12 tile-fetch bursts/sec at the public OSM
+// tile server, which can't keep up — tiles failed to land before the next
+// burst cancelled them, showing a blank gap. The TileLayer settings below
+// are the main fix; this is backed off slightly too, as the other half of it.
+const WHEEL_COOLDOWN_MS = 110;
 
 function escapeHtml(s) {
   return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -221,7 +225,22 @@ export default function BoardMap({ route, startId, endId, navigating, destinatio
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maxZoom={20}
+          // The standard OSM tile server's real max zoom is 19 — confirmed
+          // by requesting a z20 tile directly and getting back HTTP 400.
+          // maxZoom was set to 20, one past what the source actually
+          // serves, so every tile at full zoom-in failed to load and the
+          // map showed nothing but its background color.
+          maxZoom={19}
+          // Don't fetch new tiles mid-zoom-gesture — only once it settles.
+          // Fast repeated zoom steps (our wheel handler fires one roughly
+          // every 80ms) were cancelling each tile batch before it finished
+          // loading, leaving a visible gap that shows through to the map's
+          // background color until the next batch lands.
+          updateWhenZooming={false}
+          // Keep more already-loaded tiles around instead of pruning them
+          // immediately, so a gap is far more likely to show the previous
+          // zoom level's tiles (briefly scaled) than nothing at all.
+          keepBuffer={6}
         />
 
         {/* idle walkway network */}
@@ -252,6 +271,33 @@ export default function BoardMap({ route, startId, endId, navigating, destinatio
             <Polyline
               positions={route.points.map((p) => [p.lat, p.lng])}
               pathOptions={{ color: 'var(--map-accent)', weight: 5.5, lineCap: 'round', lineJoin: 'round' }}
+            />
+          </>
+        )}
+
+        {/* entrance markers — the route's actual first/last point, which is
+            the chosen door, not the building's center */}
+        {route && (
+          <>
+            <Marker
+              position={[route.points[0].lat, route.points[0].lng]}
+              icon={L.divIcon({
+                html: '<div class="entrance-dot entrance-dot-start"></div>',
+                className: 'entrance-dot-container',
+                iconSize: [14, 14],
+                iconAnchor: [7, 7],
+              })}
+              interactive={false}
+            />
+            <Marker
+              position={[route.points[route.points.length - 1].lat, route.points[route.points.length - 1].lng]}
+              icon={L.divIcon({
+                html: '<div class="entrance-dot entrance-dot-end"></div>',
+                className: 'entrance-dot-container',
+                iconSize: [14, 14],
+                iconAnchor: [7, 7],
+              })}
+              interactive={false}
             />
           </>
         )}
