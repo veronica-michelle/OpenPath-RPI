@@ -16,7 +16,7 @@ LOCATIONS = [
     {"id": "amos-eaton", "name": "Amos Eaton", "lat": 42.72920, "lng": -73.68050},
     {"id": "lally", "name": "Lally Hall", "lat": 42.73000, "lng": -73.67790},
     {"id": "library", "name": "Folsom Library", "lat": 42.72995, "lng": -73.67940},
-    {"id": "vcc", "name": "Rensselaer Union (VCC)", "lat": 42.72950, "lng": -73.68000},
+    {"id": "vcc", "name": "Voorhees Computing (VCC)", "lat": 42.72950, "lng": -73.68000},
 ]
 
 LOCATIONS_BY_ID = {loc["id"]: loc for loc in LOCATIONS}
