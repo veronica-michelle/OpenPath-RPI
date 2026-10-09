@@ -1,3 +1,4 @@
+import EntrancePicker from './EntrancePicker.jsx';
 import SearchField from './SearchField.jsx';
 import StairsToggle from './StairsToggle.jsx';
 
@@ -7,6 +8,10 @@ export default function ControlPanel({
   end,
   onStartChange,
   onEndChange,
+  startEntranceId,
+  onStartEntranceChange,
+  endEntranceId,
+  onEndEntranceChange,
   avoidStairs,
   onAvoidStairsChange,
   sameBuildingWarning,
@@ -19,7 +24,7 @@ export default function ControlPanel({
     <section className="control-panel" aria-label="Route controls" data-no-pan>
       <header className="control-panel-header">
         <span className="brand-wordmark">OpenPath</span>
-        <span className="brand-subtitle">ARN pilot</span>
+        <span className="brand-subtitle">Accessible RPI Routes</span>
       </header>
 
       <div className="control-panel-fields">
@@ -35,6 +40,12 @@ export default function ControlPanel({
           onNeedLocation={onNeedLocation}
           showNearestShortcut
         />
+        <EntrancePicker
+          label="Start entrance"
+          entrances={start?.entrances}
+          selectedId={startEntranceId}
+          onChange={onStartEntranceChange}
+        />
         <SearchField
           label="Destination"
           dotClass="search-dot-end"
@@ -45,6 +56,12 @@ export default function ControlPanel({
           placeholder="Choose destination"
           userPosition={userPosition}
           onNeedLocation={onNeedLocation}
+        />
+        <EntrancePicker
+          label="Destination entrance"
+          entrances={end?.entrances}
+          selectedId={endEntranceId}
+          onChange={onEndEntranceChange}
         />
       </div>
 
