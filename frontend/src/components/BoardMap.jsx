@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MapContainer, Marker, Polyline, TileLayer, useMap } from 'react-leaflet';
+import { Circle, MapContainer, Marker, Polyline, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { BUILDINGS, EDGES, JUNCTIONS, NODES } from '../data/board.js';
-import { pathLengthFeet, sampleAlongPathGeo } from '../utils/geo.js';
+import { pathLengthFeet, sampleAlongPathGeo, nearestPointOnRoute, bearingBetween } from '../utils/geo.js';
 import { buildManeuvers, currentInstruction } from '../utils/navigation.js';
 import InstructionBanner from './InstructionBanner.jsx';
+import LocateControl from './LocateControl.jsx';
 import ZoomControls from './ZoomControls.jsx';
 
 // Turn-by-turn camera: closer than any overview fit, puck held low so most
@@ -46,6 +47,15 @@ function buildPinIcon(kind, label) {
   return L.divIcon({ html, className: 'pin-icon-container', iconSize: [width, height], iconAnchor: [width / 2, height] });
 }
 
+const GPS_ICON = L.divIcon({
+  html: `<div class="gps-dot">
+      <span class="gps-dot-core"></span>
+    </div>`,
+  className: 'gps-dot-container',
+  iconSize: [22, 22],
+  iconAnchor: [11, 11],
+});
+
 const PUCK_ICON = L.divIcon({
   html: `<div class="nav-puck">
       <svg width="44" height="44" viewBox="-22 -22 44 44">
@@ -71,9 +81,21 @@ function MapInstanceBridge({ onReady }) {
   return null;
 }
 
-export default function BoardMap({ route, startId, endId, navigating, destinationName }) {
+export default function BoardMap({
+  route,
+  startId,
+  endId,
+  navigating,
+  liveTracking,
+  destinationName,
+  userPosition,
+  locationStatus,
+  onRequestLocation,
+}) {
   const mapRef = useRef(null);
   const puckMarkerRef = useRef(null);
+  const pendingRecenter = useRef(false);
+  const lastPosRef = useRef(null);
   const [instruction, setInstruction] = useState(null);
 
   const maneuvers = useMemo(() => (route ? buildManeuvers(route.points) : []), [route]);
@@ -100,23 +122,22 @@ export default function BoardMap({ route, startId, endId, navigating, destinatio
   }, [route]);
 
   useEffect(() => {
-    if (!navigating) fitOverview();
+    if (!navigating && !liveTracking) fitOverview();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [route, navigating]);
+  }, [route, navigating, liveTracking]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return undefined;
     const handle = () => {
-      if (!navigating) fitOverview();
+      if (!navigating && !liveTracking) fitOverview();
     };
     map.on('resize', handle);
     return () => map.off('resize', handle);
-  }, [fitOverview, navigating]);
+  }, [fitOverview, navigating, liveTracking]);
 
-  // Turn-by-turn simulation: no real GPS, so walk the resolved route at a
-  // fixed demo pace, driving the follow camera, the puck, and the
-  // instruction countdown.
+  // Turn-by-turn simulation still walks the resolved route at a demo
+  // pace. Live GPS is a separate blue dot (hidden while this sim runs).
   const navRaf = useRef(null);
   useEffect(() => {
     const map = mapRef.current;
@@ -173,14 +194,69 @@ export default function BoardMap({ route, startId, endId, navigating, destinatio
     };
   }, [navigating, route, maneuvers]);
 
-  // Leaving navigation: re-fit the overview.
-  const wasNavigating = useRef(navigating);
+  // Live tracking: drive the puck from real GPS instead of the simulated
+  // walk above. Snaps the raw fix onto the route so noisy GPS still
+  // produces smooth progress, and falls back to a computed bearing when
+  // the device doesn't report a compass heading (common on foot).
   useEffect(() => {
-    if (wasNavigating.current && !navigating) fitOverview();
-    wasNavigating.current = navigating;
-  }, [navigating, fitOverview]);
+    if (!liveTracking || !route || !userPosition || !puckMarkerRef.current) return;
+
+    const { lat, lng } = userPosition;
+    puckMarkerRef.current.setLatLng([lat, lng]);
+
+    let heading = userPosition.heading;
+    if (heading == null && lastPosRef.current) {
+      heading = bearingBetween(lastPosRef.current, { lat, lng });
+    }
+    lastPosRef.current = { lat, lng };
+
+    const el = puckMarkerRef.current.getElement();
+    const arrow = el?.querySelector('.puck-arrow');
+    if (arrow && heading != null) {
+      arrow.setAttribute('transform', `rotate(${heading})`);
+    }
+
+    const map = mapRef.current;
+    if (map) {
+      const size = map.getSize();
+      const puckPoint = map.project([lat, lng], NAV_ZOOM);
+      const dx = size.x / 2 - size.x * NAV_ANCHOR.x;
+      const dy = size.y / 2 - size.y * NAV_ANCHOR.y;
+      const virtualCenter = map.unproject(puckPoint.subtract([dx, dy]), NAV_ZOOM);
+      map.setView(virtualCenter, NAV_ZOOM, { animate: true, duration: 0.3 });
+    }
+
+    const { traveledFt } = nearestPointOnRoute({ lat, lng }, route.points);
+    setInstruction(currentInstruction(maneuvers, traveledFt));
+  }, [liveTracking, userPosition, route, maneuvers]);
+
+  // Leaving navigation: re-fit the overview.
+  const wasNavigating = useRef(navigating || liveTracking);
+  useEffect(() => {
+    const isNavLike = navigating || liveTracking;
+    if (wasNavigating.current && !isNavLike) fitOverview();
+    wasNavigating.current = isNavLike;
+  }, [navigating, liveTracking, fitOverview]);
 
   const initialCenter = [NODES.carnegie.lat, NODES.carnegie.lng];
+
+  const flyToUser = useCallback((pos) => {
+    const map = mapRef.current;
+    if (!map || !pos) return;
+    map.flyTo([pos.lat, pos.lng], 18, { duration: 0.8 });
+  }, []);
+
+  const handleLocate = useCallback(() => {
+    onRequestLocation?.();
+    if (userPosition) flyToUser(userPosition);
+    else pendingRecenter.current = true;
+  }, [flyToUser, onRequestLocation, userPosition]);
+
+  useEffect(() => {
+    if (!pendingRecenter.current || !userPosition) return;
+    pendingRecenter.current = false;
+    flyToUser(userPosition);
+  }, [flyToUser, userPosition]);
 
   return (
     <div className="board-viewport">
@@ -251,12 +327,34 @@ export default function BoardMap({ route, startId, endId, navigating, destinatio
           return <Marker key={b.id} position={[b.lat, b.lng]} icon={buildPinIcon(kind, b.name)} interactive={false} />;
         })}
 
-        {navigating && route && <Marker ref={puckMarkerRef} position={[route.points[0].lat, route.points[0].lng]} icon={PUCK_ICON} interactive={false} />}
+        {(navigating || liveTracking) && route && (
+          <Marker ref={puckMarkerRef} position={[route.points[0].lat, route.points[0].lng]} icon={PUCK_ICON} interactive={false} />
+        )}
+
+        {userPosition && !navigating && !liveTracking && (
+          <>
+            {Number.isFinite(userPosition.accuracy) && userPosition.accuracy > 0 && (
+              <Circle
+                center={[userPosition.lat, userPosition.lng]}
+                radius={userPosition.accuracy}
+                pathOptions={{
+                  color: 'var(--map-accent)',
+                  weight: 1,
+                  opacity: 0.35,
+                  fillColor: 'var(--map-accent)',
+                  fillOpacity: 0.12,
+                }}
+              />
+            )}
+            <Marker position={[userPosition.lat, userPosition.lng]} icon={GPS_ICON} interactive={false} />
+          </>
+        )}
       </MapContainer>
 
-      {navigating && <InstructionBanner instruction={instruction} destinationName={destinationName} />}
+      {(navigating || liveTracking) && <InstructionBanner instruction={instruction} destinationName={destinationName} />}
 
       <div className="board-hud" data-no-pan>
+        <LocateControl onLocate={handleLocate} status={locationStatus} />
         <ZoomControls onZoomIn={() => mapRef.current?.zoomIn()} onZoomOut={() => mapRef.current?.zoomOut()} />
       </div>
     </div>
