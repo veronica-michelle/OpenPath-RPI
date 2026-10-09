@@ -1,0 +1,31 @@
+{
+    "id": {
+        "id": "id",
+        "name": "building",
+        "entrances": [{
+            "id": "id1",
+            "coordinates": [0.0, 0.0],
+            "elevation": 0,
+            "features": {
+                "accessible": false,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [false, false]
+            }
+        }, {
+            "id": "id2",
+            "coordinates": [0.0, 0.0],
+            "elevation": 0,
+            "features": {
+                "accessible": false,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [false, false]
+            }
+        }]
+    },
+    "id": {
+        "id": "id",
+        "elevation": 0
+    }
+}
