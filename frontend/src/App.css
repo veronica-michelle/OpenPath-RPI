@@ -117,6 +117,26 @@
   }
 }
 
+.gps-dot-container {
+  background: transparent !important;
+  border: none !important;
+}
+.gps-dot {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gps-dot-core {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--map-accent);
+  border: 3px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(26, 115, 232, 0.45);
+}
+
 /* ---------- HUD: zoom ---------- */
 
 .board-hud {
@@ -136,6 +156,30 @@
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 6px rgba(30, 35, 40, 0.18), 0 1px 2px rgba(30, 35, 40, 0.12);
+}
+
+.locate-btn {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 8px;
+  background: var(--panel-bg);
+  color: var(--ink-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(30, 35, 40, 0.18), 0 1px 2px rgba(30, 35, 40, 0.12);
+  transition: background 140ms var(--ease-board), color 140ms var(--ease-board);
+}
+.locate-btn:hover {
+  background: var(--map-field);
+  color: var(--ink);
+}
+.locate-btn.is-locating {
+  color: var(--map-accent);
+}
+.locate-btn.is-denied {
+  color: var(--ink-faint);
 }
 
 .zoom-btn {
@@ -262,6 +306,13 @@
   background: repeating-linear-gradient(to bottom, var(--map-border-strong) 0 3px, transparent 3px 6px);
 }
 
+.control-panel-hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ink-faint);
+}
+
 .control-panel-warning {
   margin: 0;
   font-size: 12.5px;
@@ -352,14 +403,42 @@
 }
 
 .search-option {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
   padding: 8px 10px;
   border-radius: 6px;
   font-size: 13.5px;
   color: var(--ink-dim);
 }
+.search-option-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.search-option-title {
+  font-weight: 600;
+  color: var(--ink);
+}
+.search-option-meta {
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+.search-option-distance {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
 .search-option.is-active {
   background: var(--map-accent-soft);
   color: var(--ink);
+}
+.search-option.is-active .search-option-distance,
+.search-option.is-active .search-option-meta {
+  color: var(--map-accent);
 }
 
 /* ---------- Stairs chip ---------- */
@@ -446,6 +525,12 @@
 
 .route-summary-btn-start {
   background: var(--pin-start);
+}
+
+.route-summary-btn-live {
+  background: var(--map-accent, #2563eb);
+  color: #ffffff;
+  font-weight: 700;
 }
 
 .route-summary-btn-end {
