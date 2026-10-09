@@ -1,0 +1,105 @@
+[
+    {
+        "id": "node-a",
+        "name": "Node A",
+        "lat": 42.732,
+        "long": -73.683,
+        "type": "entrance",
+        "verified": true
+    },
+    {
+        "id": "node-b",
+        "name": "Node B",
+        "lat": 42.732,
+        "long": -73.683,
+        "type": "entrance",
+        "verified": true
+    },
+    {
+        "id": "node-c",
+        "name": "Node C",
+        "lat": 42.73114802764494,
+        "long": -73.68325506502764,
+        "type": "entrance",
+        "verified": true
+    },
+    {
+        "id": "node-d",
+        "name": "Node D",
+        "lat": 42.731184067647156,
+        "long": -73.68177421364409,
+        "type": "entrance",
+        "verified": true
+    },
+    {
+        "id": "node-e",
+        "name": "Node E",
+        "lat": 42.73085140348987,
+        "long": -73.68251003630505,
+        "type": "entrance",
+        "verified": true
+    },
+    {
+        "id": "node-f",
+        "name": "Node F",
+        "lat": 42.730439089037205,
+        "long": -73.68319844071483,
+        "type": "entrance",
+        "verified": true
+    },
+    {
+        "id": "node-g",
+        "name": "Node G",
+        "lat": 42.73020001039923,
+        "long": -73.68256937008805,
+        "type": "entrance",
+        "verified": true
+    },
+    {
+        "id": "node-h",
+        "name": "Node H",
+        "lat": 42.73007263874959,
+        "long": -73.68189371155137,
+        "type": "entrance",
+        "verified": true
+    },
+    {
+        "id": "node-v",
+        "name": "Node V",
+        "lat": 42.73002432529683,
+        "long": -73.68118815661926,
+        "type": "entrance",
+        "verified": true
+    },
+    {
+        "id": "node-w",
+        "name": "Node W",
+        "lat": 42.72936407434368,
+        "long": -73.68255508337478,
+        "type": "entrance",
+        "verified": true
+    },
+    {
+        "id": "node-x",
+        "name": "Node X",
+        "lat": 42.72924081130099,
+        "long": -73.68172841827538,
+        "type": "entrance",
+        "verified": true
+    },{
+        "id": "node-y",
+        "name": "Node Y",
+        "lat": 42.72847285695591,
+        "long": -73.68176950555977,
+        "type": "entrance",
+        "verified": true
+    },
+    {
+        "id": "node-z",
+        "name": "Node Z",
+        "lat": 42.72882497693645,
+        "long": -73.68038166818128,
+        "type": "entrance",
+        "verified": true
+    }
+]
