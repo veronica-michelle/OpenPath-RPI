@@ -1,0 +1,25 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "EMPAC to Folsom Library",
+        "route_type": "approximate straight-line connection",
+        "verified_pedestrian_path": false
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-73.68383, 42.72887],
+          [-73.6836105, 42.7289413],
+          [-73.683391, 42.7290127],
+          [-73.6831715, 42.729084],
+          [-73.682952, 42.7291553],
+          [-73.6827325, 42.7292267],
+          [-73.682513, 42.729298]
+        ]
+      }
+    }
+  ]
+}
