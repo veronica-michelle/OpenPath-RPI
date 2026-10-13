@@ -1,0 +1,19 @@
+Use the practice data as described in ConceptualGraph.jpg for these tests
+Perform these tests BEFORE integration with the RPI data. "Construction blocks"
+refers to the data setting marking construction work on a pathway that makes said
+path inaccessible. Look at map.jpg as the map for the data file.
+1. Node A to Node A. Display an error message that the user isn't going anywhere.
+2. Find a route from Node B to Node D (B -> D). Ensure this route is the same as the
+   route from Node D to Node B (D -> B). Basic algorithm check.
+3. Make a path from Node A to Node B. As a basic test of the contruction block modifier,
+   this should result in the alternate route A -> C -> B being taken.
+4. Starting from Node E, travel to Node H. This test is to ensure that when faced with
+   multiple construction blocks around a destination node, all will be accounted for
+   rather than just one.
+5. Check to reach Node Y from any Node other than Z. This should return an error due to
+   construction blocks preventing travel to Node Y. Make sure the error output properly
+   conveys this to the user. This checks that construction is more than just a priority
+   change.
+6. Attempt to reach Node Z from any other Node. This is a check for an impossible
+   route without any construction blocks as the cause. Display an error message
+   conveying the failure to find an available route for the user.

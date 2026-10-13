@@ -63,15 +63,26 @@ function dijkstra(startId, endId, allowStairs) {
 
 // Resolves a shortest node path into a walkway polyline (straight segments
 // between real node positions — a map route line, not a schematic trace).
-export function findRoute(startId, endId, allowStairs) {
+//
+// startEntrance/endEntrance (optional {lat, lng}) swap in for the building's
+// center as the route's actual first/last point when the visitor picked a
+// specific door — the graph itself still routes building-to-building (the
+// walkway network only connects at centers; no surveyed sidewalk-to-door
+// data exists), this just re-points the final "last few feet" leg at the
+// real entrance instead of the building's centroid.
+export function findRoute(startId, endId, allowStairs, startEntrance, endEntrance) {
   if (!startId || !endId || startId === endId) return null;
   const result = dijkstra(startId, endId, allowStairs);
   if (!result) return null;
 
+  const points = result.nodeIds.map((id) => NODES[id]);
+  if (startEntrance) points[0] = startEntrance;
+  if (endEntrance) points[points.length - 1] = endEntrance;
+
   const route = {
     nodeIds: result.nodeIds,
     usedStairs: result.edges.some((e) => e.stairs),
-    points: result.nodeIds.map((id) => NODES[id]),
+    points,
   };
   return { ...route, ...summarizeRoute(route) };
 }
