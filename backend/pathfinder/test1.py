@@ -20,7 +20,7 @@ def idget(line, word):
 
 graph = nx.Graph()
 
-nodes = map(str,int); # string is for location name; and int is for location number associated; int is ID
+nodes = map(str,int) # string is for location name; and int is for location number associated; int is ID
 
 infilename = string(input("put the json file here:")) # replace with actual json file that has all the nodes
 

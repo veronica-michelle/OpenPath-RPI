@@ -40,7 +40,7 @@ finder = ("id","name","lat","long","type")
 finderadds = ('": ','": ','":','":','": ') # remove the last most symbol in the seperateion:
 # so if the line is "thing": "contents",
 # it would be 'thing' and '":'
-# dont ask why this is the case, i'm not sure myself, it just kind aworks like that
+# dont ask why this is the case, i'm not sure myself, it just kind aworks like that '
 i = 0
 
 for line in fp:
