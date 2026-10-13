@@ -4,6 +4,14 @@ import networkx as nx
 
 
 
+def idget(line, word):
+
+    for letter in line:
+        if letter == word[0]:
+            print(word[0])
+
+
+
 
 
 
@@ -22,6 +30,12 @@ helper = 0
 
 for line in fp:
     print(line)
+
+    for letter in line:
+        print(letter, "\n")
+
+
+
 
 infile2name = string(input("put the json file here:"))
 
