@@ -5,22 +5,25 @@ import networkx as nx
 
 
 
+
+
+
+
+
 graph = nx.Graph()
 
-nodes = map(str,int); # string is for location name; and int is for location number associated
+nodes = map(str,int); # string is for location name; and int is for location number associated; int is ID
 
-str infilename = input("put the json file here:") # replace with actual json file that has all the nodes
+infilename = string(input("put the json file here:")) # replace with actual json file that has all the nodes
 
 infile = open(infilename, "r")
 
-int helper = 0
+helper = 0
 
-while line = infile.readline():
+for line in fp:
+    print(line)
 
-    graph.add_nodes_from( (helper, lat='1', lon= '2', ) )
-    helper++
-
-str infile2name = input("put json file here")
+infile2name = string(input("put the json file here:"))
 
 infile2 = open(infile2name, "r")
 
