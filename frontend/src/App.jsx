@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { fetchMap, fetchRoute } from './api/client.js';
 import useGeolocation from './hooks/useGeolocation.js';
 import BoardMap from './components/BoardMap.jsx';
+import CompassIndicator from './components/CompassIndicator.jsx';
 import ControlPanel from './components/ControlPanel.jsx';
 import RouteSummary from './components/RouteSummary.jsx';
-import './App.css';
 
 export default function App() {
   const [mapData, setMapData] = useState(null);
@@ -37,7 +37,7 @@ export default function App() {
   }, [reloadKey]);
 
   const buildings = useMemo(
-    () => (mapData?.nodes ?? []).filter((node) => node.type === 'location'),
+    () => (mapData?.nodes ?? []).filter((node) => node.type === 'location' || node.type === 'entrance'),
     [mapData],
   );
   const start = buildings.find((building) => building.id === startId) ?? null;
@@ -123,49 +123,53 @@ export default function App() {
         locationStatus={locationStatus}
         onRequestLocation={startLocation}
       />
-      {!routeLoading && route && (
-        <RouteSummary
-          route={route}
-          destinationName={end?.name}
-          navigating={navigating}
-          liveTracking={liveTracking}
-          onStart={() => setNavigating(true)}
-          onStartLive={() => {
-            startLocation();
-            setLiveTracking(true);
-          }}
-          onEnd={() => {
-            setNavigating(false);
-            setLiveTracking(false);
-          }}
-        />
-      )}
-      {!navigating && !liveTracking && (
-        <ControlPanel
-          buildings={buildings}
-          start={start}
-          end={end}
-          onStartChange={handleStartChange}
-          onEndChange={handleEndChange}
-          startEntranceId={startEntranceId}
-          onStartEntranceChange={setStartEntranceId}
-          endEntranceId={endEntranceId}
-          onEndEntranceChange={setEndEntranceId}
-          avoidStairs={avoidStairs}
-          onAvoidStairsChange={(value) => {
-            setNavigating(false);
-            setLiveTracking(false);
-            setAvoidStairs(value);
-          }}
-          sameBuildingWarning={sameBuilding}
-          noRouteWarning={noRouteWarning}
-          routeLoading={routeLoading}
-          routeError={routeError}
-          userPosition={userPosition}
-          locationStatus={locationStatus}
-          onNeedLocation={startLocation}
-        />
-      )}
+      <div className="app-overlay-layer">
+        <CompassIndicator />
+        {!routeLoading && route && (
+          <RouteSummary
+            route={route}
+            destinationName={end?.name}
+            navigating={navigating}
+            liveTracking={liveTracking}
+            onStart={() => setNavigating(true)}
+            onStartLive={() => {
+              startLocation();
+              setLiveTracking(true);
+            }}
+            onEnd={() => {
+              setNavigating(false);
+              setLiveTracking(false);
+            }}
+          />
+        )}
+        {!navigating && !liveTracking && (
+          <ControlPanel
+            buildings={buildings}
+            start={start}
+            end={end}
+            onStartChange={handleStartChange}
+            onEndChange={handleEndChange}
+            startEntranceId={startEntranceId}
+            onStartEntranceChange={setStartEntranceId}
+            endEntranceId={endEntranceId}
+            onEndEntranceChange={setEndEntranceId}
+            avoidStairs={avoidStairs}
+            onAvoidStairsChange={(value) => {
+              setNavigating(false);
+              setLiveTracking(false);
+              setAvoidStairs(value);
+            }}
+            sameBuildingWarning={sameBuilding}
+            noRouteWarning={noRouteWarning}
+            noRouteMessage={noRouteWarning ? activeRouteFailure?.message : null}
+            routeLoading={routeLoading}
+            routeError={routeError}
+            userPosition={userPosition}
+            locationStatus={locationStatus}
+            onNeedLocation={startLocation}
+          />
+        )}
+      </div>
     </div>
   );
 }

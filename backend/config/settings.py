@@ -26,7 +26,8 @@ SECRET_KEY = "django-insecure-u+8%n_)r#z2dzewhfq96mx41#11@=io4*7)g=nord6uhg6=-vi
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+# `backend` is the upstream host used by the Vite proxy inside Compose.
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "backend"]
 
 
 # Application definition

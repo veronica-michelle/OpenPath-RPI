@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .graph import find_route, get_graph, get_locations
+from .graph import construction_blocks_route, find_route, get_graph, get_locations
 from .serializers import LocationSerializer, RouteRequestSerializer
 
 
@@ -33,6 +33,12 @@ class RouteView(APIView):
             if data[field] not in locations:
                 return Response({"detail": f"Unknown {field}: {data[field]!r}"}, status=404)
 
+        if data["start_id"] == data["destination_id"]:
+            return Response(
+                {"detail": "You are not going anywhere: choose two different locations."},
+                status=400,
+            )
+
         route = find_route(
             data["start_id"],
             data["destination_id"],
@@ -41,5 +47,11 @@ class RouteView(APIView):
             destination_entrance_id=data.get("destination_entrance_id", ""),
         )
         if route is None:
-            return Response({"detail": "No route found for these locations and preferences."}, status=404)
+            if construction_blocks_route(
+                data["start_id"], data["destination_id"], data["avoid_stairs"]
+            ):
+                detail = "Construction blocks prevent travel between these locations."
+            else:
+                detail = "No available route connects these locations."
+            return Response({"detail": detail}, status=404)
         return Response(route)

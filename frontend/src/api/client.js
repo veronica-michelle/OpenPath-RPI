@@ -1,11 +1,21 @@
 async function request(path, options) {
-  const response = await fetch(path, {
-    headers: { Accept: 'application/json', ...(options?.body ? { 'Content-Type': 'application/json' } : {}) },
-    ...options,
-  });
+  let response;
+  try {
+    response = await fetch(path, {
+      headers: { Accept: 'application/json', ...(options?.body ? { 'Content-Type': 'application/json' } : {}) },
+      ...options,
+    });
+  } catch (error) {
+    if (error.name === 'AbortError') throw error;
+    throw new Error('Could not reach the campus API. Start Django on port 8000 or run Docker Compose from the repository root.');
+  }
+
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
-    const error = new Error(payload.detail ?? `The server returned ${response.status}.`);
+    const message = response.status === 502 || response.status === 503
+      ? 'The campus API is not running. Start Django on port 8000 or run Docker Compose from the repository root.'
+      : payload.detail ?? `The server returned ${response.status}.`;
+    const error = new Error(message);
     error.status = response.status;
     throw error;
   }

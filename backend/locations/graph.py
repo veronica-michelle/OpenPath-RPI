@@ -12,6 +12,7 @@ from pathlib import Path
 from .geo import haversine_meters
 
 GRAPH_PATH = Path(__file__).with_name("graph.json")
+PRACTICE_DATA_PATH = Path(__file__).with_name("practice_data")
 FEET_PER_METER = 3.28084
 WALK_SPEED_MPH = 2.5
 
@@ -22,8 +23,34 @@ def get_graph():
         return json.load(graph_file)
 
 
+def load_practice_graph():
+    """Adapt the conceptual CG location/path files to the route graph format."""
+    with (PRACTICE_DATA_PATH / "CGLocations.json").open(encoding="utf-8") as locations_file:
+        locations = json.load(locations_file)
+    with (PRACTICE_DATA_PATH / "CGPaths.json").open(encoding="utf-8") as paths_file:
+        paths = json.load(paths_file)
+
+    ids_by_name = {location["name"]: location["id"] for location in locations}
+    nodes = [
+        {**location, "lng": location["long"]}
+        for location in locations
+    ]
+    edges = [
+        {
+            "id": path["id"],
+            "a": ids_by_name[path["from"]],
+            "b": ids_by_name[path["to"]],
+            "dist": path["dist"],
+            "type": path["type"],
+            "verified": path["verified"],
+        }
+        for path in paths
+    ]
+    return {"nodes": nodes, "edges": edges}
+
+
 def get_locations():
-    return [node for node in get_graph()["nodes"] if node["type"] == "location"]
+    return [node for node in get_graph()["nodes"] if node["type"] in {"location", "entrance"}]
 
 
 def _bearing(a, b):
@@ -62,7 +89,7 @@ def _build_maneuvers(points):
     return maneuvers
 
 
-def _find_node_path(start_id, destination_id, avoid_stairs):
+def _find_node_path(start_id, destination_id, avoid_stairs, include_construction=False):
     """Small Dijkstra adapter, mirroring the current frontend behavior.
 
     Replace this internal implementation with the team's routing service
@@ -76,12 +103,14 @@ def _find_node_path(start_id, destination_id, avoid_stairs):
     adjacency = {node_id: [] for node_id in nodes}
     for edge in graph["edges"]:
         edge_type = edge.get("type", "path")
-        if edge_type == "construction" or (avoid_stairs and edge_type == "stairs"):
+        if (edge_type == "construction" and not include_construction) or (avoid_stairs and edge_type == "stairs"):
             continue
         a, b = nodes.get(edge["a"]), nodes.get(edge["b"])
         if not a or not b:
             continue
-        weight = haversine_meters(a["lat"], a["lng"], b["lat"], b["lng"])
+        weight = edge.get("dist")
+        if weight is None:
+            weight = haversine_meters(a["lat"], a["lng"], b["lat"], b["lng"])
         adjacency[a["id"]].append((b["id"], weight, edge))
         adjacency[b["id"]].append((a["id"], weight, edge))
 
@@ -117,6 +146,13 @@ def _find_node_path(start_id, destination_id, avoid_stairs):
     node_ids.reverse()
     edges.reverse()
     return node_ids, edges, nodes
+
+
+def construction_blocks_route(start_id, destination_id, avoid_stairs=False):
+    """Return whether ignoring construction edges makes an otherwise blocked route possible."""
+    return _find_node_path(
+        start_id, destination_id, avoid_stairs, include_construction=True
+    ) is not None
 
 
 def find_route(start_id, destination_id, avoid_stairs=False,

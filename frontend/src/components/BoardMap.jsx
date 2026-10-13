@@ -4,7 +4,6 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { pathLengthFeet, sampleAlongPathGeo, nearestPointOnRoute, bearingBetween } from '../utils/geo.js';
 import { currentInstruction } from '../utils/navigation.js';
-import CompassIndicator from './CompassIndicator.jsx';
 import InstructionBanner from './InstructionBanner.jsx';
 import LocateControl from './LocateControl.jsx';
 import ZoomControls from './ZoomControls.jsx';
@@ -427,8 +426,6 @@ export default function BoardMap({
       </MapContainer>
 
       {(navigating || liveTracking) && <InstructionBanner instruction={instruction} destinationName={destinationName} />}
-
-      <CompassIndicator />
 
       <div className="board-hud" data-no-pan>
         <LocateControl onLocate={handleLocate} status={locationStatus} />
