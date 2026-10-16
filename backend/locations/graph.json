@@ -11,13 +11,15 @@
           "id": "carnegie-e1",
           "lat": 42.7304826,
           "lng": -73.6833129,
-          "label": "Northwest"
+          "label": "Northwest",
+          "accessible": null
         },
         {
           "id": "carnegie-e2",
           "lat": 42.7304039,
           "lng": -73.6830758,
-          "label": "Southeast"
+          "label": "Southeast",
+          "accessible": null
         }
       ],
       "type": "location"
@@ -33,20 +35,23 @@
           "id": "walker-e1",
           "lat": 42.7308502,
           "lng": -73.6822893,
-          "label": "East"
+          "label": "East",
+          "accessible": null
         },
         {
           "id": "walker-e2",
           "lat": 42.7309589,
           "lng": -73.6821182,
           "label": "East (Accessible)",
-          "wheelchair": true
+          "wheelchair": true,
+          "accessible": true
         },
         {
           "id": "walker-e3",
           "lat": 42.7306746,
           "lng": -73.6827277,
-          "label": "Southwest"
+          "label": "Southwest",
+          "accessible": null
         }
       ],
       "type": "location"
@@ -62,13 +67,15 @@
           "id": "sage-e1",
           "lat": 42.7307679,
           "lng": -73.6816787,
-          "label": "South"
+          "label": "South",
+          "accessible": null
         },
         {
           "id": "sage-e2",
           "lat": 42.7309716,
           "lng": -73.681183,
-          "label": "East"
+          "label": "East",
+          "accessible": null
         }
       ],
       "type": "location"
@@ -84,7 +91,8 @@
           "id": "pittsburgh-e1",
           "lat": 42.7310446,
           "lng": -73.6833374,
-          "label": "South"
+          "label": "South",
+          "accessible": null
         }
       ],
       "type": "location"
@@ -100,25 +108,29 @@
           "id": "empac-e1",
           "lat": 42.7285344,
           "lng": -73.6836701,
-          "label": "Southeast"
+          "label": "Southeast",
+          "accessible": null
         },
         {
           "id": "empac-e2",
           "lat": 42.7285846,
           "lng": -73.6839246,
-          "label": "South"
+          "label": "South",
+          "accessible": null
         },
         {
           "id": "empac-e3",
           "lat": 42.7286302,
           "lng": -73.6841558,
-          "label": "Southwest"
+          "label": "Southwest",
+          "accessible": null
         },
         {
           "id": "empac-e4",
           "lat": 42.7291589,
           "lng": -73.6836622,
-          "label": "North"
+          "label": "North",
+          "accessible": null
         }
       ],
       "type": "location"
@@ -134,25 +146,29 @@
           "id": "westhall-e1",
           "lat": 42.7316936,
           "lng": -73.6827275,
-          "label": "East"
+          "label": "East",
+          "accessible": null
         },
         {
           "id": "westhall-e2",
           "lat": 42.7317588,
           "lng": -73.6829431,
-          "label": "Northeast"
+          "label": "Northeast",
+          "accessible": null
         },
         {
           "id": "westhall-e3",
           "lat": 42.7317388,
           "lng": -73.6834818,
-          "label": "West"
+          "label": "West",
+          "accessible": null
         },
         {
           "id": "westhall-e4",
           "lat": 42.7315635,
           "lng": -73.683056,
-          "label": "South"
+          "label": "South",
+          "accessible": null
         }
       ],
       "type": "location"
@@ -168,7 +184,8 @@
           "id": "amoseaton-e1",
           "lat": 42.7301741,
           "lng": -73.6822909,
-          "label": "East"
+          "label": "East",
+          "accessible": null
         }
       ],
       "type": "location"
@@ -184,7 +201,8 @@
           "id": "lally-e1",
           "lat": 42.7301234,
           "lng": -73.6818871,
-          "label": "North"
+          "label": "North",
+          "accessible": null
         }
       ],
       "type": "location"
@@ -200,7 +218,8 @@
           "id": "library-e1",
           "lat": 42.7293023,
           "lng": -73.6824149,
-          "label": "Southeast"
+          "label": "Southeast",
+          "accessible": null
         }
       ],
       "type": "location"
@@ -216,19 +235,22 @@
           "id": "vcc-e1",
           "lat": 42.7290895,
           "lng": -73.6816222,
-          "label": "Southeast"
+          "label": "Southeast",
+          "accessible": null
         },
         {
           "id": "vcc-e2",
           "lat": 42.7292812,
           "lng": -73.6822042,
-          "label": "West"
+          "label": "West",
+          "accessible": null
         },
         {
           "id": "vcc-e3",
           "lat": 42.7293412,
           "lng": -73.681573,
-          "label": "Northeast"
+          "label": "Northeast",
+          "accessible": null
         }
       ],
       "type": "location"
@@ -281,6 +303,57 @@
       "lng": -73.6834809,
       "elevation": 8,
       "type": "path"
+    },
+    {
+      "id": "mock-annex",
+      "name": "Mock: Unreachable Annex",
+      "lat": 42.7313,
+      "lng": -73.681,
+      "elevation": 64,
+      "entrances": [
+        {
+          "id": "mock-annex-e1",
+          "lat": 42.73125,
+          "lng": -73.68105,
+          "label": "South",
+          "accessible": true
+        }
+      ],
+      "type": "location",
+      "mock": true
+    },
+    {
+      "id": "mock-annex-j1",
+      "lat": 42.7311,
+      "lng": -73.6812,
+      "elevation": 63,
+      "type": "path",
+      "mock": true
+    },
+    {
+      "id": "mock-overlook",
+      "name": "Mock: Stairs-only Overlook",
+      "lat": 42.7297,
+      "lng": -73.6811,
+      "elevation": 70,
+      "entrances": [
+        {
+          "id": "mock-overlook-e1",
+          "lat": 42.7297,
+          "lng": -73.68117,
+          "label": "West",
+          "accessible": false
+        },
+        {
+          "id": "mock-overlook-e2",
+          "lat": 42.72975,
+          "lng": -73.6811,
+          "label": "North",
+          "accessible": true
+        }
+      ],
+      "type": "location",
+      "mock": true
     }
   ],
   "edges": [
@@ -433,6 +506,93 @@
       "a": "empac",
       "b": "library",
       "type": "stairs"
+    },
+    {
+      "a": "mock-annex",
+      "b": "mock-annex-j1",
+      "type": "path",
+      "mock": true
+    },
+    {
+      "a": "mock-overlook",
+      "b": "j6",
+      "type": "stairs",
+      "mock": true
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "stairs-shortcut",
+      "case": "stairs",
+      "description": "Carnegie to Library: the shortest route uses the Carnegie-Library stairs.",
+      "start_id": "carnegie",
+      "destination_id": "library",
+      "avoid_stairs": false,
+      "expect": "route",
+      "used_stairs": true
+    },
+    {
+      "id": "stairs-avoided",
+      "case": "stairs",
+      "description": "Carnegie to Library with stairs avoided: the route detours through j5 instead.",
+      "start_id": "carnegie",
+      "destination_id": "library",
+      "avoid_stairs": true,
+      "expect": "route",
+      "used_stairs": false
+    },
+    {
+      "id": "multi-entrance-endpoints",
+      "case": "multiple-entrances",
+      "description": "Carnegie (2 entrances) to EMPAC (4 entrances): the chosen entrances become the route's endpoints.",
+      "start_id": "carnegie",
+      "start_entrance_id": "carnegie-e2",
+      "destination_id": "empac",
+      "destination_entrance_id": "empac-e4",
+      "avoid_stairs": false,
+      "expect": "route"
+    },
+    {
+      "id": "accessible-entrance",
+      "case": "accessible-entrance",
+      "description": "Carnegie to Walker Lab's accessible east entrance (walker-e2) with stairs avoided.",
+      "start_id": "carnegie",
+      "destination_id": "walker",
+      "destination_entrance_id": "walker-e2",
+      "avoid_stairs": true,
+      "expect": "route",
+      "used_stairs": false
+    },
+    {
+      "id": "unreachable-annex",
+      "case": "disconnected",
+      "description": "Carnegie to Mock: Unreachable Annex: the annex and its walkway are not connected to the rest of the map, so no route exists even with stairs allowed.",
+      "start_id": "carnegie",
+      "destination_id": "mock-annex",
+      "avoid_stairs": false,
+      "expect": "no_route",
+      "detail": "No available route connects these locations."
+    },
+    {
+      "id": "overlook-by-stairs",
+      "case": "stairs",
+      "description": "Carnegie to Mock: Stairs-only Overlook with stairs allowed: reachable, but only by the overlook's stairs.",
+      "start_id": "carnegie",
+      "destination_id": "mock-overlook",
+      "avoid_stairs": false,
+      "expect": "route",
+      "used_stairs": true
+    },
+    {
+      "id": "no-accessible-route",
+      "case": "no-accessible-route",
+      "description": "Carnegie to Mock: Stairs-only Overlook's accessible north entrance with stairs avoided: no route, because stairs are the only way in.",
+      "start_id": "carnegie",
+      "destination_id": "mock-overlook",
+      "destination_entrance_id": "mock-overlook-e2",
+      "avoid_stairs": true,
+      "expect": "no_route",
+      "detail": "No available route connects these locations."
     }
   ]
 }
