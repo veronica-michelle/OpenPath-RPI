@@ -1,0 +1,23 @@
+Log 1 - 10/6/2026: (NOTE: This log has only reviewed the website as seen from
+a standard Lenovo Laptop-K0UJR6QD, purchased from RPI. These notes may not
+reflect the potential phone experience. RELEVANT FOR FRONTEND!!!)
+Website frontend is coming along well. However, I failed to adequately define
+certain Accessibility constraints pertaining to color, resulting in some
+errors to note. The website's current design forgoes a proper border for the
+route selection menu, which immediately creates a color contrast violation
+between the menu's color(#FFFFFF) and the overall map(various). More color
+contrast violations are found between the subtitle text "ARN Pilot"(--ink-faint)
+and the menu color, between the button color and the menu background, and
+between the each button's text and the button background. I take the blame for
+these mistakes, as I failed to communicate the rules of contrast beyond the
+case of text on a background. For the color contrast violations, I suggest
+changing the color of the text in each button, as well as adding a border color
+that fits the color contrast rules(MAYBE a blue). I am no graphic designer, but
+try giving --ink-faint the Hex Value(#050505), and the button
+background(#757589). This would fix the color contrast ratios. If you have
+specific hues in mind, ensure that there is a 4.5:1 contrast between
+--ink-faint and the button backgrounds, as well as between the button
+backgrounds and menu(#FFFFFF). To fix my errors, this log entry will be
+committed alongside an updated version of Accessibility.txt that not only
+explains these constraints better, but makes the rules more navigable by
+numbering the list instead of using simple bullet points.

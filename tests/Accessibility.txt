@@ -8,6 +8,57 @@ Reference website for 508 Guidelines:
 https://www.ada.gov/resources/small-entity-compliance-guide/#1-archived-web-content
 Reference website for WCAG 2:
 https://www.w3.org/WAI/WCAG22/quickref/
+Upon further discussion(9/22/26) it has been determined that certain features should
+not be implemented in this semester's build of OpenPath RPI. Therefore, any parts of
+the checklist that are no longer necessary/adjusted for our current build will from
+this point on be labelled with an asterisk(*) after the rule number, indicating them
+as optional. They will be bottom priority items until all previous accessibility goals
+and website functions are realized. They will be expanded upon below in the section
+titled "Optional Items".
+---------------------Ease of information access----------------------------------------
+1. Check that a screen reader can read the route directions.
+2. Ensure that the Google read-aloud functions properly on our website.
+3.* A verbal transcription option of the optimal route determined by our program.
+4. Visuals should use text cues alongside color cues in a consistent, non-conditional
+   manner.
+5. Proper alternative text should be available for all non-text content. This text
+   should effectively convey all necessary information that the content would
+   otherwise provide to the user.
+6. Ensure proper color contrast ratio. A minimum of 4.5:1 contrast between text color
+   and its background is acceptable. For large text (18 point/14 point bold or higher
+   on client end), this minimum is lowered to 3:1. For graphical objects and user-
+   interface components (e.g. buttons, text boxes), the contrast between these objects
+   and their surroundings also requires a minimum of 3:1. For clarity, user-interface
+   components can accomplish this through having their border meet the contrast
+   requirements even if the non-text based inner parts (e.g. button color) do not meet
+   these requirements.
+7. Our website should also be able to scale reasonably with page zoom and text-size
+   adjustment features for computer and mobile devices respectively.
+8. Check that the site remains usable up to and including 200% page zoom.
+9. All user input must be given a title describing their purpose.
+10. All site functions must be accessible with keyboard alone. For example, the
+   specification of disabilities/unusable traversal methods must be achievable without
+   a mouse.
+11. If needed/possible, employ a programmatically determined website structure. That
+   is, any information that needs to be given in a specific order must be processed by
+   screen readers in that order. This can be accomplished through markup language and
+   Accessible Rich Internet Applications(ARIA). Only use ARIA if the behavior cannot
+   be performed in base HTML.
+12. Ensure that all instructions to press a certain button offer means of
+   identifying said button without any knowledge of its shape, size, or relative
+   position. Avoid terms like "the green button on the right", try "the button
+   that says 'go'".
+13. Avoid flashing items on-screen (potential epileptic hazard).
+14. If CAPTCHA is incorporated, provide modes for different disabilities.
+15. If an error is detected, it should be identified and described to the user in
+   text.
+16. Ensure all statements in this list apply to all screen sizes and orientations
+   (e.g. computer, phone, tablet, landscape, portrait).
+----------------------------------------------------------------------------------
+Proper documentation will be required on how we account for disabilities.
+----------------------------Optional Items----------------------------------------
+*3. An audio transcription summarizing the current route displayed to the user by
+   our program.
 Upon further discussion(9/22/26) it has been determined that certain features
 should not be implemented in this semester's build of OpenPath RPI. Therefore,
 any parts of the checklist that are no longer necessary/adjusted for our current

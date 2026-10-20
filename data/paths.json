@@ -1,0 +1,14 @@
+{
+    "id": {
+        "from": "from",
+        "to": "to",
+        "distance": "distance",
+        "features": {
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
+    }
+}

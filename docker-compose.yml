@@ -29,6 +29,12 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-openpath}
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/map/')"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
     depends_on:
       db:
         condition: service_healthy
@@ -41,8 +47,11 @@ services:
       - /app/node_modules
     ports:
       - "5173:5173"
+    environment:
+      VITE_API_PROXY_TARGET: http://backend:8000
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
 volumes:
   postgres_data:
