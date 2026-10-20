@@ -1,4 +1,4 @@
-
+import networkx as nx
 
 def checker(line, word):
     i = 0;
@@ -27,30 +27,64 @@ def contents(line, word):
             else:
                 if letter == word[i]:
                     i = i + 1
-    return ""
+                else:
+                    i = 0;
+    return "null"
+
+
+# put stuff below here
+G = nx.Graph()
 
 
 
 fp = open("dummyloc.json")
 
-
-finder = (     "id","name","lat","long","type")
-finderadds = ('":"', '":"', '":',  '":', '":"') # remove the last most symbol in the seperateion:
-# so if the line is "thing": "contents",
-# it would be 'thing' and '":'
-# dont ask why this is the case, i'm not sure myself, it just kind aworks like that '
+finder = ("id","name","lat","long","type")
+finderadds = ('":"', '":"', '":',  '":', '":"')
+# if the line is "thing": "contents",
+# it would be 'thing' and '": "'
 i = 0
 
 for line in fp:
+    helper = ["null","null","null","null","null"]
+    while i < len(finder):
+        result = "null"
+        status = checker(line, finder[i])
+        if status == "good":
+
+            result = contents(line, finder[i] + finderadds[i] )
+            print(result)
+            helper[i] = result
+
+        if result == "null":
+            break
+        print(finder[i] + ": " + result)
+        i = i + 1
+    if(i == len(finder)):
+        G.add_node(helper[0])
+    i = 0
+
+
+fp2 = open("dummypath.json")
+
+finder = ("id","from","to","dist","type")
+finderadds = ('":"', '":"', '":"',  '":', '":"')
+# if the line is "thing": "contents",
+# it would be 'thing' and '": "'
+i = 0
+
+for line in fp2:
+    helper = ["null","null","null","null","null"]
     while i < len(finder):
         result = "null"
         status = checker(line, finder[i])
         if status == "good":
             result = contents(line, finder[i] + finderadds[i] )
+            helper[i] = result
         if result == "null":
             break
         print(finder[i] + ": " + result)
         i = i + 1
-    i = 0;
-
-
+    if(i == len(finder)):
+        G.add_edge(helper[1],helper[2])
+    i = 0
