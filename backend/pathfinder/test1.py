@@ -1,9 +1,6 @@
 import networkx as nx
 
 
-
-
-
 def idget(line, word):
 
     for letter in line:

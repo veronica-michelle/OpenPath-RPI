@@ -1,4 +1,3 @@
-infilename = input("put the json file here:")
 
 def checker(line, word):
     i = 0;
@@ -29,21 +28,24 @@ def contents(line, word):
                     i = i + 1
     return ""
 
+nodedataname = input("put the location json file here:")
 
-fd = open(infilename)
+nodedata = open(nodedataname)
 nodeinfo = dict()
 finder = ("id","name","lat","long","type")
 finderadds = ('": ','": ','":','":','": ') # remove the last most symbol in the seperateion:
 # so if the line is "thing": "contents",
 # it would be 'thing' and '":'
-# dont ask why this is the case, i'm not sure myself, it just kind aworks like that '
+# dont ask why this is the case, i'm not sure myself, it just kinda works like that
 i = 0
 
-for line in fd:
+for line in nodedata:
     status = checker(line, finder[i])
     if status == "good":
         result = contents(line, finder[i] + finderadds[i] )
+
         nodeinfo[finder[i]] = result
+
         print(nodeinfo[finder[i]])
         i = i + 1
         if i == len(finder):
@@ -52,4 +54,6 @@ for line in fd:
 
             i = 0
 
+
+infilename = input("put the location json file here:")
 
