@@ -22,7 +22,7 @@ def contents(line, word):
                 return final
             final = final + letter
         else:
-            if i == len(word):
+            if i+1 == len(word):
                 checker = 1
             else:
                 if letter == word[i]:
@@ -31,44 +31,26 @@ def contents(line, word):
 
 
 
-fp = open("dummydata.json")
+fp = open("dummyloc.json")
 
 
-finder = ("id","name","lat","long","type")
-finderadds = ('": ','": ','":','":','": ') # remove the last most symbol in the seperateion:
+finder = (     "id","name","lat","long","type")
+finderadds = ('":"', '":"', '":',  '":', '":"') # remove the last most symbol in the seperateion:
 # so if the line is "thing": "contents",
 # it would be 'thing' and '":'
 # dont ask why this is the case, i'm not sure myself, it just kind aworks like that '
 i = 0
 
 for line in fp:
-    status = checker(line, finder[i])
-    if status == "good":
-        result = contents(line, finder[i] + finderadds[i] )
+    while i < len(finder):
+        result = "null"
+        status = checker(line, finder[i])
+        if status == "good":
+            result = contents(line, finder[i] + finderadds[i] )
+        if result == "null":
+            break
         print(finder[i] + ": " + result)
         i = i + 1
-        if i == len(finder):
-            i = 0
-
-fp = open("dummydata2.json")
-
-
-finder = ("id","name","lat","long","type")
-finderadds = ('": ','": ','":','":','": ') # remove the last most symbol in the seperateion:
-# so if the line is "thing": "contents",
-# it would be 'thing' and '":'
-# dont ask why this is the case, i'm not sure myself, it just kind aworks like that '
-i = 0
-
-for line in fp:
-    status = checker(line, finder[i])
-    if status == "good":
-        result = contents(line, finder[i] + finderadds[i] )
-        print(finder[i] + ": " + result)
-        i = i + 1
-        if i == len(finder):
-            i = 0
-
-
+    i = 0;
 
 
