@@ -1,7 +1,41 @@
+.app-status {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  padding: 24px;
+  color: var(--ink);
+  text-align: center;
+}
+
+.app-status button {
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  background: var(--map-accent);
+  color: white;
+  cursor: pointer;
+}
+
 .app-shell {
   position: fixed;
   inset: 0;
   background: var(--map-ground);
+  isolation: isolate;
+}
+
+/* Keep app UI above Leaflet's pane/control z-indexes while letting map
+   gestures pass through everywhere outside the actual controls. */
+.app-overlay-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  pointer-events: none;
+}
+
+.app-overlay-layer > * {
+  pointer-events: auto;
 }
 
 /* ---------- Board ---------- */
@@ -15,10 +49,10 @@
      (popups 700, controls 1000). Without an explicit z-index here, this
      wrapper never forms its own stacking context, so those values leak
      straight past it and float above our search card, route summary, and
-     instruction banner (all z-index 5-30) regardless of DOM order. Giving
-     the viewport its own low z-index traps everything Leaflet does inside
-     it, so from the outside the whole map only ever counts as "z-index 1". */
-  z-index: 1;
+     instruction banner regardless of DOM order. Giving the viewport its
+     own low z-index traps everything Leaflet does inside it below the
+     app-level controls. */
+  z-index: 0;
 }
 
 .board-map {
@@ -161,6 +195,8 @@
   background: var(--map-accent);
   border: 3px solid #ffffff;
   box-shadow: 0 1px 4px rgba(26, 115, 232, 0.45);
+}
+
 /* ---------- Compass indicator ---------- */
 
 .compass-indicator {

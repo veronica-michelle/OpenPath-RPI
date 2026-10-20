@@ -16,6 +16,9 @@ export default function ControlPanel({
   onAvoidStairsChange,
   sameBuildingWarning,
   noRouteWarning,
+  noRouteMessage,
+  routeLoading,
+  routeError,
   userPosition,
   locationStatus,
   onNeedLocation,
@@ -67,7 +70,7 @@ export default function ControlPanel({
 
       {locationStatus === 'denied' && (
         <p className="control-panel-hint" role="status">
-          Location is blocked — allow it in the browser to sort nearby entrances.
+          Location Services are blocked: allow it in the browser to sort nearby entrances.
         </p>
       )}
       {locationStatus === 'unsupported' && (
@@ -88,14 +91,21 @@ export default function ControlPanel({
 
       <StairsToggle checked={avoidStairs} onChange={onAvoidStairsChange} />
 
+      {routeLoading && (
+        <p className="control-panel-hint" role="status">Finding a route…</p>
+      )}
+      {routeError && (
+        <p className="control-panel-warning" role="alert">Route request failed: {routeError}</p>
+      )}
+
       {sameBuildingWarning && (
         <p className="control-panel-warning" role="alert">
-          Start and end are the same building — pick two different stops.
+          You are not going anywhere: choose two different locations.
         </p>
       )}
       {noRouteWarning && (
         <p className="control-panel-warning" role="alert">
-          No accessible path found between these buildings.
+          {noRouteMessage || 'No accessible path found between these buildings.'}
         </p>
       )}
     </section>
