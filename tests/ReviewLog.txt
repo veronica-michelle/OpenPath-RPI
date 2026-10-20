@@ -61,3 +61,25 @@ NonVisual Desktop Access (NVDA) - Free. Open Source.
         - In-built Add-on Store
     Cons:
         - Only supports Windows
+        - The How-to's cost money
+
+Log 3 - 10/20/2026: Testing the Website (Frontend and Backend)
+My manual testing of the user interface has gathered interesting
+results. Chief among them is the overabundance of non-functional
+tab interactions. Each pinned location node is accessible via
+the tab button, but there is no meaningful interact with those
+pins available. This makes navigating the site without a mouse
+tedious. I suggest having these pins either inaccessible via tab,
+or have the map adjust to center the selected marker on the map.
+Regarding map traversal, it is imperative we add a system so that
+when the user has not selected part of the user input segment in
+the top left, the program will take arrows as map traversal
+options. As a quality of life feature, add a button that centers
+the map back on campus, similar to the current location button.
+Visually, besides my previous comments that haven't been adjusted
+for yet, the "show your location" button's symbol doesn't
+contrast enough with it's white backdrop, so adjust the symbol's
+color as described in Log 1 and Rule 6 of Accessibility.txt.
+As a rule of thumb, if a feature or important action seems
+inconvient for someone to use without using a mouse or trackpad,
+then find a way to make it more convenient. 
