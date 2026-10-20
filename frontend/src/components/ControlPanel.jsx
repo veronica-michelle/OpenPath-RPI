@@ -16,6 +16,12 @@ export default function ControlPanel({
   onAvoidStairsChange,
   sameBuildingWarning,
   noRouteWarning,
+  noRouteMessage,
+  routeLoading,
+  routeError,
+  userPosition,
+  locationStatus,
+  onNeedLocation,
 }) {
   return (
     <section className="control-panel" aria-label="Route controls" data-no-pan>
@@ -33,6 +39,9 @@ export default function ControlPanel({
           onChange={onStartChange}
           excludeId={end?.id}
           placeholder="Choose starting point"
+          userPosition={userPosition}
+          onNeedLocation={onNeedLocation}
+          showNearestShortcut
         />
         <EntrancePicker
           label="Start entrance"
@@ -48,6 +57,8 @@ export default function ControlPanel({
           onChange={onEndChange}
           excludeId={start?.id}
           placeholder="Choose destination"
+          userPosition={userPosition}
+          onNeedLocation={onNeedLocation}
         />
         <EntrancePicker
           label="Destination entrance"
@@ -57,16 +68,44 @@ export default function ControlPanel({
         />
       </div>
 
+      {locationStatus === 'denied' && (
+        <p className="control-panel-hint" role="status">
+          Location Services are blocked: allow it in the browser to sort nearby entrances.
+        </p>
+      )}
+      {locationStatus === 'unsupported' && (
+        <p className="control-panel-hint" role="status">
+          This browser cannot share location.
+        </p>
+      )}
+      {locationStatus === 'locating' && (
+        <p className="control-panel-hint" role="status">
+          Finding your location…
+        </p>
+      )}
+      {locationStatus === 'ready' && (
+        <p className="control-panel-hint" role="status">
+          Nearby entrances are listed closest first.
+        </p>
+      )}
+
       <StairsToggle checked={avoidStairs} onChange={onAvoidStairsChange} />
+
+      {routeLoading && (
+        <p className="control-panel-hint" role="status">Finding a route…</p>
+      )}
+      {routeError && (
+        <p className="control-panel-warning" role="alert">Route request failed: {routeError}</p>
+      )}
 
       {sameBuildingWarning && (
         <p className="control-panel-warning" role="alert">
-          Start and end are the same building — pick two different stops.
+          You are not going anywhere: choose two different locations.
         </p>
       )}
       {noRouteWarning && (
         <p className="control-panel-warning" role="alert">
-          No accessible path found between these buildings.
+          {noRouteMessage || 'No accessible path found between these buildings.'}
         </p>
       )}
     </section>

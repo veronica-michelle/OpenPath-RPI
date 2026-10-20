@@ -1,0 +1,267 @@
+{
+    "L01": {
+        "id": "L01",
+        "name": "Carnegie Building",
+        "entrances": [{
+            "id": "L01A",
+            "coordinates": [42.7304198, -73.6830735],
+            "elevation": 64.04,
+            "features": {
+                "accessible": false,
+                "stairs": false,
+                "ramp": true,
+                "buttons": [true, true]
+            }
+        }]
+    },
+    "L02": {
+        "id": "L02",
+        "name": "Walker Laboratory",
+        "entrances": [{
+            "id": "L02A",
+            "coordinates": [42.7308236, -73.6822905],
+            "elevation": 65.81,
+            "features": {
+                "accessible": true,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [true, true]
+            }
+        }, {
+            "id": "L02B",
+            "coordinates": [42.7306768, -73.6827297],
+            "elevation": 63.33,
+            "features": {
+                "accessible": false,
+                "stairs": true,
+                "ramp": false,
+                "buttons": [false, false]
+            }
+        }]
+    },
+    "L03": {
+        "id": "L03",
+        "name": "Russell Sage Laboratory",
+        "entrances": [{
+            "id": "L03A",
+            "coordinates": [42.7309112, -73.6821297],
+            "elevation": 65.38,
+            "features": {
+                "accessible": true,
+                "stairs": true,
+                "ramp": true,
+                "buttons": [true, true]
+            }
+        }, {
+            "id": "L03B",
+            "coordinates": [42.7309656, -73.6811769],
+            "elevation": 68.04,
+            "features": {
+                "accessible": true,
+                "stairs": true,
+                "ramp": true,
+                "buttons": [true, true]
+            }
+        }, {
+            "id": "L03C",
+            "coordinates": [42.7307673, -73.6816886],
+            "elevation": 69.93,
+            "features": {
+                "accessible": true,
+                "stairs": true,
+                "ramp": false,
+                "buttons": [false, false]
+            }
+        }]
+    },
+    "L04": {
+        "id": "L04",
+        "name": "Pittsburgh Building",
+        "entrances": [{
+            "id": "L04A",
+            "coordinates": [42.7310311, -73.6833420],
+            "elevation": 49.63,
+            "features": {
+                "accessible": true,
+                "stairs": true,
+                "ramp": true,
+                "buttons": [true, true]
+            }
+        }]
+    },
+    "L05": {
+        "id": "L05",
+        "name": "EMPAC",
+        "entrances": [{
+            "id": "L05A",
+            "coordinates": [42.7289147, -73.6832852],
+            "elevation": 64.78,
+            "features": {
+                "accessible": false,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [true, true]
+            }
+        }]
+    },
+    "L06": {
+        "id": "L06",
+        "name": "West Hall",
+        "entrances": [{
+            "id": "L06A",
+            "coordinates": [42.7315650, -73.6830444],
+            "elevation": 44.77,
+            "features": {
+                "accessible": false,
+                "stairs": true,
+                "ramp": false,
+                "buttons": [false, false]
+            }
+        }, {
+            "id": "L06B",
+            "coordinates": [42.7316874, -73.6827210],
+            "elevation": 50.52,
+            "features": {
+                "accessible": false,
+                "stairs": true,
+                "ramp": false,
+                "buttons": [false, false]
+            }
+        }]
+    },
+    "L07": {
+        "id": "L07",
+        "name": "Amos Eaton Hall",
+        "entrances": [{
+            "id": "L07A",
+            "coordinates": [42.7301824, -73.6822777],
+            "elevation": 70.08,
+            "features": {
+                "accessible": false,
+                "stairs": true,
+                "ramp": false,
+                "buttons": [false, false]
+            }
+        }, {
+            "id": "L07B",
+            "coordinates": [42.7301115, -73.6828133],
+            "elevation": 68.98,
+            "features": {
+                "accessible": false,
+                "stairs": true,
+                "ramp": false,
+                "buttons": [true, true]
+            }
+        }]
+    },
+    "L08": {
+        "id": "L08",
+        "name": "Lally Hall",
+        "entrances": [{
+            "id": "L08A",
+            "coordinates": [42.7301258, -73.6818882],
+            "elevation": 72.56,
+            "features": {
+                "accessible": false,
+                "stairs": true,
+                "ramp": false,
+                "buttons": [false, false]
+            }
+        }]
+    },
+    "L09": {
+        "id": "L09",
+        "name": "Folsom Library",
+        "entrances": [{
+            "id": "L09A",
+            "coordinates": [42.7293208, -73.6823471],
+            "elevation": 74.11,
+            "features": {
+                "accessible": true,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [true, true]
+            }
+        }]
+    },
+    "L10": {
+        "id": "L10",
+        "name": "VCC",
+        "entrances": [{
+            "id": "L10A",
+            "coordinates": [42.7292786, -73.6822100],
+            "elevation": 74.1,
+            "features": {
+                "accessible": true,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [true, true]
+            }
+        }]
+    },
+    "N001": {
+        "id": "N001",
+        "coordinates": [42.7306304, -73.6817295],
+        "elevation": 70.86
+    },
+    "N002": {
+        "id": "N002",
+        "coordinates": [42.7305970, -73.6817703],
+        "elevation": 71.13
+    },
+    "N003": {
+        "id": "N003",
+        "coordinates": [42.7305886, -73.6817082],
+        "elevation": 71.24
+    },
+    "N004": {
+        "id": "N004",
+        "coordinates": [42.7306020, -73.6816786],
+        "elevation": 71.17
+    },
+    "N005": {
+        "id": "N005",
+        "coordinates": [42.7304447, -73.6819626],
+        "elevation": 72.16
+    },
+    "N006": {
+        "id": "N006",
+        "coordinates": [42.7304278, -73.6819831],
+        "elevation": 72.29
+    },
+    "N007": {
+        "id": "N007",
+        "coordinates": [42.7304423, -73.6820053],
+        "elevation": 72.21
+    },
+    "N008": {
+        "id": "N008",
+        "coordinates": [42.7304127, -73.6820047],
+        "elevation": 72.38
+    },
+    "N009": {
+        "id": "N009",
+        "coordinates": [42.7304112, -73.6819603],
+        "elevation": 72.31
+    },
+    "N010": {
+        "id": "N010",
+        "coordinates": [42.7304812, -73.6820583],
+        "elevation": 71.54
+    },
+    "N011": {
+        "id": "N011",
+        "coordinates": [42.7304937, -73.6820833],
+        "elevation": 71.18
+    },
+    "N012": {
+        "id": "N012",
+        "coordinates": [42.7305069, -73.6820924],
+        "elevation": 71.03
+    },
+    "N013": {
+        "id": "N013",
+        "coordinates": [42.7304737, -73.6820816],
+        "elevation": 71.26
+    }
+}
