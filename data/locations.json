@@ -10,7 +10,7 @@
                 "accessible": false,
                 "stairs": false,
                 "ramp": true,
-                "buttons": [traue, true]
+                "buttons": [true, true]
             }
         }]
     },
