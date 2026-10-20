@@ -67,14 +67,21 @@ export default function App() {
 
   // Clicking a pin on the map is a shortcut for the same two fields: first
   // click picks the start, the next click picks the end. Once both are set,
-  // a further click starts a fresh pick rather than doing nothing — without
-  // this, clicking pins would go dead the moment a route exists.
+  // re-clicking whichever pin is already picked clears just that one field
+  // (so you can swap it out) rather than discarding the other selection —
+  // clicking the start pin was clearing the destination, which reads as
+  // clearing the wrong field. Clicking any other, unpicked pin starts a
+  // fresh pick rather than doing nothing.
   const handlePinClick = (building) => {
     if (navigating || liveTracking) return;
     if (!startId) {
       handleStartChange(building);
     } else if (!endId) {
       handleEndChange(building);
+    } else if (building.id === startId) {
+      handleStartChange(null);
+    } else if (building.id === endId) {
+      handleEndChange(null);
     } else {
       handleStartChange(building);
       handleEndChange(null);
