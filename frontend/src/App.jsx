@@ -65,6 +65,22 @@ export default function App() {
     setEndEntranceId(building?.entrances?.[0]?.id ?? null);
   };
 
+  // Clicking a pin on the map is a shortcut for the same two fields: first
+  // click picks the start, the next click picks the end. Once both are set,
+  // a further click starts a fresh pick rather than doing nothing — without
+  // this, clicking pins would go dead the moment a route exists.
+  const handlePinClick = (building) => {
+    if (navigating || liveTracking) return;
+    if (!startId) {
+      handleStartChange(building);
+    } else if (!endId) {
+      handleEndChange(building);
+    } else {
+      handleStartChange(building);
+      handleEndChange(null);
+    }
+  };
+
   useEffect(() => {
     if (!startId || !endId || sameBuilding || !mapData) {
       return undefined;
@@ -122,6 +138,7 @@ export default function App() {
         userPosition={userPosition}
         locationStatus={locationStatus}
         onRequestLocation={startLocation}
+        onPinClick={handlePinClick}
       />
       <div className="app-overlay-layer">
         <CompassIndicator />
