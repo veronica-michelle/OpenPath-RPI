@@ -21,3 +21,43 @@ backgrounds and menu(#FFFFFF). To fix my errors, this log entry will be
 committed alongside an updated version of Accessibility.txt that not only
 explains these constraints better, but makes the rules more navigable by
 numbering the list instead of using simple bullet points.
+
+Log 2 - 10/13/2026: Research On Screen Readers.
+TL;DR We may need to use multiple to test cross-platform capability.
+JAWS - Designed for a Windows PC platform, paid software
+    Pros:
+        - Highly configurable.
+        - Keyboard shortcuts.
+    Cons:
+        - Memory intensive(can freeze the computer due to RAM)
+        - Learning Curve
+        - Designed for a Windows PC platform
+        - $90 a year
+Microsoft Narrator - Bundled with recent Windows OS. Free
+    Pros:
+        - Easily Available.
+    Cons:
+        - Limited functionality(particularly with browsers and web apps)
+        - Silence on deeper levels of OS(shouldn't matter here)
+ChromeVox - Bundled with Chrome laptop/Chrome browser extension. Free
+    Pros:
+        - Easily available
+        - Fairly Navigable
+    Cons:
+        - Limited to the Chrome platform
+VoiceOver - Free, included with Apple Products.
+    Pros:
+        - No installation or setup required
+        - Variety of languages
+        - Relatively configurable
+        - Keyboard shortcuts
+    Cons:
+        - Focused on Apple Products
+        - Somewhat of a learning curve
+NonVisual Desktop Access (NVDA) - Free. Open Source.
+    Pros:
+        - Supports web content using JavaScript
+        - Strong Windows Capability
+        - In-built Add-on Store
+    Cons:
+        - Only supports Windows
