@@ -11,23 +11,15 @@
           "id": "carnegie-e1",
           "lat": 42.7304826,
           "lng": -73.6833129,
-<<<<<<< HEAD
-          "label": "Northwest"
-=======
           "label": "Northwest",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         },
         {
           "id": "carnegie-e2",
           "lat": 42.7304039,
           "lng": -73.6830758,
-<<<<<<< HEAD
-          "label": "Southeast"
-=======
           "label": "Southeast",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         }
       ],
       "type": "location"
@@ -43,35 +35,23 @@
           "id": "walker-e1",
           "lat": 42.7308502,
           "lng": -73.6822893,
-<<<<<<< HEAD
-          "label": "East"
-=======
           "label": "East",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         },
         {
           "id": "walker-e2",
           "lat": 42.7309589,
           "lng": -73.6821182,
           "label": "East (Accessible)",
-<<<<<<< HEAD
-          "wheelchair": true
-=======
           "wheelchair": true,
           "accessible": true
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         },
         {
           "id": "walker-e3",
           "lat": 42.7306746,
           "lng": -73.6827277,
-<<<<<<< HEAD
-          "label": "Southwest"
-=======
           "label": "Southwest",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         }
       ],
       "type": "location"
@@ -87,23 +67,15 @@
           "id": "sage-e1",
           "lat": 42.7307679,
           "lng": -73.6816787,
-<<<<<<< HEAD
-          "label": "South"
-=======
           "label": "South",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         },
         {
           "id": "sage-e2",
           "lat": 42.7309716,
           "lng": -73.681183,
-<<<<<<< HEAD
-          "label": "East"
-=======
           "label": "East",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         }
       ],
       "type": "location"
@@ -119,12 +91,8 @@
           "id": "pittsburgh-e1",
           "lat": 42.7310446,
           "lng": -73.6833374,
-<<<<<<< HEAD
-          "label": "South"
-=======
           "label": "South",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         }
       ],
       "type": "location"
@@ -140,45 +108,29 @@
           "id": "empac-e1",
           "lat": 42.7285344,
           "lng": -73.6836701,
-<<<<<<< HEAD
-          "label": "Southeast"
-=======
           "label": "Southeast",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         },
         {
           "id": "empac-e2",
           "lat": 42.7285846,
           "lng": -73.6839246,
-<<<<<<< HEAD
-          "label": "South"
-=======
           "label": "South",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         },
         {
           "id": "empac-e3",
           "lat": 42.7286302,
           "lng": -73.6841558,
-<<<<<<< HEAD
-          "label": "Southwest"
-=======
           "label": "Southwest",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         },
         {
           "id": "empac-e4",
           "lat": 42.7291589,
           "lng": -73.6836622,
-<<<<<<< HEAD
-          "label": "North"
-=======
           "label": "North",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         }
       ],
       "type": "location"
@@ -194,45 +146,29 @@
           "id": "westhall-e1",
           "lat": 42.7316936,
           "lng": -73.6827275,
-<<<<<<< HEAD
-          "label": "East"
-=======
           "label": "East",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         },
         {
           "id": "westhall-e2",
           "lat": 42.7317588,
           "lng": -73.6829431,
-<<<<<<< HEAD
-          "label": "Northeast"
-=======
           "label": "Northeast",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         },
         {
           "id": "westhall-e3",
           "lat": 42.7317388,
           "lng": -73.6834818,
-<<<<<<< HEAD
-          "label": "West"
-=======
           "label": "West",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         },
         {
           "id": "westhall-e4",
           "lat": 42.7315635,
           "lng": -73.683056,
-<<<<<<< HEAD
-          "label": "South"
-=======
           "label": "South",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         }
       ],
       "type": "location"
@@ -248,12 +184,8 @@
           "id": "amoseaton-e1",
           "lat": 42.7301741,
           "lng": -73.6822909,
-<<<<<<< HEAD
-          "label": "East"
-=======
           "label": "East",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         }
       ],
       "type": "location"
@@ -269,12 +201,8 @@
           "id": "lally-e1",
           "lat": 42.7301234,
           "lng": -73.6818871,
-<<<<<<< HEAD
-          "label": "North"
-=======
           "label": "North",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         }
       ],
       "type": "location"
@@ -290,12 +218,8 @@
           "id": "library-e1",
           "lat": 42.7293023,
           "lng": -73.6824149,
-<<<<<<< HEAD
-          "label": "Southeast"
-=======
           "label": "Southeast",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         }
       ],
       "type": "location"
@@ -311,34 +235,22 @@
           "id": "vcc-e1",
           "lat": 42.7290895,
           "lng": -73.6816222,
-<<<<<<< HEAD
-          "label": "Southeast"
-=======
           "label": "Southeast",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         },
         {
           "id": "vcc-e2",
           "lat": 42.7292812,
           "lng": -73.6822042,
-<<<<<<< HEAD
-          "label": "West"
-=======
           "label": "West",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         },
         {
           "id": "vcc-e3",
           "lat": 42.7293412,
           "lng": -73.681573,
-<<<<<<< HEAD
-          "label": "Northeast"
-=======
           "label": "Northeast",
           "accessible": null
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
         }
       ],
       "type": "location"
@@ -391,8 +303,6 @@
       "lng": -73.6834809,
       "elevation": 8,
       "type": "path"
-<<<<<<< HEAD
-=======
     },
     {
       "id": "mock-annex",
@@ -444,7 +354,6 @@
       ],
       "type": "location",
       "mock": true
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
     }
   ],
   "edges": [
@@ -597,8 +506,6 @@
       "a": "empac",
       "b": "library",
       "type": "stairs"
-<<<<<<< HEAD
-=======
     },
     {
       "a": "mock-annex",
@@ -686,7 +593,6 @@
       "avoid_stairs": true,
       "expect": "no_route",
       "detail": "No available route connects these locations."
->>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
     }
   ]
 }
