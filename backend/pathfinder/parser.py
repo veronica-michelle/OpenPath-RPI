@@ -46,6 +46,8 @@ finderadds = ('":"', '":"', '":',  '":', '":"')
 i = 0
 
 for line in fp:
+
+    # makes a list of all of the necesary information
     helper = ["null","null","null","null","null"]
     while i < len(finder):
         result = "null"
@@ -54,6 +56,7 @@ for line in fp:
 
             result = contents(line, finder[i] + finderadds[i] )
             print(result)
+            # gets a stores information in lit
             helper[i] = result
 
         if result == "null":
@@ -61,6 +64,7 @@ for line in fp:
         print(finder[i] + ": " + result)
         i = i + 1
     if(i == len(finder)):
+        # uses information in list to make node
         G.add_node(helper[0])
     i = 0
 
