@@ -57,11 +57,17 @@ def load_graph(locations_path, paths_path):
     Edges still connect building IDs. The first entrance supplies a building's
     default position; explicit entrance choices still adjust route endpoints.
     Nested features and other metadata remain available for future consumers.
+    Omitted or null distances use the router's coordinate-based meter estimate.
     """
     with Path(locations_path).open(encoding="utf-8") as locations_file:
         locations = json.load(locations_file)
     with Path(paths_path).open(encoding="utf-8") as paths_file:
         paths = json.load(paths_file)
+    if not isinstance(paths, dict):
+        raise ValueError(
+            "paths.json must be a JSON object keyed by unique edge IDs, "
+            'such as {"E0001": {...}}, not an array. Use {} for no paths.'
+        )
 
     nodes = []
     for location in locations.values():
@@ -94,7 +100,7 @@ def load_graph(locations_path, paths_path):
             "id": edge_id,
             "a": path["from"],
             "b": path["to"],
-            "dist": path["distance"],
+            "dist": path.get("distance"),
             "type": "construction" if features["closed"] else "stairs" if features["stairs"] else "path",
         })
     return {"nodes": nodes, "edges": edges}
