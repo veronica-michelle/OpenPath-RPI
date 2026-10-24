@@ -1,7 +1,7 @@
 {
     "Path-001": {
-        "from": "Node A",
-        "to": "Node B",
+        "from": "LA01",
+        "to": "LB01",
         "dist": 5.0,
         "features": {
             "paved": false,
@@ -12,8 +12,8 @@
         }
     },
     "Path-002": {
-        "from": "Node A",
-        "to": "Node C",
+        "from": "LA01",
+        "to": "LC01",
         "dist": 4.0,
         "features":{
             "paved": false,
@@ -24,8 +24,8 @@
         }
     },
     "Path-003": {
-        "from": "Node A",
-        "to": "Node H",
+        "from": "LA01",
+        "to": "LH01",
         "dist": 9.0,
         "features":{
             "paved": false,
@@ -36,9 +36,8 @@
         }
     },
     "Path-004": {
-        "id": "Path-004",
-        "from": "Node B",
-        "to": "Node C",
+        "from": "LB01",
+        "to": "LC01",
         "dist": 3.0,
         "features":{
             "paved": false,
@@ -49,9 +48,8 @@
         }
     },
     "Path-005": {
-        "id": "Path-005",
-        "from": "Node B",
-        "to": "Node D",
+        "from": "LB01",
+        "to": "LD01",
         "dist": 5.0,
         "features":{
             "paved": false,
@@ -62,8 +60,8 @@
         }
     },
     "Path-006": {
-        "from": "Node B",
-        "to": "Node E",
+        "from": "LB01",
+        "to": "LE01",
         "dist": 3.0,
         "features":{
             "paved": false,
@@ -74,8 +72,8 @@
         }
     },
     "Path-007": {
-        "from": "Node C",
-        "to": "Node H",
+        "from": "LC01",
+        "to": "LH01",
         "dist": 7.0,
         "features": {
             "paved": false,
@@ -86,8 +84,8 @@
         }
     },
     "Path-008": {
-        "from": "Node D",
-        "to": "Node E",
+        "from": "LD01",
+        "to": "LE01",
         "dist": 3.0,
         "features":{
             "paved": false,
@@ -98,8 +96,8 @@
         }
     },
     "Path-009": {
-        "from": "Node E",
-        "to": "Node F",
+        "from": "LE01",
+        "to": "LF01",
         "dist": 9.0,
         "features":{
             "paved": false,
@@ -110,8 +108,8 @@
         }
     },
     "Path-010": {
-        "from": "Node E",
-        "to": "Node H",
+        "from": "LE01",
+        "to": "LH01",
         "dist": 10.0,
         "features": {
             "paved": false,
@@ -122,8 +120,8 @@
         }
     },
     "Path-011": {
-        "from": "Node E",
-        "to": "Node V",
+        "from": "LE01",
+        "to": "LV01",
         "dist": 11.0,
         "features":{
             "paved": false,
@@ -134,8 +132,8 @@
         }
     },
     "Path-012": {
-        "from": "Node E",
-        "to": "Node X",
+        "from": "LE01",
+        "to": "LX01",
         "dist": 14.0,
         "features":{
             "paved": false,
@@ -146,8 +144,8 @@
         }
     },
     "Path-013": {
-        "from": "Node F",
-        "to": "Node G",
+        "from": "LF01",
+        "to": "LG01",
         "dist": 2.0,
         "features":{
             "paved": false,
@@ -158,8 +156,8 @@
         }
     },
     "Path-014": {
-        "from": "Node V",
-        "to": "Node W",
+        "from": "LV01",
+        "to": "LW01",
         "dist": 4.0,
         "features":{
             "paved": false,
@@ -170,8 +168,8 @@
         }
     },
     "Path-015": {
-        "from": "Node V",
-        "to": "Node Y",
+        "from": "LV01",
+        "to": "LY01",
         "dist": 8.0,
         "features": {
             "paved": false,
@@ -182,8 +180,8 @@
         }
     },
     "Path-016": {
-        "from": "Node W",
-        "to": "Node Y",
+        "from": "LW01",
+        "to": "LY01",
         "dist": 6.0,
         "features": {
             "paved": false,
@@ -194,8 +192,8 @@
         }
     },
     "Path-017": {
-        "from": "Node X",
-        "to": "Node Y",
+        "from": "LX01",
+        "to": "LY01",
         "dist": 10.0,
         "features": {
             "paved": false,
