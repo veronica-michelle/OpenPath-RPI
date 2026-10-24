@@ -19,8 +19,10 @@ logger = logging.getLogger(__name__)
 def get_graph():
     # JSON edits do not trigger Django's Python autoreloader.
     return _get_graph(
-        LOCATIONS_PATH, PATHS_PATH,
-        LOCATIONS_PATH.stat().st_mtime_ns, PATHS_PATH.stat().st_mtime_ns,
+        LOCATIONS_PATH,
+        PATHS_PATH,
+        LOCATIONS_PATH.stat().st_mtime_ns,
+        PATHS_PATH.stat().st_mtime_ns,
     )
 
 
@@ -32,8 +34,12 @@ def _get_graph(locations_path, paths_path, locations_modified, paths_modified):
     for edge in graph["edges"]:
         if edge["a"] not in node_ids or edge["b"] not in node_ids:
             # Routing already skips these; the map must not try to draw them.
-            logger.warning("Skipping path %s: endpoint does not exist (%s -> %s)",
-                           edge["id"], edge["a"], edge["b"])
+            logger.warning(
+                "Skipping path %s: endpoint does not exist (%s -> %s)",
+                edge["id"],
+                edge["a"],
+                edge["b"],
+            )
             continue
         edges.append(edge)
     return {**graph, "edges": edges}
@@ -83,26 +89,36 @@ def load_graph(locations_path, paths_path):
                 }
                 for entrance in location["entrances"]
             ]
-            nodes.append({
-                **location,
-                **_point_fields(location["entrances"][0]),
-                "type": "location",
-                "entrances": entrances,
-            })
+            nodes.append(
+                {
+                    **location,
+                    **_point_fields(location["entrances"][0]),
+                    "type": "location",
+                    "entrances": entrances,
+                }
+            )
         else:
             nodes.append({**location, **_point_fields(location), "type": "path"})
 
     edges = []
     for edge_id, path in paths.items():
         features = path["features"]
-        edges.append({
-            **path,
-            "id": edge_id,
-            "a": path["from"],
-            "b": path["to"],
-            "dist": path.get("distance"),
-            "type": "construction" if features["closed"] else "stairs" if features["stairs"] else "path",
-        })
+        edges.append(
+            {
+                **path,
+                "id": edge_id,
+                "a": path["from"],
+                "b": path["to"],
+                "dist": path.get("distance"),
+                "type": (
+                    "construction"
+                    if features["closed"]
+                    else "stairs"
+                    if features["stairs"]
+                    else "path"
+                ),
+            }
+        )
     return {"nodes": nodes, "edges": edges}
 
 
