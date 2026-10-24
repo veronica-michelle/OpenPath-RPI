@@ -1,0 +1,49 @@
+{
+    "E0001": {
+        "from": "L01",
+        "to": "L02",
+        "distance": null,
+        "features": {
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
+    },
+    "E0002": {
+        "from": "L01",
+        "to": "L03",
+        "distance": null,
+        "features": {
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
+    },
+    "E0003": {
+        "from": "L01",
+        "to": "L04",
+        "distance": null,
+        "features": {
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
+    },"E0004": {
+        "from": "L02",
+        "to": "L03",
+        "distance": null,
+        "features": {
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
+    }
+}
