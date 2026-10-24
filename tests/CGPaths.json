@@ -1,5 +1,5 @@
 {
-    "Path-001": {
+    "EO001": {
         "from": "LA01",
         "to": "LB01",
         "dist": 5.0,
@@ -11,7 +11,7 @@
             "gradient": 0.0
         }
     },
-    "Path-002": {
+    "EO002": {
         "from": "LA01",
         "to": "LC01",
         "dist": 4.0,
@@ -23,7 +23,7 @@
             "gradient": 0.0
         }
     },
-    "Path-003": {
+    "EO003": {
         "from": "LA01",
         "to": "LH01",
         "dist": 9.0,
@@ -35,7 +35,7 @@
             "gradient": 0.0
         }
     },
-    "Path-004": {
+    "EO004": {
         "from": "LB01",
         "to": "LC01",
         "dist": 3.0,
@@ -47,7 +47,7 @@
             "gradient": 0.0
         }
     },
-    "Path-005": {
+    "EO005": {
         "from": "LB01",
         "to": "LD01",
         "dist": 5.0,
@@ -59,7 +59,7 @@
             "gradient": 0.0
         }
     },
-    "Path-006": {
+    "EO006": {
         "from": "LB01",
         "to": "LE01",
         "dist": 3.0,
@@ -71,7 +71,7 @@
             "gradient": 0.0
         }
     },
-    "Path-007": {
+    "EO007": {
         "from": "LC01",
         "to": "LH01",
         "dist": 7.0,
@@ -83,7 +83,7 @@
             "gradient": 0.0
         }
     },
-    "Path-008": {
+    "EO008": {
         "from": "LD01",
         "to": "LE01",
         "dist": 3.0,
@@ -95,7 +95,7 @@
             "gradient": 0.0
         }
     },
-    "Path-009": {
+    "EO009": {
         "from": "LE01",
         "to": "LF01",
         "dist": 9.0,
@@ -107,7 +107,7 @@
             "gradient": 0.0
         }
     },
-    "Path-010": {
+    "EO010": {
         "from": "LE01",
         "to": "LH01",
         "dist": 10.0,
@@ -119,7 +119,7 @@
             "gradient": 0.0
         }
     },
-    "Path-011": {
+    "EO011": {
         "from": "LE01",
         "to": "LV01",
         "dist": 11.0,
@@ -131,7 +131,7 @@
             "gradient": 0.0
         }
     },
-    "Path-012": {
+    "EO012": {
         "from": "LE01",
         "to": "LX01",
         "dist": 14.0,
@@ -143,7 +143,7 @@
             "gradient": 0.0
         }
     },
-    "Path-013": {
+    "EO013": {
         "from": "LF01",
         "to": "LG01",
         "dist": 2.0,
@@ -155,7 +155,7 @@
             "gradient": 0.0
         }
     },
-    "Path-014": {
+    "EO014": {
         "from": "LV01",
         "to": "LW01",
         "dist": 4.0,
@@ -167,7 +167,7 @@
             "gradient": 0.0
         }
     },
-    "Path-015": {
+    "EO015": {
         "from": "LV01",
         "to": "LY01",
         "dist": 8.0,
@@ -179,7 +179,7 @@
             "gradient": 0.0
         }
     },
-    "Path-016": {
+    "EO016": {
         "from": "LW01",
         "to": "LY01",
         "dist": 6.0,
@@ -191,7 +191,7 @@
             "gradient": 0.0
         }
     },
-    "Path-017": {
+    "EO017": {
         "from": "LX01",
         "to": "LY01",
         "dist": 10.0,
