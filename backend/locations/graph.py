@@ -114,10 +114,7 @@ def load_practice_graph():
         paths = json.load(paths_file)
 
     ids_by_name = {location["name"]: location["id"] for location in locations}
-    nodes = [
-        {**location, "lng": location["long"]}
-        for location in locations
-    ]
+    nodes = [{**location, "lng": location["long"]} for location in locations]
     edges = [
         {
             "id": path["id"],
@@ -147,9 +144,11 @@ def _bearing(a, b):
 def _build_maneuvers(points):
     distances = [0]
     for before, after in zip(points, points[1:]):
-        distances.append(distances[-1] + haversine_meters(
-            before["lat"], before["lng"], after["lat"], after["lng"]
-        ) * FEET_PER_METER)
+        distances.append(
+            distances[-1]
+            + haversine_meters(before["lat"], before["lng"], after["lat"], after["lng"])
+            * FEET_PER_METER
+        )
 
     maneuvers = []
     for index in range(1, len(points) - 1):
@@ -162,12 +161,14 @@ def _build_maneuvers(points):
         if magnitude < 20:
             continue
         turn_magnitude = "slight" if magnitude < 45 else "sharp" if magnitude >= 135 else None
-        maneuvers.append({
-            "type": "turn",
-            "direction": "right" if delta > 0 else "left",
-            "magnitude": turn_magnitude,
-            "atDistance": distances[index],
-        })
+        maneuvers.append(
+            {
+                "type": "turn",
+                "direction": "right" if delta > 0 else "left",
+                "magnitude": turn_magnitude,
+                "atDistance": distances[index],
+            }
+        )
     maneuvers.append({"type": "arrive", "atDistance": distances[-1]})
     return maneuvers
 
@@ -186,7 +187,9 @@ def _find_node_path(start_id, destination_id, avoid_stairs, include_construction
     adjacency = {node_id: [] for node_id in nodes}
     for edge in graph["edges"]:
         edge_type = edge.get("type", "path")
-        if (edge_type == "construction" and not include_construction) or (avoid_stairs and edge_type == "stairs"):
+        if (edge_type == "construction" and not include_construction) or (
+            avoid_stairs and edge_type == "stairs"
+        ):
             continue
         a, b = nodes.get(edge["a"]), nodes.get(edge["b"])
         if not a or not b:
@@ -233,13 +236,15 @@ def _find_node_path(start_id, destination_id, avoid_stairs, include_construction
 
 def construction_blocks_route(start_id, destination_id, avoid_stairs=False):
     """Return whether ignoring construction edges makes an otherwise blocked route possible."""
-    return _find_node_path(
-        start_id, destination_id, avoid_stairs, include_construction=True
-    ) is not None
+    return (
+        _find_node_path(start_id, destination_id, avoid_stairs, include_construction=True)
+        is not None
+    )
 
 
-def find_route(start_id, destination_id, avoid_stairs=False,
-               start_entrance_id="", destination_entrance_id=""):
+def find_route(
+    start_id, destination_id, avoid_stairs=False, start_entrance_id="", destination_entrance_id=""
+):
     result = _find_node_path(start_id, destination_id, avoid_stairs)
     if result is None or start_id == destination_id:
         return None
@@ -258,8 +263,7 @@ def find_route(start_id, destination_id, avoid_stairs=False,
             point.update(lat=entrance["lat"], lng=entrance["lng"])
 
     distance_m = sum(
-        haversine_meters(a["lat"], a["lng"], b["lat"], b["lng"])
-        for a, b in zip(points, points[1:])
+        haversine_meters(a["lat"], a["lng"], b["lat"], b["lng"]) for a, b in zip(points, points[1:])
     )
     elevation_gain = 0
     elevation_loss = 0
@@ -289,6 +293,7 @@ def find_route(start_id, destination_id, avoid_stairs=False,
         "directions": [f"Head toward {destination_name}."],
         "maneuvers": maneuvers,
         "accessibility_notes": [
-            "Campus paths and accessibility details are provisional and have not been verified on site."
+            "Campus paths and accessibility details are provisional and have not "
+            "been verified on site."
         ],
     }
