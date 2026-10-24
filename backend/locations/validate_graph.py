@@ -1,6 +1,6 @@
-"""Check graph.json for data mistakes before the app or tests rely on it.
+"""Check locations.json and paths.json before the app or tests rely on them.
 
-Run from backend/:  python -m locations.validate_graph [path/to/graph.json]
+Run from backend/:  python -m locations.validate_graph [locations.json paths.json]
 Exits with status 1 when any errors are found.
 
 Errors: duplicate ids, edges pointing at missing nodes, buildings without
@@ -10,12 +10,12 @@ Report only: intentional disconnected areas (all-mock) and locations that
 can only be reached by stairs.
 """
 
-import json
 import sys
 from collections import Counter
 from pathlib import Path
 
-GRAPH_PATH = Path(__file__).with_name("graph.json")
+from .graph import LOCATIONS_PATH, PATHS_PATH, load_graph
+
 NODE_TYPES = {"location", "entrance", "path"}
 EDGE_TYPES = {"path", "stairs", "construction"}
 SCENARIO_EXPECTS = {"route", "no_route"}
@@ -137,14 +137,18 @@ def validate(graph):
 
 
 def main(argv):
-    path = Path(argv[1]) if len(argv) > 1 else GRAPH_PATH
-    with path.open(encoding="utf-8") as graph_file:
-        graph = json.load(graph_file)
+    if len(argv) not in (1, 3):
+        print("Usage: python -m locations.validate_graph [locations.json paths.json]")
+        return 1
+    locations_path = Path(argv[1]) if len(argv) == 3 else LOCATIONS_PATH
+    paths_path = Path(argv[2]) if len(argv) == 3 else PATHS_PATH
+    graph = load_graph(locations_path, paths_path)
 
     errors, notes = validate(graph)
     entrance_count = sum(len(node.get("entrances", [])) for node in graph.get("nodes", []))
     print(
-        f"Checked {path.name}: {len(graph.get('nodes', []))} nodes, {len(graph.get('edges', []))} edges, "
+        f"Checked {locations_path.name} and {paths_path.name}: "
+        f"{len(graph.get('nodes', []))} nodes, {len(graph.get('edges', []))} edges, "
         f"{entrance_count} entrances, {len(graph.get('scenarios', []))} scenarios"
     )
     for note in notes:

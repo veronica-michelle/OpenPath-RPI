@@ -4,7 +4,10 @@ from unittest import TestCase
 from rest_framework.test import APITestCase
 
 from .graph import get_graph, get_locations
+<<<<<<< HEAD
+=======
 from .validate_graph import components, validate
+>>>>>>> a052f38362b2dafa6d7710eff3cace262f89f4a4
 
 
 class MapGraphViewTests(APITestCase):
