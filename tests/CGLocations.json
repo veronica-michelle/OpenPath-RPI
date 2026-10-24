@@ -1,10 +1,10 @@
 {
-    "LA": {
-        "id": "LA",
+    "LA#": {
+        "id": "LA#",
         "name": "Node A",
         "entrances": [{
-            "id": "LA01",
-            "coordinates" : [ 42.732, -73.683],
+            "id": "LA#1",
+            "coordinates" : [42.7304198, -73.6830735],
             "elevation": 0.0,
             "features": {
                 "accessible": false,
@@ -14,12 +14,12 @@
             }
         }]
     },
-    "LB": {
-        "id": "LB",
+    "LB#": {
+        "id": "LB#",
         "name": "Node B",
         "entrances": [{
-            "id": "LB01",
-            "coordinates" : [ 42.732, -73.683],
+            "id": "LB#1",
+            "coordinates" : [42.7308236, -73.6822905],
             "elevation": 0.0,
             "features": {
                 "accessible": false,
@@ -29,11 +29,11 @@
             }
         }]
     },
-    "LC": {
-        "id": "LC",
+    "LC#": {
+        "id": "LC#",
         "name": "Node C",
         "entrances": [{
-            "id": "LC01",
+            "id": "LC#1",
             "coordinates": [42.73114802764494, -73.68325506502764],
             "elevation": 0.0,
             "features": {
@@ -44,11 +44,11 @@
             }
         }]
     },
-    "LD": {
-        "id": "LD",
+    "LD#": {
+        "id": "LD#",
         "name": "Node D",
         "entrances": [{
-            "id": "LD01",
+            "id": "LD#1",
             "coordinates": [42.731184067647156, -73.68177421364409],
             "elevation": 0.0,
             "features": {
@@ -59,13 +59,11 @@
             }
         }]
     },
-    "LE": {
-        "id": "LE",
+    "LE#": {
+        "id": "LE#",
         "name": "Node E",
-        "lat": 42.73085140348987,
-        "long": -73.68251003630505,
         "entrances": [{
-            "id": "LE01",
+            "id": "LE#1",
             "coordinates": [42.73085140348987, -73.68251003630505],
             "elevation": 0.0,
             "features": {
@@ -76,11 +74,11 @@
             }
         }]
     },
-    "LF": {
-        "id": "LF",
+    "LF#": {
+        "id": "LF#",
         "name": "Node F",
         "entrances": [{
-            "id": "LF01",
+            "id": "LF#1",
             "coordinates": [42.730439089037205, -73.68319844071483],
             "elevation": 0.0,
             "features": {
@@ -91,11 +89,11 @@
             }
         }]
     },
-    "LG": {
-        "id": "LG",
+    "LG#": {
+        "id": "LG#",
         "name": "Node G",
         "entrances": [{
-            "id": "LG01",
+            "id": "LG#1",
             "coordinates": [42.73020001039923, -73.68256937008805],
             "elevation": 0.0,
             "features": {
@@ -106,11 +104,11 @@
             }
         }]
     },
-    "LH": {
-        "id": "LH",
+    "LH#": {
+        "id": "LH#",
         "name": "Node H",
         "entrances": [{
-            "id": "LH01",
+            "id": "LH#1",
             "coordinates": [42.73007263874959, -73.68189371155137],
             "elevation": 0.0,
             "features": {
@@ -121,11 +119,11 @@
             }
         }]
     },
-    "LV": {
-        "id": "LV",
+    "LV#": {
+        "id": "LV#",
         "name": "Node V",
         "entrances": [{
-            "id": "LV01",
+            "id": "LV#1",
             "coordinates": [42.73002432529683, -73.68118815661926],
             "elevation": 0.0,
             "features": {
@@ -136,11 +134,11 @@
             }
         }]
     },
-    "LW": {
-        "id": "LW",
+    "LW#": {
+        "id": "LW#",
         "name": "Node W",
         "entrances": [{
-            "id": "LW01",
+            "id": "LW#1",
             "coordinates": [42.72936407434368, -73.68255508337478],
             "elevation": 0.0,
             "features": {
@@ -151,11 +149,11 @@
             }
         }]
     },
-    "LX": {
-        "id": "LX",
+    "LX#": {
+        "id": "LX#",
         "name": "Node X",
         "entrances": [{
-            "id": "LX01",
+            "id": "LX#1",
             "coordinates": [42.72924081130099, -73.68172841827538],
             "elevation": 0.0,
             "features": {
@@ -166,11 +164,11 @@
             }
         }]
     },
-    "LY": {
-        "id": "LY",
+    "LY#": {
+        "id": "LY#",
         "name": "Node Y",
         "entrances": [{
-            "id": "LY01",
+            "id": "LY#1",
             "coordinates": [42.72847285695591, -73.68176950555977],
             "elevation": 0.0,
             "features": {
@@ -181,11 +179,11 @@
             }
         }]
     },
-    "LZ": {
-        "id": "LZ",
+    "LZ#": {
+        "id": "LZ#",
         "name": "Node Z",
         "entrances": [{
-            "id": "LZ01",
+            "id": "LZ#1",
             "coordinates": [42.72882497693645, -73.68038166818128],
             "elevation": 0.0,
             "features": {
