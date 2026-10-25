@@ -1,0 +1,39 @@
+{
+  "start": {
+    "name": "Voorhees Computing Center (VCC)",
+    "latitude": 42.729214,
+    "longitude": -73.681871
+  },
+  "destination": {
+    "name": "Russell Sage Dining Hall",
+    "latitude": 42.729720,
+    "longitude": -73.678330
+  },
+  "mode": "walking",
+  "estimated_time_minutes": 7,
+  "estimated_distance_meters": 400,
+  "steps": [
+    {
+      "step": 1,
+      "instruction": "Exit the Voorhees Computing Center and head east along the campus pedestrian paths."
+    },
+    {
+      "step": 2,
+      "instruction": "Continue toward the Darrin Communications Center (DCC)."
+    },
+    {
+      "step": 3,
+      "instruction": "Walk toward the Low Center for Industrial Innovation."
+    },
+    {
+      "step": 4,
+      "instruction": "Continue northeast toward the Quadrangle Complex."
+    },
+    {
+      "step": 5,
+      "instruction": "Follow the pedestrian path to Russell Sage Dining Hall on the south side of the Quadrangle."
+    }
+  ],
+  "route_verified": false,
+  "notes": "Approximate campus walking route. Distance and time are estimates; individual pedestrian paths have not been verified."
+}
