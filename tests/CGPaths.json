@@ -1,138 +1,206 @@
-[
-    {
-        "id": "Path-001",
-        "from": "Node A",
-        "to": "Node B",
+{
+    "E0001": {
+        "from": "LA01",
+        "to": "LB01",
         "dist": 5.0,
-        "type": "construction",
-        "verified": true
+        "features": {
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": true,
+            "gradient": 0.0
+        }
     },
-    {
-        "id": "Path-002",
-        "from": "Node A",
-        "to": "Node C",
+    "E0002": {
+        "from": "LA01",
+        "to": "LC01",
         "dist": 4.0,
-        "type": "regular",
-        "verified": true
+        "features":{
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
     },
-    {
-        "id": "Path-003",
-        "from": "Node A",
-        "to": "Node H",
+    "E0003": {
+        "from": "LA01",
+        "to": "LH01",
         "dist": 9.0,
-        "type": "regular",
-        "verified": true
+        "features":{
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
     },
-    {
-        "id": "Path-004",
-        "from": "Node B",
-        "to": "Node C",
+    "E0004": {
+        "from": "LB01",
+        "to": "LC01",
         "dist": 3.0,
-        "type": "regular",
-        "verified": true
+        "features":{
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
     },
-    {
-        "id": "Path-005",
-        "from": "Node B",
-        "to": "Node D",
+    "E0005": {
+        "from": "LB01",
+        "to": "LD01",
         "dist": 5.0,
-        "type": "regular",
-        "verified": true
+        "features":{
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
     },
-    {
-        "id": "Path-006",
-        "from": "Node B",
-        "to": "Node E",
+    "E0006": {
+        "from": "LB01",
+        "to": "LE01",
         "dist": 3.0,
-        "type": "regular",
-        "verified": true
+        "features":{
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
     },
-    {
-        "id": "Path-007",
-        "from": "Node C",
-        "to": "Node H",
+    "E0007": {
+        "from": "LC01",
+        "to": "LH01",
         "dist": 7.0,
-        "type": "construction",
-        "verified": true
+        "features": {
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": true,
+            "gradient": 0.0
+        }
     },
-    {
-        "id": "Path-008",
-        "from": "Node D",
-        "to": "Node E",
+    "E0008": {
+        "from": "LD01",
+        "to": "LE01",
         "dist": 3.0,
-        "type": "regular",
-        "verified": true
+        "features":{
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
     },
-    {
-        "id": "Path-009",
-        "from": "Node E",
-        "to": "Node F",
+    "E0009": {
+        "from": "LE01",
+        "to": "LF01",
         "dist": 9.0,
-        "type": "regular",
-        "verified": true
+        "features":{
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
     },
-    {
-        "id": "Path-010",
-        "from": "Node E",
-        "to": "Node H",
+    "E0010": {
+        "from": "LE01",
+        "to": "LH01",
         "dist": 10.0,
-        "type": "construction",
-        "verified": true
+        "features": {
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": true,
+            "gradient": 0.0
+        }
     },
-    {
-        "id": "Path-011",
-        "from": "Node E",
-        "to": "Node V",
+    "E0011": {
+        "from": "LE01",
+        "to": "LV01",
         "dist": 11.0,
-        "type": "regular",
-        "verified": true
+        "features":{
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
     },
-    {
-        "id": "Path-012",
-        "from": "Node E",
-        "to": "Node X",
+    "E0012": {
+        "from": "LE01",
+        "to": "LX01",
         "dist": 14.0,
-        "type": "regular",
-        "verified": true
+        "features":{
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
     },
-    {
-        "id": "Path-013",
-        "from": "Node F",
-        "to": "Node G",
+    "E0013": {
+        "from": "LF01",
+        "to": "LG01",
         "dist": 2.0,
-        "type": "regular",
-        "verified": true
+        "features":{
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
     },
-    {
-        "id": "Path-014",
-        "from": "Node V",
-        "to": "Node W",
+    "E0014": {
+        "from": "LV01",
+        "to": "LW01",
         "dist": 4.0,
-        "type": "regular",
-        "verified": true
+        "features":{
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
     },
-    {
-        "id": "Path-015",
-        "from": "Node V",
-        "to": "Node Y",
+    "E0015": {
+        "from": "LV01",
+        "to": "LY01",
         "dist": 8.0,
-        "type": "construction",
-        "verified": true
+        "features": {
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": true,
+            "gradient": 0.0
+        }
     },
-    {
-        "id": "Path-016",
-        "from": "Node W",
-        "to": "Node Y",
+    "E0016": {
+        "from": "LW01",
+        "to": "LY01",
         "dist": 6.0,
-        "type": "construction",
-        "verified": true
+        "features": {
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": true,
+            "gradient": 0.0
+        }
     },
-    {
-        "id": "Path-017",
-        "from": "Node X",
-        "to": "Node Y",
+    "E0017": {
+        "from": "LX01",
+        "to": "LY01",
         "dist": 10.0,
-        "type": "construction",
-        "verified": true
+        "features": {
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": true,
+            "gradient": 0.0
+        }
     }
-]
+}

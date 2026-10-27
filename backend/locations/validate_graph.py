@@ -74,9 +74,13 @@ def validate(graph):
         for entrance in node.get("entrances", []):
             entrance_ids.append(entrance.get("id"))
             if "accessible" not in entrance:
-                errors.append(f"entrance {entrance.get('id')}: missing 'accessible' (use null if unverified)")
+                errors.append(
+                    f"entrance {entrance.get('id')}: missing 'accessible' (use null if unverified)"
+                )
             elif entrance["accessible"] not in (True, False, None):
-                errors.append(f"entrance {entrance.get('id')}: 'accessible' must be true, false, or null")
+                errors.append(
+                    f"entrance {entrance.get('id')}: 'accessible' must be true, false, or null"
+                )
     for entrance_id in _duplicates(entrance_ids):
         errors.append(f"duplicate entrance id: {entrance_id}")
     for entrance_id in sorted(set(entrance_ids) & known_nodes):
@@ -109,7 +113,9 @@ def validate(graph):
                 errors.append(f"{label}: unknown {end}_id {scenario.get(f'{end}_id')!r}")
                 continue
             entrance_id = scenario.get(f"{end}_entrance_id")
-            if entrance_id and entrance_id not in {item.get("id") for item in location.get("entrances", [])}:
+            if entrance_id and entrance_id not in {
+                item.get("id") for item in location.get("entrances", [])
+            }:
                 errors.append(f"{label}: {entrance_id!r} is not an entrance of {location['id']}")
 
     groups = components(graph)
@@ -119,7 +125,9 @@ def validate(graph):
         if group <= mock_ids:
             notes.append(f"intentional disconnected area (mock): {', '.join(sorted(group))}")
         else:
-            errors.append(f"unreachable from campus (not marked mock): {', '.join(sorted(group - mock_ids))}")
+            errors.append(
+                f"unreachable from campus (not marked mock): {', '.join(sorted(group - mock_ids))}"
+            )
 
     if groups:
         # Routing always skips construction edges, and skips stairs when asked to avoid them.
