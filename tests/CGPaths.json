@@ -1,0 +1,138 @@
+[
+    {
+        "id": "Path-001",
+        "from": "Node A",
+        "to": "Node B",
+        "dist": 5.0,
+        "type": "construction",
+        "verified": true
+    },
+    {
+        "id": "Path-002",
+        "from": "Node A",
+        "to": "Node C",
+        "dist": 4.0,
+        "type": "regular",
+        "verified": true
+    },
+    {
+        "id": "Path-003",
+        "from": "Node A",
+        "to": "Node H",
+        "dist": 9.0,
+        "type": "regular",
+        "verified": true
+    },
+    {
+        "id": "Path-004",
+        "from": "Node B",
+        "to": "Node C",
+        "dist": 3.0,
+        "type": "regular",
+        "verified": true
+    },
+    {
+        "id": "Path-005",
+        "from": "Node B",
+        "to": "Node D",
+        "dist": 5.0,
+        "type": "regular",
+        "verified": true
+    },
+    {
+        "id": "Path-006",
+        "from": "Node B",
+        "to": "Node E",
+        "dist": 3.0,
+        "type": "regular",
+        "verified": true
+    },
+    {
+        "id": "Path-007",
+        "from": "Node C",
+        "to": "Node H",
+        "dist": 7.0,
+        "type": "construction",
+        "verified": true
+    },
+    {
+        "id": "Path-008",
+        "from": "Node D",
+        "to": "Node E",
+        "dist": 3.0,
+        "type": "regular",
+        "verified": true
+    },
+    {
+        "id": "Path-009",
+        "from": "Node E",
+        "to": "Node F",
+        "dist": 9.0,
+        "type": "regular",
+        "verified": true
+    },
+    {
+        "id": "Path-010",
+        "from": "Node E",
+        "to": "Node H",
+        "dist": 10.0,
+        "type": "construction",
+        "verified": true
+    },
+    {
+        "id": "Path-011",
+        "from": "Node E",
+        "to": "Node V",
+        "dist": 11.0,
+        "type": "regular",
+        "verified": true
+    },
+    {
+        "id": "Path-012",
+        "from": "Node E",
+        "to": "Node X",
+        "dist": 14.0,
+        "type": "regular",
+        "verified": true
+    },
+    {
+        "id": "Path-013",
+        "from": "Node F",
+        "to": "Node G",
+        "dist": 2.0,
+        "type": "regular",
+        "verified": true
+    },
+    {
+        "id": "Path-014",
+        "from": "Node V",
+        "to": "Node W",
+        "dist": 4.0,
+        "type": "regular",
+        "verified": true
+    },
+    {
+        "id": "Path-015",
+        "from": "Node V",
+        "to": "Node Y",
+        "dist": 8.0,
+        "type": "construction",
+        "verified": true
+    },
+    {
+        "id": "Path-016",
+        "from": "Node W",
+        "to": "Node Y",
+        "dist": 6.0,
+        "type": "construction",
+        "verified": true
+    },
+    {
+        "id": "Path-017",
+        "from": "Node X",
+        "to": "Node Y",
+        "dist": 10.0,
+        "type": "construction",
+        "verified": true
+    }
+]
