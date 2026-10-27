@@ -1,105 +1,197 @@
-[
-    {
-        "id": "node-a",
+{
+    "LA#": {
+        "id": "LA#",
         "name": "Node A",
-        "lat": 42.732,
-        "long": -73.683,
-        "type": "entrance",
-        "verified": true
+        "entrances": [{
+            "id": "LA#1",
+            "coordinates" : [42.7304198, -73.6830735],
+            "elevation": 0.0,
+            "features": {
+                "accessible": false,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [false,false]
+            }
+        }]
     },
-    {
-        "id": "node-b",
+    "LB#": {
+        "id": "LB#",
         "name": "Node B",
-        "lat": 42.732,
-        "long": -73.683,
-        "type": "entrance",
-        "verified": true
+        "entrances": [{
+            "id": "LB#1",
+            "coordinates" : [42.7308236, -73.6822905],
+            "elevation": 0.0,
+            "features": {
+                "accessible": false,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [false,false]
+            }
+        }]
     },
-    {
-        "id": "node-c",
+    "LC#": {
+        "id": "LC#",
         "name": "Node C",
-        "lat": 42.73114802764494,
-        "long": -73.68325506502764,
-        "type": "entrance",
-        "verified": true
+        "entrances": [{
+            "id": "LC#1",
+            "coordinates": [42.73114802764494, -73.68325506502764],
+            "elevation": 0.0,
+            "features": {
+                "accessible": false,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [false,false]
+            }
+        }]
     },
-    {
-        "id": "node-d",
+    "LD#": {
+        "id": "LD#",
         "name": "Node D",
-        "lat": 42.731184067647156,
-        "long": -73.68177421364409,
-        "type": "entrance",
-        "verified": true
+        "entrances": [{
+            "id": "LD#1",
+            "coordinates": [42.731184067647156, -73.68177421364409],
+            "elevation": 0.0,
+            "features": {
+                "accessible": false,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [false,false]
+            }
+        }]
     },
-    {
-        "id": "node-e",
+    "LE#": {
+        "id": "LE#",
         "name": "Node E",
-        "lat": 42.73085140348987,
-        "long": -73.68251003630505,
-        "type": "entrance",
-        "verified": true
+        "entrances": [{
+            "id": "LE#1",
+            "coordinates": [42.73085140348987, -73.68251003630505],
+            "elevation": 0.0,
+            "features": {
+                "accessible": false,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [false,false]
+            }
+        }]
     },
-    {
-        "id": "node-f",
+    "LF#": {
+        "id": "LF#",
         "name": "Node F",
-        "lat": 42.730439089037205,
-        "long": -73.68319844071483,
-        "type": "entrance",
-        "verified": true
+        "entrances": [{
+            "id": "LF#1",
+            "coordinates": [42.730439089037205, -73.68319844071483],
+            "elevation": 0.0,
+            "features": {
+                "accessible": false,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [false,false]
+            }
+        }]
     },
-    {
-        "id": "node-g",
+    "LG#": {
+        "id": "LG#",
         "name": "Node G",
-        "lat": 42.73020001039923,
-        "long": -73.68256937008805,
-        "type": "entrance",
-        "verified": true
+        "entrances": [{
+            "id": "LG#1",
+            "coordinates": [42.73020001039923, -73.68256937008805],
+            "elevation": 0.0,
+            "features": {
+                "accessible": false,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [false,false]
+            }
+        }]
     },
-    {
-        "id": "node-h",
+    "LH#": {
+        "id": "LH#",
         "name": "Node H",
-        "lat": 42.73007263874959,
-        "long": -73.68189371155137,
-        "type": "entrance",
-        "verified": true
+        "entrances": [{
+            "id": "LH#1",
+            "coordinates": [42.73007263874959, -73.68189371155137],
+            "elevation": 0.0,
+            "features": {
+                "accessible": false,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [false,false]
+            }
+        }]
     },
-    {
-        "id": "node-v",
+    "LV#": {
+        "id": "LV#",
         "name": "Node V",
-        "lat": 42.73002432529683,
-        "long": -73.68118815661926,
-        "type": "entrance",
-        "verified": true
+        "entrances": [{
+            "id": "LV#1",
+            "coordinates": [42.73002432529683, -73.68118815661926],
+            "elevation": 0.0,
+            "features": {
+                "accessible": false,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [false,false]
+            }
+        }]
     },
-    {
-        "id": "node-w",
+    "LW#": {
+        "id": "LW#",
         "name": "Node W",
-        "lat": 42.72936407434368,
-        "long": -73.68255508337478,
-        "type": "entrance",
-        "verified": true
+        "entrances": [{
+            "id": "LW#1",
+            "coordinates": [42.72936407434368, -73.68255508337478],
+            "elevation": 0.0,
+            "features": {
+                "accessible": false,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [false,false]
+            }
+        }]
     },
-    {
-        "id": "node-x",
+    "LX#": {
+        "id": "LX#",
         "name": "Node X",
-        "lat": 42.72924081130099,
-        "long": -73.68172841827538,
-        "type": "entrance",
-        "verified": true
-    },{
-        "id": "node-y",
-        "name": "Node Y",
-        "lat": 42.72847285695591,
-        "long": -73.68176950555977,
-        "type": "entrance",
-        "verified": true
+        "entrances": [{
+            "id": "LX#1",
+            "coordinates": [42.72924081130099, -73.68172841827538],
+            "elevation": 0.0,
+            "features": {
+                "accessible": false,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [false,false]
+            }
+        }]
     },
-    {
-        "id": "node-z",
+    "LY#": {
+        "id": "LY#",
+        "name": "Node Y",
+        "entrances": [{
+            "id": "LY#1",
+            "coordinates": [42.72847285695591, -73.68176950555977],
+            "elevation": 0.0,
+            "features": {
+                "accessible": false,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [false,false]
+            }
+        }]
+    },
+    "LZ#": {
+        "id": "LZ#",
         "name": "Node Z",
-        "lat": 42.72882497693645,
-        "long": -73.68038166818128,
-        "type": "entrance",
-        "verified": true
+        "entrances": [{
+            "id": "LZ#1",
+            "coordinates": [42.72882497693645, -73.68038166818128],
+            "elevation": 0.0,
+            "features": {
+                "accessible": false,
+                "stairs": false,
+                "ramp": false,
+                "buttons": [false,false]
+            }
+        }]
     }
-]
+}
