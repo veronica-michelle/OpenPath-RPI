@@ -106,6 +106,12 @@
 
 .pin-icon-svg {
   display: block;
+  /* The wrap above is pointer-events:none so the wide label area doesn't
+     steal drag gestures from the map — re-enable hit-testing on just the
+     pin glyph itself so it stays clickable (for picking start/end) while
+     clicking near a building's name still pans the map underneath it. */
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .pin-label {
