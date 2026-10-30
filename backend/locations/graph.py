@@ -1,4 +1,17 @@
-"""Adapt the campus location/path JSON files to the existing route graph."""
+"""Read the 2 campus data files and prepare map data for the app.
+
+locations.json holds buildings, entrances, and points along paths.
+paths.json holds the connections between building or path-point IDs.
+
+The app expects a list of nodes and a list of edges, so this file translates
+the saved fields into that shape and preserves existing route behavior and
+metadata.
+
+The route distances and current summary use meters and feet in different areas.
+The data loader keeps the source elevation in meters and also supplies the feet
+value the current summary expects. A path without a measured distance is
+estimated from the coordinates of its endpoints during route generation.
+"""
 
 import json
 import logging
@@ -17,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_graph():
-    # JSON edits do not trigger Django's Python autoreloader.
+    # Check file dates so edits to map data appear without restarting Django.
     return _get_graph(
         LOCATIONS_PATH,
         PATHS_PATH,
@@ -33,7 +46,7 @@ def _get_graph(locations_path, paths_path, locations_modified, paths_modified):
     edges = []
     for edge in graph["edges"]:
         if edge["a"] not in node_ids or edge["b"] not in node_ids:
-            # Routing already skips these; the map must not try to draw them.
+            # Ignore broken links here so the map still shows valid data.
             logger.warning(
                 "Skipping path %s: endpoint does not exist (%s -> %s)",
                 edge["id"],
@@ -45,26 +58,28 @@ def _get_graph(locations_path, paths_path, locations_modified, paths_modified):
     return {**graph, "edges": edges}
 
 
+# Maintains elevation in meters and in feet value
 def _point_fields(point):
-    """Keep source coordinates and meter elevations alongside legacy UI fields."""
     lat, lng = point["coordinates"]
     return {
         "lat": lat,
         "lng": lng,
         "elevation_m": point["elevation"],
-        # The existing route summary expects node elevations in feet.
+        # Keep meters above, and give the current route summary feet.
         "elevation": point["elevation"] * FEET_PER_METER,
     }
 
 
-def load_graph(locations_path, paths_path):
-    """Read keyed location/path objects without changing the routing interface.
+"""Turns the 2 saved objects into the node and edge lists used by routes.
+Edges connect building IDs or path-point IDs. A building starts at its first
+entrance unless the request names another entrance. Feature, details, and other
+saved fields remain attached to the returned items. If a path has no distance,
+the route finder estimates a distance from its endpoints' locations.
+"""
 
-    Edges still connect building IDs. The first entrance supplies a building's
-    default position; explicit entrance choices still adjust route endpoints.
-    Nested features and other metadata remain available for future consumers.
-    Omitted or null distances use the router's coordinate-based meter estimate.
-    """
+
+def load_graph(locations_path, paths_path):
+
     with Path(locations_path).open(encoding="utf-8") as locations_file:
         locations = json.load(locations_file)
     with Path(paths_path).open(encoding="utf-8") as paths_file:
@@ -122,8 +137,8 @@ def load_graph(locations_path, paths_path):
     return {"nodes": nodes, "edges": edges}
 
 
+# Read the Conceptual Graph files used by the routing practice checks.
 def load_practice_graph():
-    """Adapt the conceptual CG location/path files to the route graph format."""
     with (PRACTICE_DATA_PATH / "CGLocations.json").open(encoding="utf-8") as locations_file:
         locations = json.load(locations_file)
     with (PRACTICE_DATA_PATH / "CGPaths.json").open(encoding="utf-8") as paths_file:
@@ -149,6 +164,7 @@ def get_locations():
     return [node for node in get_graph()["nodes"] if node["type"] in {"location", "entrance"}]
 
 
+# Return direction of travel in degrees, measured clockwise from north.
 def _bearing(a, b):
     lat1, lat2 = math.radians(a["lat"]), math.radians(b["lat"])
     delta_lng = math.radians(b["lng"] - a["lng"])
@@ -157,6 +173,7 @@ def _bearing(a, b):
     return (math.degrees(math.atan2(y, x)) + 360) % 360
 
 
+# Mark noticeable changes in direction and finish with an arrival step.
 def _build_maneuvers(points):
     distances = [0]
     for before, after in zip(points, points[1:]):
@@ -189,17 +206,14 @@ def _build_maneuvers(points):
     return maneuvers
 
 
+# Choose the lowest-distance route while honoring stair avoidance and closures.
 def _find_node_path(start_id, destination_id, avoid_stairs, include_construction=False):
-    """Small Dijkstra adapter, mirroring the current frontend behavior.
-
-    Replace this internal implementation with the team's routing service
-    once its graph interface is finalized; keep the HTTP response contract.
-    """
     graph = get_graph()
     nodes = {node["id"]: node for node in graph["nodes"]}
     if start_id not in nodes or destination_id not in nodes:
         return None
 
+    # Treat each usable edge as a 2-way connection between its node IDs.
     adjacency = {node_id: [] for node_id in nodes}
     for edge in graph["edges"]:
         edge_type = edge.get("type", "path")
@@ -216,6 +230,7 @@ def _find_node_path(start_id, destination_id, avoid_stairs, include_construction
         adjacency[a["id"]].append((b["id"], weight, edge))
         adjacency[b["id"]].append((a["id"], weight, edge))
 
+    # Repeatedly visit the nearest remaining node and record its best next step.
     distances = {node_id: math.inf for node_id in nodes}
     previous = {}
     unvisited = set(nodes)
@@ -250,14 +265,15 @@ def _find_node_path(start_id, destination_id, avoid_stairs, include_construction
     return node_ids, edges, nodes
 
 
+# Return whether a closure is the only thing blocking the route.
 def construction_blocks_route(start_id, destination_id, avoid_stairs=False):
-    """Return whether ignoring construction edges makes an otherwise blocked route possible."""
     return (
         _find_node_path(start_id, destination_id, avoid_stairs, include_construction=True)
         is not None
     )
 
 
+# Build the route response and move its endpoints to any selected entrances.
 def find_route(
     start_id, destination_id, avoid_stairs=False, start_entrance_id="", destination_entrance_id=""
 ):
@@ -267,6 +283,7 @@ def find_route(
 
     node_ids, edges, nodes = result
     points = [{"lat": nodes[node_id]["lat"], "lng": nodes[node_id]["lng"]} for node_id in node_ids]
+    # Move the displayed route endpoints to the requested doors when provided.
     for point, location_id, entrance_id in (
         (points[0], start_id, start_entrance_id),
         (points[-1], destination_id, destination_entrance_id),
@@ -278,6 +295,7 @@ def find_route(
         if entrance:
             point.update(lat=entrance["lat"], lng=entrance["lng"])
 
+    # Measure the displayed route points so chosen doors affect its summary.
     distance_m = sum(
         haversine_meters(a["lat"], a["lng"], b["lat"], b["lng"]) for a, b in zip(points, points[1:])
     )
