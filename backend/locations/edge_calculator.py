@@ -72,8 +72,10 @@ def main(argv):
 
     for edge_id, edge in paths.items():
         if edge_id not in problems:
-            print(f"  {edge_id}: {edge['from']} -> {edge['to']}  "
-                  f"{edge['distance']} m, {edge['features']['gradient']} deg")
+            print(
+                f"  {edge_id}: {edge['from']} -> {edge['to']}  "
+                f"{edge['distance']} m, {edge['features']['gradient']} deg"
+            )
     if problems:
         print(f"\n{len(problems)} problem(s):")
         for edge_id, problem in problems.items():
