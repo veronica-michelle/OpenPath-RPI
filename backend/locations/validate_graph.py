@@ -1,6 +1,6 @@
-"""Check graph.json for data mistakes before the app or tests rely on it.
+"""Check locations.json and paths.json before the app or tests rely on them.
 
-Run from backend/:  python -m locations.validate_graph [path/to/graph.json]
+Run from backend/:  python -m locations.validate_graph [locations.json paths.json]
 Exits with status 1 when any errors are found.
 
 Errors: duplicate ids, edges pointing at missing nodes, buildings without
@@ -10,12 +10,12 @@ Report only: intentional disconnected areas (all-mock) and locations that
 can only be reached by stairs.
 """
 
-import json
 import sys
 from collections import Counter
 from pathlib import Path
 
-GRAPH_PATH = Path(__file__).with_name("graph.json")
+from .graph import LOCATIONS_PATH, PATHS_PATH, load_graph
+
 NODE_TYPES = {"location", "entrance", "path"}
 EDGE_TYPES = {"path", "stairs", "construction"}
 SCENARIO_EXPECTS = {"route", "no_route"}
@@ -74,9 +74,13 @@ def validate(graph):
         for entrance in node.get("entrances", []):
             entrance_ids.append(entrance.get("id"))
             if "accessible" not in entrance:
-                errors.append(f"entrance {entrance.get('id')}: missing 'accessible' (use null if unverified)")
+                errors.append(
+                    f"entrance {entrance.get('id')}: missing 'accessible' (use null if unverified)"
+                )
             elif entrance["accessible"] not in (True, False, None):
-                errors.append(f"entrance {entrance.get('id')}: 'accessible' must be true, false, or null")
+                errors.append(
+                    f"entrance {entrance.get('id')}: 'accessible' must be true, false, or null"
+                )
     for entrance_id in _duplicates(entrance_ids):
         errors.append(f"duplicate entrance id: {entrance_id}")
     for entrance_id in sorted(set(entrance_ids) & known_nodes):
@@ -109,7 +113,9 @@ def validate(graph):
                 errors.append(f"{label}: unknown {end}_id {scenario.get(f'{end}_id')!r}")
                 continue
             entrance_id = scenario.get(f"{end}_entrance_id")
-            if entrance_id and entrance_id not in {item.get("id") for item in location.get("entrances", [])}:
+            if entrance_id and entrance_id not in {
+                item.get("id") for item in location.get("entrances", [])
+            }:
                 errors.append(f"{label}: {entrance_id!r} is not an entrance of {location['id']}")
 
     groups = components(graph)
@@ -119,7 +125,9 @@ def validate(graph):
         if group <= mock_ids:
             notes.append(f"intentional disconnected area (mock): {', '.join(sorted(group))}")
         else:
-            errors.append(f"unreachable from campus (not marked mock): {', '.join(sorted(group - mock_ids))}")
+            errors.append(
+                f"unreachable from campus (not marked mock): {', '.join(sorted(group - mock_ids))}"
+            )
 
     if groups:
         # Routing always skips construction edges, and skips stairs when asked to avoid them.
@@ -137,14 +145,18 @@ def validate(graph):
 
 
 def main(argv):
-    path = Path(argv[1]) if len(argv) > 1 else GRAPH_PATH
-    with path.open(encoding="utf-8") as graph_file:
-        graph = json.load(graph_file)
+    if len(argv) not in (1, 3):
+        print("Usage: python -m locations.validate_graph [locations.json paths.json]")
+        return 1
+    locations_path = Path(argv[1]) if len(argv) == 3 else LOCATIONS_PATH
+    paths_path = Path(argv[2]) if len(argv) == 3 else PATHS_PATH
+    graph = load_graph(locations_path, paths_path)
 
     errors, notes = validate(graph)
     entrance_count = sum(len(node.get("entrances", [])) for node in graph.get("nodes", []))
     print(
-        f"Checked {path.name}: {len(graph.get('nodes', []))} nodes, {len(graph.get('edges', []))} edges, "
+        f"Checked {locations_path.name} and {paths_path.name}: "
+        f"{len(graph.get('nodes', []))} nodes, {len(graph.get('edges', []))} edges, "
         f"{entrance_count} entrances, {len(graph.get('scenarios', []))} scenarios"
     )
     for note in notes:

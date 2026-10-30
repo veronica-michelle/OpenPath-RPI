@@ -1,26 +1,125 @@
-"""Access to the provisional JSON campus graph and graph-based routes.
-
-The JSON shape is an adapter for the current UI and should be aligned with
-the team's finalized data organization before it is treated as permanent.
-"""
+"""Adapt the campus location/path JSON files to the existing route graph."""
 
 import json
+import logging
 import math
 from functools import lru_cache
 from pathlib import Path
 
 from .geo import haversine_meters
 
-GRAPH_PATH = Path(__file__).with_name("graph.json")
+LOCATIONS_PATH = Path(__file__).with_name("locations.json")
+PATHS_PATH = Path(__file__).with_name("paths.json")
 PRACTICE_DATA_PATH = Path(__file__).with_name("practice_data")
 FEET_PER_METER = 3.28084
 WALK_SPEED_MPH = 2.5
+logger = logging.getLogger(__name__)
+
+
+def get_graph():
+    # JSON edits do not trigger Django's Python autoreloader.
+    return _get_graph(
+        LOCATIONS_PATH,
+        PATHS_PATH,
+        LOCATIONS_PATH.stat().st_mtime_ns,
+        PATHS_PATH.stat().st_mtime_ns,
+    )
 
 
 @lru_cache(maxsize=1)
-def get_graph():
-    with GRAPH_PATH.open(encoding="utf-8") as graph_file:
-        return json.load(graph_file)
+def _get_graph(locations_path, paths_path, locations_modified, paths_modified):
+    graph = load_graph(locations_path, paths_path)
+    node_ids = {node["id"] for node in graph["nodes"]}
+    edges = []
+    for edge in graph["edges"]:
+        if edge["a"] not in node_ids or edge["b"] not in node_ids:
+            # Routing already skips these; the map must not try to draw them.
+            logger.warning(
+                "Skipping path %s: endpoint does not exist (%s -> %s)",
+                edge["id"],
+                edge["a"],
+                edge["b"],
+            )
+            continue
+        edges.append(edge)
+    return {**graph, "edges": edges}
+
+
+def _point_fields(point):
+    """Keep source coordinates and meter elevations alongside legacy UI fields."""
+    lat, lng = point["coordinates"]
+    return {
+        "lat": lat,
+        "lng": lng,
+        "elevation_m": point["elevation"],
+        # The existing route summary expects node elevations in feet.
+        "elevation": point["elevation"] * FEET_PER_METER,
+    }
+
+
+def load_graph(locations_path, paths_path):
+    """Read keyed location/path objects without changing the routing interface.
+
+    Edges still connect building IDs. The first entrance supplies a building's
+    default position; explicit entrance choices still adjust route endpoints.
+    Nested features and other metadata remain available for future consumers.
+    Omitted or null distances use the router's coordinate-based meter estimate.
+    """
+    with Path(locations_path).open(encoding="utf-8") as locations_file:
+        locations = json.load(locations_file)
+    with Path(paths_path).open(encoding="utf-8") as paths_file:
+        paths = json.load(paths_file)
+    if not isinstance(paths, dict):
+        raise ValueError(
+            "paths.json must be a JSON object keyed by unique edge IDs, "
+            'such as {"E0001": {...}}, not an array. Use {} for no paths.'
+        )
+
+    nodes = []
+    for location in locations.values():
+        if "entrances" in location:
+            if not location["entrances"]:
+                raise ValueError(f"Building {location['id']!r} needs at least one entrance")
+            entrances = [
+                {
+                    **entrance,
+                    **_point_fields(entrance),
+                    "label": entrance.get("label", entrance["id"]),
+                    "accessible": entrance["features"]["accessible"],
+                }
+                for entrance in location["entrances"]
+            ]
+            nodes.append(
+                {
+                    **location,
+                    **_point_fields(location["entrances"][0]),
+                    "type": "location",
+                    "entrances": entrances,
+                }
+            )
+        else:
+            nodes.append({**location, **_point_fields(location), "type": "path"})
+
+    edges = []
+    for edge_id, path in paths.items():
+        features = path["features"]
+        edges.append(
+            {
+                **path,
+                "id": edge_id,
+                "a": path["from"],
+                "b": path["to"],
+                "dist": path.get("distance"),
+                "type": (
+                    "construction"
+                    if features["closed"]
+                    else "stairs"
+                    if features["stairs"]
+                    else "path"
+                ),
+            }
+        )
+    return {"nodes": nodes, "edges": edges}
 
 
 def load_practice_graph():
@@ -31,10 +130,7 @@ def load_practice_graph():
         paths = json.load(paths_file)
 
     ids_by_name = {location["name"]: location["id"] for location in locations}
-    nodes = [
-        {**location, "lng": location["long"]}
-        for location in locations
-    ]
+    nodes = [{**location, "lng": location["long"]} for location in locations]
     edges = [
         {
             "id": path["id"],
@@ -64,9 +160,11 @@ def _bearing(a, b):
 def _build_maneuvers(points):
     distances = [0]
     for before, after in zip(points, points[1:]):
-        distances.append(distances[-1] + haversine_meters(
-            before["lat"], before["lng"], after["lat"], after["lng"]
-        ) * FEET_PER_METER)
+        distances.append(
+            distances[-1]
+            + haversine_meters(before["lat"], before["lng"], after["lat"], after["lng"])
+            * FEET_PER_METER
+        )
 
     maneuvers = []
     for index in range(1, len(points) - 1):
@@ -79,12 +177,14 @@ def _build_maneuvers(points):
         if magnitude < 20:
             continue
         turn_magnitude = "slight" if magnitude < 45 else "sharp" if magnitude >= 135 else None
-        maneuvers.append({
-            "type": "turn",
-            "direction": "right" if delta > 0 else "left",
-            "magnitude": turn_magnitude,
-            "atDistance": distances[index],
-        })
+        maneuvers.append(
+            {
+                "type": "turn",
+                "direction": "right" if delta > 0 else "left",
+                "magnitude": turn_magnitude,
+                "atDistance": distances[index],
+            }
+        )
     maneuvers.append({"type": "arrive", "atDistance": distances[-1]})
     return maneuvers
 
@@ -103,7 +203,9 @@ def _find_node_path(start_id, destination_id, avoid_stairs, include_construction
     adjacency = {node_id: [] for node_id in nodes}
     for edge in graph["edges"]:
         edge_type = edge.get("type", "path")
-        if (edge_type == "construction" and not include_construction) or (avoid_stairs and edge_type == "stairs"):
+        if (edge_type == "construction" and not include_construction) or (
+            avoid_stairs and edge_type == "stairs"
+        ):
             continue
         a, b = nodes.get(edge["a"]), nodes.get(edge["b"])
         if not a or not b:
@@ -150,13 +252,15 @@ def _find_node_path(start_id, destination_id, avoid_stairs, include_construction
 
 def construction_blocks_route(start_id, destination_id, avoid_stairs=False):
     """Return whether ignoring construction edges makes an otherwise blocked route possible."""
-    return _find_node_path(
-        start_id, destination_id, avoid_stairs, include_construction=True
-    ) is not None
+    return (
+        _find_node_path(start_id, destination_id, avoid_stairs, include_construction=True)
+        is not None
+    )
 
 
-def find_route(start_id, destination_id, avoid_stairs=False,
-               start_entrance_id="", destination_entrance_id=""):
+def find_route(
+    start_id, destination_id, avoid_stairs=False, start_entrance_id="", destination_entrance_id=""
+):
     result = _find_node_path(start_id, destination_id, avoid_stairs)
     if result is None or start_id == destination_id:
         return None
@@ -175,8 +279,7 @@ def find_route(start_id, destination_id, avoid_stairs=False,
             point.update(lat=entrance["lat"], lng=entrance["lng"])
 
     distance_m = sum(
-        haversine_meters(a["lat"], a["lng"], b["lat"], b["lng"])
-        for a, b in zip(points, points[1:])
+        haversine_meters(a["lat"], a["lng"], b["lat"], b["lng"]) for a, b in zip(points, points[1:])
     )
     elevation_gain = 0
     elevation_loss = 0
@@ -206,6 +309,7 @@ def find_route(start_id, destination_id, avoid_stairs=False,
         "directions": [f"Head toward {destination_name}."],
         "maneuvers": maneuvers,
         "accessibility_notes": [
-            "Campus paths and accessibility details are provisional and have not been verified on site."
+            "Campus paths and accessibility details are provisional and have not "
+            "been verified on site."
         ],
     }

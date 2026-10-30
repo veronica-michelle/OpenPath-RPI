@@ -91,8 +91,13 @@ class RouteViewTests(APITestCase):
 class DatasetScenarioTests(APITestCase):
     """Runs every labeled edge case in graph.json's "scenarios" list through the route API."""
 
-    REQUIRED_CASES = {"stairs", "multiple-entrances", "accessible-entrance", "disconnected",
-                      "no-accessible-route"}
+    REQUIRED_CASES = {
+        "stairs",
+        "multiple-entrances",
+        "accessible-entrance",
+        "disconnected",
+        "no-accessible-route",
+    }
 
     @classmethod
     def setUpTestData(cls):
@@ -112,7 +117,8 @@ class DatasetScenarioTests(APITestCase):
                 self.assertLessEqual(island, mock_ids, "real nodes are unreachable from campus")
 
     def test_every_entrance_has_an_accessibility_flag(self):
-        # true = accessible, false = not accessible, null = not yet verified (never assume accessible)
+        # true = accessible, false = not accessible, null = not yet verified
+        # (never assume accessible)
         for location in self.locations.values():
             for entrance in location["entrances"]:
                 with self.subTest(entrance=entrance["id"]):
@@ -125,8 +131,11 @@ class DatasetScenarioTests(APITestCase):
                 continue
             with self.subTest(scenario=scenario["id"]):
                 entrance_id = scenario["destination_entrance_id"]
-                entrance = next(item for item in self.locations[scenario["destination_id"]]["entrances"]
-                                if item["id"] == entrance_id)
+                entrance = next(
+                    item
+                    for item in self.locations[scenario["destination_id"]]["entrances"]
+                    if item["id"] == entrance_id
+                )
                 self.assertIs(entrance["accessible"], True)
 
     def test_scenarios_reference_existing_locations_and_entrances(self):
@@ -149,8 +158,13 @@ class DatasetScenarioTests(APITestCase):
                     "/api/route/",
                     {
                         field: scenario[field]
-                        for field in ("start_id", "destination_id", "start_entrance_id",
-                                      "destination_entrance_id", "avoid_stairs")
+                        for field in (
+                            "start_id",
+                            "destination_id",
+                            "start_entrance_id",
+                            "destination_entrance_id",
+                            "avoid_stairs",
+                        )
                         if field in scenario
                     },
                     format="json",
@@ -164,13 +178,20 @@ class DatasetScenarioTests(APITestCase):
                 self.assertEqual(response.status_code, 200)
                 if "used_stairs" in scenario:
                     self.assertEqual(response.data["usedStairs"], scenario["used_stairs"])
-                for end, point in (("start", response.data["points"][0]),
-                                   ("destination", response.data["points"][-1])):
+                for end, point in (
+                    ("start", response.data["points"][0]),
+                    ("destination", response.data["points"][-1]),
+                ):
                     entrance_id = scenario.get(f"{end}_entrance_id")
                     if entrance_id:
-                        entrance = next(item for item in self.locations[scenario[f"{end}_id"]]["entrances"]
-                                        if item["id"] == entrance_id)
-                        self.assertEqual((point["lat"], point["lng"]), (entrance["lat"], entrance["lng"]))
+                        entrance = next(
+                            item
+                            for item in self.locations[scenario[f"{end}_id"]]["entrances"]
+                            if item["id"] == entrance_id
+                        )
+                        self.assertEqual(
+                            (point["lat"], point["lng"]), (entrance["lat"], entrance["lng"])
+                        )
 
 
 class ValidateGraphTests(TestCase):
@@ -178,10 +199,26 @@ class ValidateGraphTests(TestCase):
 
     BASE = {
         "nodes": [
-            {"id": "hall", "name": "Hall", "lat": 0, "lng": 0, "type": "location",
-             "entrances": [{"id": "hall-e1", "lat": 0, "lng": 0, "label": "Main", "accessible": True}]},
-            {"id": "lab", "name": "Lab", "lat": 0, "lng": 1, "type": "location",
-             "entrances": [{"id": "lab-e1", "lat": 0, "lng": 1, "label": "Main", "accessible": None}]},
+            {
+                "id": "hall",
+                "name": "Hall",
+                "lat": 0,
+                "lng": 0,
+                "type": "location",
+                "entrances": [
+                    {"id": "hall-e1", "lat": 0, "lng": 0, "label": "Main", "accessible": True}
+                ],
+            },
+            {
+                "id": "lab",
+                "name": "Lab",
+                "lat": 0,
+                "lng": 1,
+                "type": "location",
+                "entrances": [
+                    {"id": "lab-e1", "lat": 0, "lng": 1, "label": "Main", "accessible": None}
+                ],
+            },
             {"id": "j1", "lat": 0, "lng": 0.5, "type": "path"},
         ],
         "edges": [
@@ -189,7 +226,13 @@ class ValidateGraphTests(TestCase):
             {"a": "j1", "b": "lab", "type": "path"},
         ],
         "scenarios": [
-            {"id": "hall-to-lab", "case": "stairs", "start_id": "hall", "destination_id": "lab", "expect": "route"},
+            {
+                "id": "hall-to-lab",
+                "case": "stairs",
+                "start_id": "hall",
+                "destination_id": "lab",
+                "expect": "route",
+            },
         ],
     }
 
