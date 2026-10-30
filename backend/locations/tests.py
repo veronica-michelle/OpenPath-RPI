@@ -29,13 +29,23 @@ LOCATIONS_DATA = {
                 "id": "L01A",
                 "coordinates": [42.0, -73.0],
                 "elevation": 10.0,
-                "features": {"accessible": True, "stairs": False, "ramp": True, "buttons": [False, True]},
+                "features": {
+                    "accessible": True,
+                    "stairs": False,
+                    "ramp": True,
+                    "buttons": [False, True],
+                },
             },
             {
                 "id": "L01B",
                 "coordinates": [42.0001, -73.0],
                 "elevation": 10.5,
-                "features": {"accessible": False, "stairs": True, "ramp": False, "buttons": [False, False]},
+                "features": {
+                    "accessible": False,
+                    "stairs": True,
+                    "ramp": False,
+                    "buttons": [False, False],
+                },
             },
         ],
     },
@@ -47,7 +57,12 @@ LOCATIONS_DATA = {
                 "id": "L02A",
                 "coordinates": [42.0, -72.999],
                 "elevation": 12.0,
-                "features": {"accessible": True, "stairs": False, "ramp": False, "buttons": [True, False]},
+                "features": {
+                    "accessible": True,
+                    "stairs": False,
+                    "ramp": False,
+                    "buttons": [True, False],
+                },
             }
         ],
     },
@@ -59,7 +74,12 @@ LOCATIONS_DATA = {
                 "id": "L03A",
                 "coordinates": [42.001, -72.999],
                 "elevation": 13.0,
-                "features": {"accessible": None, "stairs": False, "ramp": False, "buttons": [False, False]},
+                "features": {
+                    "accessible": None,
+                    "stairs": False,
+                    "ramp": False,
+                    "buttons": [False, False],
+                },
             }
         ],
     },
@@ -71,7 +91,12 @@ LOCATIONS_DATA = {
                 "id": "L04A",
                 "coordinates": [42.002, -72.998],
                 "elevation": 14.0,
-                "features": {"accessible": False, "stairs": False, "ramp": False, "buttons": [False, False]},
+                "features": {
+                    "accessible": False,
+                    "stairs": False,
+                    "ramp": False,
+                    "buttons": [False, False],
+                },
             }
         ],
     },
@@ -83,24 +108,48 @@ PATHS_DATA = {
         "from": "L01",
         "to": "L02",
         "distance": 1.0,
-        "features": {"paved": True, "stairs": True, "ramp": False, "closed": False, "gradient": 0.0},
+        "features": {
+            "paved": True,
+            "stairs": True,
+            "ramp": False,
+            "closed": False,
+            "gradient": 0.0,
+        },
     },
     "E00002": {
         "from": "L01",
         "to": "N001",
-        "features": {"paved": True, "stairs": False, "ramp": False, "closed": False, "gradient": 0.0},
+        "features": {
+            "paved": True,
+            "stairs": False,
+            "ramp": False,
+            "closed": False,
+            "gradient": 0.0,
+        },
     },
     "E00003": {
         "from": "N001",
         "to": "L02",
         "distance": None,
-        "features": {"paved": True, "stairs": False, "ramp": False, "closed": False, "gradient": 0.0},
+        "features": {
+            "paved": True,
+            "stairs": False,
+            "ramp": False,
+            "closed": False,
+            "gradient": 0.0,
+        },
     },
     "E00004": {
         "from": "L02",
         "to": "L03",
         "distance": None,
-        "features": {"paved": False, "stairs": False, "ramp": False, "closed": True, "gradient": 0.0},
+        "features": {
+            "paved": False,
+            "stairs": False,
+            "ramp": False,
+            "closed": True,
+            "gradient": 0.0,
+        },
     },
 }
 
@@ -144,7 +193,10 @@ class GraphLoaderTests(TestCase):
         self.assertEqual(nodes["L01"]["type"], "location")
         self.assertEqual((nodes["L01"]["lat"], nodes["L01"]["lng"]), (42.0, -73.0))
         self.assertEqual(nodes["L01"]["entrances"][1]["id"], "L01B")
-        self.assertEqual(nodes["L01"]["entrances"][1]["features"], LOCATIONS_DATA["L01"]["entrances"][1]["features"])
+        self.assertEqual(
+            nodes["L01"]["entrances"][1]["features"],
+            LOCATIONS_DATA["L01"]["entrances"][1]["features"],
+        )
         self.assertAlmostEqual(nodes["L01"]["elevation_m"], 10.0)
         self.assertAlmostEqual(nodes["L01"]["elevation"], 10.0 * graph_module.FEET_PER_METER)
         self.assertEqual(nodes["N001"]["type"], "path")
@@ -176,7 +228,12 @@ class MapGraphViewTests(ControlledGraphAPITestCase):
         self.assertEqual(len(response.data["nodes"]), len(LOCATIONS_DATA))
         node_ids = {node["id"] for node in response.data["nodes"]}
         self.assertTrue(any(node["type"] == "path" for node in response.data["nodes"]))
-        self.assertTrue(all(edge["a"] in node_ids and edge["b"] in node_ids for edge in response.data["edges"]))
+        self.assertTrue(
+            all(
+                edge["a"] in node_ids and edge["b"] in node_ids
+                for edge in response.data["edges"]
+            )
+        )
 
 
 # Check that the location picker receives buildings and their entrances.
@@ -184,7 +241,10 @@ class LocationListViewTests(ControlledGraphAPITestCase):
     def test_returns_selectable_buildings_and_entrances(self):
         response = self.client.get("/api/locations/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual({location["id"] for location in response.data}, {"L01", "L02", "L03", "L04"})
+        self.assertEqual(
+            {location["id"] for location in response.data},
+            {"L01", "L02", "L03", "L04"},
+        )
         self.assertTrue(all("entrances" in location for location in response.data))
 
     # Check route requests for ordinary, blocked, and invalid trips.
@@ -286,7 +346,10 @@ class ValidateGraphTests(TestCase):
 
     def assert_error(self, graph, fragment):
         errors, _ = validate(graph)
-        self.assertTrue(any(fragment in error for error in errors), f"{fragment!r} not in {errors}")
+        self.assertTrue(
+            any(fragment in error for error in errors),
+            f"{fragment!r} not in {errors}",
+        )
 
     def test_valid_example_has_no_errors(self):
         self.assertEqual(validate(self.graph())[0], [])
