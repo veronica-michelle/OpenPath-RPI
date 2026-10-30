@@ -316,8 +316,8 @@ class RouteViewTests(ControlledGraphAPITestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_invalid_destination_id_returns_400(self):
-            response = self.route(start_entrance_id="L01A", destination_entrance_id="L02Z")
-            self.assertEqual(response.status_code, 400)
+        response = self.route(start_entrance_id="L01A", destination_entrance_id="L02Z")
+        self.assertEqual(response.status_code, 400)
 
 
 class ValidateGraphTests(TestCase):
