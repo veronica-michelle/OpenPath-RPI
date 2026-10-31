@@ -17,13 +17,18 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: .
+      dockerfile: backend/Dockerfile
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend:/app
+      - ./data:/data:ro
     ports:
       - "8000:8000"
     environment:
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-true}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
       POSTGRES_DB: ${POSTGRES_DB:-openpath}
       POSTGRES_USER: ${POSTGRES_USER:-openpath}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-openpath}
