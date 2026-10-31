@@ -37,9 +37,6 @@ export default function RouteSummary({
         </svg>
         Elevation: {gain} ft ({route.steepness})
       </div>
-      {route.accessibility_notes?.map((note) => (
-        <p key={note} className="control-panel-hint">{note}</p>
-      ))}
 
       {active ? (
         <button type="button" className="route-summary-btn route-summary-btn-end" onClick={onEnd} data-no-pan>
