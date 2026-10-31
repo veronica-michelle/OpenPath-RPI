@@ -13,8 +13,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 
-from django.core.exceptions import ImproperlyConfigured
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,20 +21,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() in {"1", "true", "yes"}
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
-if not SECRET_KEY:
-    if not DEBUG:
-        raise ImproperlyConfigured("Set DJANGO_SECRET_KEY when DJANGO_DEBUG is false.")
-    SECRET_KEY = "django-insecure-local-development-only"
+SECRET_KEY = "django-insecure-u+8%n_)r#z2dzewhfq96mx41#11@=io4*7)g=nord6uhg6=-vi"
 
 # SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
 # `backend` is the upstream host used by the Vite proxy inside Compose.
-ALLOWED_HOSTS = [
-    host.strip()
-    for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,backend").split(",")
-    if host.strip()
-]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "backend"]
 
 
 # Application definition
@@ -67,13 +58,6 @@ MIDDLEWARE = [
 # Dev only: lets the frontend dev server (different port) call this API.
 # Tighten this to specific origins before deploying anywhere real.
 CORS_ALLOW_ALL_ORIGINS = DEBUG
-CORS_ALLOWED_ORIGINS = [
-    origin.strip()
-    for origin in os.environ.get("DJANGO_CORS_ORIGINS", "").split(",")
-    if origin.strip()
-]
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
 
 ROOT_URLCONF = "config.urls"
 
