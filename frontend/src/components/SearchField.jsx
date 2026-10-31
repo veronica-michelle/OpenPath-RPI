@@ -52,6 +52,10 @@ export default function SearchField({
 
   useEffect(() => {
     setText(value?.name ?? '');
+    // An external change (e.g. the swap button) can land while this field's
+    // own blur-commit timer is still pending from a moment ago; without this
+    // the stale timer fires afterward and overwrites the fresh value.
+    clearTimeout(blurTimer.current);
   }, [value]);
 
   const ranked = useMemo(
