@@ -30,6 +30,7 @@ class RouteResponseSerializer(serializers.Serializer):
     usedStairs = serializers.BooleanField()
     distanceFt = serializers.FloatField()
     total_distance_m = serializers.FloatField()
+    segmentDistancesFt = serializers.ListField(child=serializers.FloatField())
     elevationGainFt = serializers.FloatField()
     elevationLossFt = serializers.FloatField()
     minutes = serializers.IntegerField()

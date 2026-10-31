@@ -39,6 +39,27 @@ class RouteView(APIView):
                 status=400,
             )
 
+        for end, field in (("start", "start_id"), ("destination", "destination_id")):
+            entrance_id = data.get(f"{end}_entrance_id")
+            entrances = locations[data[field]].get("entrances", [])
+            if entrance_id and not any(item["id"] == entrance_id for item in entrances):
+                return Response(
+                    {"detail": f"Unknown {end} entrance for this building: {entrance_id!r}"},
+                    status=400,
+                )
+            entrance = next((item for item in entrances if item["id"] == entrance_id), None)
+            if entrance is None and entrances:
+                entrance = entrances[0]
+            features = entrance.get("features", {}) if entrance else {}
+            if data["avoid_stairs"] and features.get("stairs") and not features.get("ramp"):
+                return Response(
+                    {
+                        "detail": f"The selected {end} entrance has stairs and no recorded ramp. "
+                        "Choose another entrance or turn off Avoid stairs."
+                    },
+                    status=404,
+                )
+
         route = find_route(
             data["start_id"],
             data["destination_id"],
@@ -48,7 +69,11 @@ class RouteView(APIView):
         )
         if route is None:
             if construction_blocks_route(
-                data["start_id"], data["destination_id"], data["avoid_stairs"]
+                data["start_id"],
+                data["destination_id"],
+                data["avoid_stairs"],
+                start_entrance_id=data.get("start_entrance_id", ""),
+                destination_entrance_id=data.get("destination_entrance_id", ""),
             ):
                 detail = "Construction blocks prevent travel between these locations."
             else:

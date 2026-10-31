@@ -32,3 +32,6 @@ jobs:
 
       - name: Run tests
         run: python manage.py test
+
+      - name: Run conceptual routing scenarios
+        run: python -m unittest locations.conceptual_tests

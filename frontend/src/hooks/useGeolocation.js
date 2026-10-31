@@ -14,6 +14,7 @@ export default function useGeolocation() {
   const [error, setError] = useState(null);
   const [status, setStatus] = useState('idle');
   const watchId = useRef(null);
+  const watchFailed = useRef(false);
 
   const start = useCallback(() => {
     if (typeof navigator === 'undefined' || !navigator.geolocation) {
@@ -21,11 +22,16 @@ export default function useGeolocation() {
       setError('Location is not available in this browser.');
       return;
     }
-    if (watchId.current != null) return;
+    if (watchId.current != null && !watchFailed.current) return;
+    if (watchId.current != null) navigator.geolocation.clearWatch(watchId.current);
+    watchId.current = null;
+    watchFailed.current = false;
+    setError(null);
 
     setStatus((s) => (s === 'ready' ? s : 'locating'));
     watchId.current = navigator.geolocation.watchPosition(
       (pos) => {
+        watchFailed.current = false;
         setPosition({
           lat: pos.coords.latitude,
           lng: pos.coords.longitude,
@@ -36,6 +42,8 @@ export default function useGeolocation() {
         setStatus('ready');
       },
       (err) => {
+        watchFailed.current = true;
+        setPosition(null);
         setStatus(err.code === 1 ? 'denied' : 'error');
         setError(err.message);
       },

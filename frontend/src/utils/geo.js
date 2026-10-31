@@ -16,7 +16,7 @@ export function haversineFeet(a, b) {
   const dPhi = toRad(b.lat - a.lat);
   const dLambda = toRad(b.lng - a.lng);
   const h = Math.sin(dPhi / 2) ** 2 + Math.cos(p1) * Math.cos(p2) * Math.sin(dLambda / 2) ** 2;
-  return 2 * EARTH_RADIUS_FT * Math.asin(Math.sqrt(h));
+  return 2 * EARTH_RADIUS_FT * Math.asin(Math.sqrt(Math.min(1, Math.max(0, h))));
 }
 
 // Initial great-circle bearing from a to b, compass convention (0 = north).
@@ -43,12 +43,12 @@ export function pathLengthFeet(points) {
 
 // Walks a lat/lng polyline by total-length fraction t (0..1), returning the
 // interpolated position and the compass bearing of the segment it's on.
-export function sampleAlongPathGeo(points, t) {
+export function sampleAlongPathGeo(points, t, segmentDistancesFt) {
   if (points.length < 2) return { pos: points[0] ?? { lat: 0, lng: 0 }, heading: 0 };
   const segLens = [];
   let total = 0;
   for (let i = 1; i < points.length; i += 1) {
-    const len = haversineFeet(points[i - 1], points[i]);
+    const len = segmentDistancesFt?.[i - 1] ?? haversineFeet(points[i - 1], points[i]);
     segLens.push(len);
     total += len;
   }
@@ -87,26 +87,27 @@ export function boundsOfLatLng(points, padFt = 0) {
 // and returns how far along the route (in feet) that spot is — this is
 // what lets real, noisy GPS fixes (which won't sit exactly on the line)
 // still drive progress along a known path.
-export function nearestPointOnRoute(userPos, points) {
+export function nearestPointOnRoute(userPos, points, segmentDistancesFt) {
   let best = { distFt: Infinity, traveledFt: 0, snapped: points[0] };
   let cumulativeFt = 0;
 
   for (let i = 0; i < points.length - 1; i++) {
     const a = points[i];
     const b = points[i + 1];
-    const segLenFt = haversineFeet(a, b);
+    const segLenFt = segmentDistancesFt?.[i] ?? haversineFeet(a, b);
 
     // Project userPos onto segment a→b using simple lat/lng as flat-plane
     // approximation (fine at this scale — a few hundred feet).
     const abLat = b.lat - a.lat;
-    const abLng = b.lng - a.lng;
+    const longitudeScale = Math.cos(toRad((a.lat + b.lat) / 2));
+    const abLng = (b.lng - a.lng) * longitudeScale;
     const apLat = userPos.lat - a.lat;
-    const apLng = userPos.lng - a.lng;
+    const apLng = (userPos.lng - a.lng) * longitudeScale;
     const abLenSq = abLat * abLat + abLng * abLng;
     let t = abLenSq === 0 ? 0 : (apLat * abLat + apLng * abLng) / abLenSq;
     t = Math.max(0, Math.min(1, t));
 
-    const projected = { lat: a.lat + abLat * t, lng: a.lng + abLng * t };
+    const projected = lerpLatLng(a, b, t);
     const distFt = haversineFeet(userPos, projected);
 
     if (distFt < best.distFt) {
