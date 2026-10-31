@@ -18,7 +18,6 @@ from rest_framework.test import APITestCase
 from . import graph as graph_module
 from .validate_graph import validate
 
-
 # These contrived examples cover a direct stair path, a regular detour, and a closed path.
 LOCATIONS_DATA = {
     "L01": {
@@ -153,14 +152,18 @@ PATHS_DATA = {
     },
 }
 
+
 # Load a fresh copy of the data so that tests cannot modify shared examples
 def make_graph():
-    with patch(
-        "locations.graph.Path.open",
-        mock_open(),
-    ), patch(
-        "locations.graph.json.load",
-        side_effect=[copy.deepcopy(LOCATIONS_DATA), copy.deepcopy(PATHS_DATA)],
+    with (
+        patch(
+            "locations.graph.Path.open",
+            mock_open(),
+        ),
+        patch(
+            "locations.graph.json.load",
+            side_effect=[copy.deepcopy(LOCATIONS_DATA), copy.deepcopy(PATHS_DATA)],
+        ),
     ):
         return graph_module.load_graph("locations.json", "paths.json")
 
@@ -177,11 +180,13 @@ class ControlledGraphAPITestCase(APITestCase):
         self.addCleanup(graph_patch.stop)
         self.addCleanup(view_map_patch.stop)
 
+
 # Check that the loader appropriately generates a graph from the node and edge JSON files
 class GraphLoaderTests(TestCase):
     def load_files(self, locations, paths):
-        with patch("locations.graph.Path.open", mock_open()), patch(
-            "locations.graph.json.load", side_effect=[locations, paths]
+        with (
+            patch("locations.graph.Path.open", mock_open()),
+            patch("locations.graph.json.load", side_effect=[locations, paths]),
         ):
             return graph_module.load_graph("locations.json", "paths.json")
 
@@ -220,6 +225,7 @@ class GraphLoaderTests(TestCase):
         with self.assertRaisesRegex(ValueError, "needs at least one entrance"):
             self.load_files(locations, copy.deepcopy(PATHS_DATA))
 
+
 # Check the API endpoint used to draw the map.
 class MapGraphViewTests(ControlledGraphAPITestCase):
     def test_returns_nodes_and_edges_with_valid_endpoints(self):
@@ -229,10 +235,7 @@ class MapGraphViewTests(ControlledGraphAPITestCase):
         node_ids = {node["id"] for node in response.data["nodes"]}
         self.assertTrue(any(node["type"] == "path" for node in response.data["nodes"]))
         self.assertTrue(
-            all(
-                edge["a"] in node_ids and edge["b"] in node_ids
-                for edge in response.data["edges"]
-            )
+            all(edge["a"] in node_ids and edge["b"] in node_ids for edge in response.data["edges"])
         )
 
 
@@ -248,6 +251,7 @@ class LocationListViewTests(ControlledGraphAPITestCase):
         self.assertTrue(all("entrances" in location for location in response.data))
 
     # Check route requests for ordinary, blocked, and invalid trips.
+
 
 class RouteViewTests(ControlledGraphAPITestCase):
     def route(self, **overrides):

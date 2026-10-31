@@ -58,7 +58,7 @@ def _get_graph(locations_path, paths_path, locations_modified, paths_modified):
     return {**graph, "edges": edges}
 
 
-# Maintains elevation in meters and in feet value 
+# Maintains elevation in meters and in feet value
 def _point_fields(point):
     lat, lng = point["coordinates"]
     return {
@@ -69,14 +69,17 @@ def _point_fields(point):
         "elevation": point["elevation"] * FEET_PER_METER,
     }
 
+
 """Turns the 2 saved objects into the node and edge lists used by routes.
 Edges connect building IDs or path-point IDs. A building starts at its first
 entrance unless the request names another entrance. Feature, details, and other
 saved fields remain attached to the returned items. If a path has no distance,
 the route finder estimates a distance from its endpoints' locations.
 """
+
+
 def load_graph(locations_path, paths_path):
-    
+
     with Path(locations_path).open(encoding="utf-8") as locations_file:
         locations = json.load(locations_file)
     with Path(paths_path).open(encoding="utf-8") as paths_file:
