@@ -1,0 +1,51 @@
+{
+  "description": "Walking path graph connecting the RPI Freshman 5 dorms (Bray, Cary, Crockett, Hall, Nason) to Davison Hall and Nugent Hall on Freshman Hill.",
+  "nodes": [
+    {"id": "bray",     "name": "Bray Hall",     "map_id": 48, "group": "Freshman 5", "lat": 42.7305, "lng": -73.6693},
+    {"id": "cary",     "name": "Cary Hall",     "map_id": 47, "group": "Freshman 5", "lat": 42.7303, "lng": -73.6697},
+    {"id": "crockett", "name": "Crockett Hall", "map_id": 40, "group": "Freshman 5", "lat": 42.7299, "lng": -73.6704},
+    {"id": "hall",     "name": "Hall Hall",     "map_id": 46, "group": "Freshman 5", "lat": 42.7301, "lng": -73.6700},
+    {"id": "nason",    "name": "Nason Hall",    "map_id": 41, "group": "Freshman 5", "lat": 42.7297, "lng": -73.6708},
+    {"id": "hub",      "name": "Freshman Hill walkway junction (near Commons Dining Hall)", "map_id": 39, "group": "waypoint", "lat": 42.7300, "lng": -73.6711},
+    {"id": "davison",  "name": "Davison Hall",  "map_id": 42, "group": "Destination", "lat": 42.7294, "lng": -73.6716},
+    {"id": "nugent",   "name": "Nugent Hall",   "map_id": 44, "group": "Destination", "lat": 42.7291, "lng": -73.6720}
+  ],
+  "edges": [
+    {"from": "bray",     "to": "cary",     "distance_m": 45},
+    {"from": "cary",     "to": "hall",     "distance_m": 40},
+    {"from": "hall",     "to": "crockett", "distance_m": 50},
+    {"from": "crockett", "to": "nason",    "distance_m": 45},
+    {"from": "nason",    "to": "hub",      "distance_m": 40},
+    {"from": "crockett", "to": "hub",      "distance_m": 55},
+    {"from": "hub",      "to": "davison",  "distance_m": 70},
+    {"from": "davison",  "to": "nugent",   "distance_m": 45}
+  ],
+  "path": {
+    "order": ["bray", "cary", "hall", "crockett", "nason", "hub", "davison", "nugent"],
+    "total_distance_m": 335,
+    "geojson": {
+      "type": "Feature",
+      "properties": {"name": "Freshman 5 to Davison and Nugent"},
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-73.6693, 42.7305],
+          [-73.6697, 42.7303],
+          [-73.6700, 42.7301],
+          [-73.6704, 42.7299],
+          [-73.6708, 42.7297],
+          [-73.6711, 42.7300],
+          [-73.6716, 42.7294],
+          [-73.6720, 42.7291]
+        ]
+      }
+    }
+  },
+  "per_dorm_routes": {
+    "bray":     ["bray", "cary", "hall", "crockett", "nason", "hub", "davison", "nugent"],
+    "cary":     ["cary", "hall", "crockett", "nason", "hub", "davison", "nugent"],
+    "hall":     ["hall", "crockett", "hub", "davison", "nugent"],
+    "crockett": ["crockett", "hub", "davison", "nugent"],
+    "nason":    ["nason", "hub", "davison", "nugent"]
+  }
+}
