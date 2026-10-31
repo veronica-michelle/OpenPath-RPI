@@ -416,12 +416,18 @@ export default function BoardMap({
             label area, so clicking near a pin's name still pans the map */}
         {buildings.map((b) => {
           const kind = b.id === startId ? 'start' : b.id === endId ? 'end' : onNode?.has(b.id) ? 'transit' : 'idle';
+          // Leaflet stacks overlapping markers by latitude by default, which
+          // has nothing to do with which pin is actually selected — a nearby
+          // idle pin could out-rank a chosen start/end pin and silently eat
+          // its clicks. Force selection state to win the stacking order.
+          const zIndexOffset = kind === 'start' || kind === 'end' ? 1000 : kind === 'transit' ? 500 : 0;
           return (
             <Marker
               key={b.id}
               alt={b.name}
               position={[b.lat, b.lng]}
               icon={buildPinIcon(kind, b.name)}
+              zIndexOffset={zIndexOffset}
               eventHandlers={onPinClick ? { click: () => onPinClick(b) } : undefined}
             />
           );
