@@ -74,6 +74,12 @@ export default function SearchField({
     setOpen(false);
   }, [onChange]);
 
+  const clear = useCallback(() => {
+    onChange(null);
+    setText('');
+    setOpen(false);
+  }, [onChange]);
+
   const handleInput = useCallback((e) => {
     const next = e.target.value;
     setText(next);
@@ -152,6 +158,22 @@ export default function SearchField({
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
       />
+      {text !== '' && (
+        <button
+          type="button"
+          className="search-clear"
+          aria-label={`Clear ${label.toLowerCase()}`}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            clearTimeout(blurTimer.current);
+          }}
+          onClick={clear}
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 5l14 14M19 5L5 19" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          </svg>
+        </button>
+      )}
       {open && (options.length > 0 || showNearest) && (
         <ul
           id={listId}
