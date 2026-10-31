@@ -15,5 +15,5 @@
     #steps:
       #- uses: actions/checkout@v4
 
-      #- name: 70 Character lines
+      #- name: 100 Character lines
       #-
