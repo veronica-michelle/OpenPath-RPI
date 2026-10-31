@@ -1,4 +1,0 @@
-# Optional dependencies for the historical Excel audit (not used by Django).
--r requirements.txt
-pandas==3.0.1
-openpyxl==3.1.5
