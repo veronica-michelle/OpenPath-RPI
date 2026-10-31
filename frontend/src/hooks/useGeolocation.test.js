@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { renderHook, act, cleanup } from '@testing-library/react';
 import useGeolocation from './useGeolocation.js';
 
 const watchPosition = vi.fn();
@@ -16,6 +16,8 @@ function setGeolocation(value) {
 const successCb = () => watchPosition.mock.calls[0][0];
 const errorCb = () => watchPosition.mock.calls[0][1];
 
+afterEach(cleanup);
+
 beforeEach(() => {
   watchPosition.mockReset();
   clearWatch.mockReset();
@@ -24,6 +26,25 @@ beforeEach(() => {
 });
 
 describe('useGeolocation', () => {
+  it('restarts a failed watch when the user retries', () => {
+    const { result } = renderHook(() => useGeolocation());
+    act(() => result.current.start());
+    act(() => errorCb()({ code: 3, message: 'Timeout expired' }));
+    act(() => result.current.start());
+    expect(clearWatch).toHaveBeenCalledWith(42);
+    expect(watchPosition).toHaveBeenCalledTimes(2);
+    expect(result.current.status).toBe('locating');
+    expect(result.current.error).toBeNull();
+  });
+
+  it('removes a stale fix when location permission is denied', () => {
+    const { result } = renderHook(() => useGeolocation());
+    act(() => result.current.start());
+    act(() => successCb()({ coords: { latitude: 42.73, longitude: -73.68, accuracy: 5 } }));
+    act(() => errorCb()({ code: 1, message: 'Permission revoked' }));
+    expect(result.current.position).toBeNull();
+    expect(result.current.status).toBe('denied');
+  });
   it('starts idle with no position', () => {
     const { result } = renderHook(() => useGeolocation());
     expect(result.current.status).toBe('idle');
