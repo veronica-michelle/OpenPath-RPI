@@ -403,6 +403,32 @@
   background: repeating-linear-gradient(to bottom, var(--map-border-strong) 0 3px, transparent 3px 6px);
 }
 
+.swap-button {
+  /* A normal row below everything else in the fields column (not absolutely
+     positioned over a field), so it can never sit behind or overlap either
+     search box regardless of how tall the entrance pickers make the column. */
+  align-self: center;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--map-field);
+  border: 1.5px solid var(--map-border-strong);
+  color: var(--ink-dim);
+  transition: background 160ms var(--ease-board), color 160ms var(--ease-board), border-color 160ms var(--ease-board), transform 160ms var(--ease-board);
+}
+.swap-button:hover {
+  background: var(--map-accent-soft);
+  color: var(--map-accent);
+  border-color: rgba(26, 115, 232, 0.28);
+}
+.swap-button:active {
+  transform: scale(0.92);
+}
+
 .control-panel-hint {
   margin: 0;
   font-size: 12px;

@@ -8,6 +8,7 @@ export default function ControlPanel({
   end,
   onStartChange,
   onEndChange,
+  onSwap,
   startEntranceId,
   onStartEntranceChange,
   endEntranceId,
@@ -66,6 +67,21 @@ export default function ControlPanel({
           selectedId={endEntranceId}
           onChange={onEndEntranceChange}
         />
+        {(start || end) && (
+          <button
+            type="button"
+            className="swap-button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={onSwap}
+            aria-label="Swap starting point and destination"
+            data-no-pan
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M7 4v13M7 4 3 8M7 4l4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M17 20V7M17 20l4-4M17 20l-4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        )}
       </div>
 
       {locationStatus === 'denied' && (
