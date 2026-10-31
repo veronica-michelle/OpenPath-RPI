@@ -598,6 +598,17 @@
   color: var(--ink-dim);
   transition: background 160ms var(--ease-board), color 160ms var(--ease-board), border-color 160ms var(--ease-board);
 }
+.entrance-chip.is-accessible {
+  color: var(--accessible);
+}
+.entrance-chip.is-inaccessible {
+  background: var(--alert-soft);
+  color: var(--alert);
+}
+.entrance-chip.is-unverified {
+  color: var(--ink-faint);
+}
+
 .entrance-chip.is-active {
   background: var(--map-accent-soft);
   color: var(--map-accent);
