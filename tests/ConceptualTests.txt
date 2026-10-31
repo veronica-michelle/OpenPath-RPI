@@ -17,3 +17,14 @@ path inaccessible. Look at map.jpg as the map for the data file.
 6. Attempt to reach Node Z from any other Node. This is a check for an impossible
    route without any construction blocks as the cause. Display an error message
    conveying the failure to find an available route for the user.
+Part 2: Advanced Conceptual Tests - Working with entrances and paths of different properties
+Represented by AdvConceptualGraph.jpg
+7. Attempt to find a path from Node J to Node L while avoiding stairs. It should display an error
+   that the location cannot be reached without stairs. Simple test of the avoidance property.
+8. Attempt to find a path from Node G to Node I while avoiding stairs. This valid path should
+   acknowledge that the shorter paths aren't usable due to the stair restrictions across their
+   paths, and go to from Nodes G to J to I.
+9. Attempt to find a path from Node E to Node Y, with and without the avoid stairs toggle. This
+   is a test that the addition of new features hasn't overridden the priority of avoiding closed
+   paths.
+ 
