@@ -105,6 +105,7 @@ export default function BoardMap({
   userPosition,
   locationStatus,
   onRequestLocation,
+  onPinClick,
 }) {
   const nodesById = useMemo(() => Object.fromEntries(graphNodes.map((node) => [node.id, node])), [graphNodes]);
   const mapRef = useRef(null);
@@ -395,10 +396,19 @@ export default function BoardMap({
           />
         ))}
 
-        {/* building pins */}
+        {/* building pins — clickable when not mid-navigation; only the pin
+            glyph itself is hit-testable (see .pin-icon-svg), not the wider
+            label area, so clicking near a pin's name still pans the map */}
         {buildings.map((b) => {
           const kind = b.id === startId ? 'start' : b.id === endId ? 'end' : onNode?.has(b.id) ? 'transit' : 'idle';
-          return <Marker key={b.id} position={[b.lat, b.lng]} icon={buildPinIcon(kind, b.name)} interactive={false} />;
+          return (
+            <Marker
+              key={b.id}
+              position={[b.lat, b.lng]}
+              icon={buildPinIcon(kind, b.name)}
+              eventHandlers={onPinClick ? { click: () => onPinClick(b) } : undefined}
+            />
+          );
         })}
 
         {(navigating || liveTracking) && route && (
