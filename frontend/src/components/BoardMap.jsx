@@ -87,7 +87,7 @@ const PUCK_ICON = L.divIcon({
 function MapInstanceBridge({ onReady }) {
   const map = useMap();
   useEffect(() => {
-    onReady(map);
+    return onReady(map);
   }, [map, onReady]);
   return null;
 }
@@ -121,17 +121,24 @@ export default function BoardMap({
   const handleMapReady = useCallback((map) => {
     mapRef.current = map;
     const container = map.getContainer();
+    let cooldownTimer;
     const onWheel = (e) => {
       e.preventDefault();
       if (wheelCooldown.current) return;
       wheelCooldown.current = true;
       const targetZoom = map.getZoom() + (e.deltaY < 0 ? WHEEL_ZOOM_STEP : -WHEEL_ZOOM_STEP);
       map.setZoom(targetZoom, { animate: true });
-      setTimeout(() => {
+      cooldownTimer = setTimeout(() => {
         wheelCooldown.current = false;
       }, WHEEL_COOLDOWN_MS);
     };
     container.addEventListener('wheel', onWheel, { passive: false });
+    return () => {
+      container.removeEventListener('wheel', onWheel);
+      clearTimeout(cooldownTimer);
+      wheelCooldown.current = false;
+      mapRef.current = null;
+    };
   }, []);
 
   // Fit the whole pilot area on mount, and fit the resolved route whenever
@@ -141,6 +148,7 @@ export default function BoardMap({
     const map = mapRef.current;
     if (!map) return;
     const points = route ? route.points : buildings;
+    if (!points.length) return;
     const bounds = L.latLngBounds(points.map((p) => [p.lat, p.lng]));
     const mobile = map.getSize().x <= 640;
     map.fitBounds(bounds, {
@@ -172,7 +180,7 @@ export default function BoardMap({
     const map = mapRef.current;
     if (!navigating || !route || !map || route.points.length < 2) return undefined;
 
-    const totalLen = pathLengthFeet(route.points);
+    const totalLen = route.distanceFt ?? pathLengthFeet(route.points);
     const duration = Math.min(45, Math.max(8, totalLen / NAV_FT_PER_SEC));
     const start = performance.now();
     let lastCameraAt = 0;
@@ -181,7 +189,7 @@ export default function BoardMap({
     const frame = (now) => {
       const elapsed = (now - start) / 1000;
       const t = Math.min(1, elapsed / duration);
-      const { pos, heading } = sampleAlongPathGeo(route.points, t);
+      const { pos, heading } = sampleAlongPathGeo(route.points, t, route.segmentDistancesFt);
 
       if (puckMarkerRef.current) {
         puckMarkerRef.current.setLatLng([pos.lat, pos.lng]);
@@ -255,7 +263,14 @@ export default function BoardMap({
       map.setView(virtualCenter, NAV_ZOOM, { animate: true, duration: 0.3 });
     }
 
-    const { traveledFt } = nearestPointOnRoute({ lat, lng }, route.points);
+    const { traveledFt, distFt } = nearestPointOnRoute(
+      { lat, lng }, route.points, route.segmentDistancesFt,
+    );
+    // A far-away fix must not announce arrival by projecting onto the route's end.
+    if (distFt > Math.max(100, (userPosition.accuracy ?? 0) * 3.28084)) {
+      setInstruction({ type: 'off-route' });
+      return;
+    }
     setInstruction(currentInstruction(maneuvers, traveledFt));
   }, [liveTracking, userPosition, route, maneuvers]);
 
@@ -267,7 +282,7 @@ export default function BoardMap({
     wasNavigating.current = isNavLike;
   }, [navigating, liveTracking, fitOverview]);
 
-  const initialNode = nodesById.carnegie ?? graphNodes[0];
+  const initialNode = nodesById.carnegie ?? graphNodes[0] ?? { lat: 42.73, lng: -73.68 };
   const initialCenter = [initialNode.lat, initialNode.lng];
 
   const flyToUser = useCallback((pos) => {
@@ -325,7 +340,7 @@ export default function BoardMap({
         {/* idle walkway network */}
         {graphEdges.map((edge) => (
           <Polyline
-            key={`${edge.a}-${edge.b}`}
+            key={edge.id ?? `${edge.a}-${edge.b}-${edge.type}`}
             positions={[
               [nodesById[edge.a].lat, nodesById[edge.a].lng],
               [nodesById[edge.b].lat, nodesById[edge.b].lng],
@@ -404,6 +419,7 @@ export default function BoardMap({
           return (
             <Marker
               key={b.id}
+              alt={b.name}
               position={[b.lat, b.lng]}
               icon={buildPinIcon(kind, b.name)}
               eventHandlers={onPinClick ? { click: () => onPinClick(b) } : undefined}

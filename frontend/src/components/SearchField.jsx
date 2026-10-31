@@ -20,7 +20,14 @@ function matchBuildings(buildings, query, excludeId) {
 function withDistance(buildings, origin) {
   if (!origin) return buildings.map((b) => ({ ...b, distanceFt: null }));
   return buildings
-    .map((b) => ({ ...b, distanceFt: haversineFeet(origin, b) }))
+    .map((b) => {
+      const candidates = b.entrances?.length ? b.entrances : [b];
+      const nearest = candidates.reduce((best, entrance) => {
+        const distanceFt = haversineFeet(origin, entrance);
+        return !best || distanceFt < best.distanceFt ? { entrance, distanceFt } : best;
+      }, null);
+      return { ...b, distanceFt: nearest.distanceFt, nearestEntranceId: nearest.entrance.id };
+    })
     .sort((a, b) => a.distanceFt - b.distanceFt);
 }
 
@@ -57,6 +64,9 @@ export default function SearchField({
   const showNearest = Boolean(showNearestShortcut && userPosition && nearest && queryEmpty && open);
   const options = ranked;
   const rowCount = options.length + (showNearest ? 1 : 0);
+  const highlightedIndex = Math.min(activeIndex, Math.max(rowCount - 1, 0));
+
+  useEffect(() => () => clearTimeout(blurTimer.current), []);
 
   const commit = useCallback((building) => {
     onChange(building);
@@ -73,6 +83,7 @@ export default function SearchField({
   }, [onChange]);
 
   const handleFocus = useCallback(() => {
+    clearTimeout(blurTimer.current);
     setOpen(true);
     onNeedLocation?.();
   }, [onNeedLocation]);
@@ -80,16 +91,17 @@ export default function SearchField({
   const handleBlur = useCallback(() => {
     blurTimer.current = setTimeout(() => {
       setOpen(false);
-      const exact = buildings.find((b) => b.name.toLowerCase() === text.trim().toLowerCase());
+      const exact = buildings.find((b) => b.id !== excludeId && b.name.toLowerCase() === text.trim().toLowerCase());
       if (exact) {
-        commit(exact);
+        if (exact.id !== value?.id) commit(exact);
+        else setText(value.name);
       } else if (text.trim() === '') {
         onChange(null);
       } else {
         setText(value?.name ?? '');
       }
     }, 120);
-  }, [buildings, commit, onChange, text, value]);
+  }, [buildings, commit, excludeId, onChange, text, value]);
 
   const activateRow = useCallback((index) => {
     if (showNearest && index === 0) {
@@ -110,12 +122,12 @@ export default function SearchField({
       setActiveIndex((i) => Math.max(i - 1, 0));
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      if (open) activateRow(activeIndex);
+      if (open) activateRow(highlightedIndex);
     } else if (e.key === 'Escape') {
       setOpen(false);
       setText(value?.name ?? '');
     }
-  }, [activateRow, activeIndex, open, rowCount, value]);
+  }, [activateRow, highlightedIndex, open, rowCount, value]);
 
   return (
     <div className={`search-field${open ? ' is-open' : ''}`} data-no-pan>
@@ -129,9 +141,9 @@ export default function SearchField({
         type="text"
         role="combobox"
         aria-expanded={open}
-        aria-controls={listId}
+        aria-controls={open && rowCount > 0 ? listId : undefined}
         aria-autocomplete="list"
-        aria-activedescendant={open ? `${listId}-row-${activeIndex}` : undefined}
+        aria-activedescendant={open && rowCount > 0 ? `${listId}-row-${highlightedIndex}` : undefined}
         autoComplete="off"
         placeholder={placeholder}
         value={text}
@@ -154,8 +166,8 @@ export default function SearchField({
             <li
               id={`${listId}-row-0`}
               role="option"
-              aria-selected={activeIndex === 0}
-              className={`search-option search-option-nearest${activeIndex === 0 ? ' is-active' : ''}`}
+              aria-selected={highlightedIndex === 0}
+              className={`search-option search-option-nearest${highlightedIndex === 0 ? ' is-active' : ''}`}
               onMouseEnter={() => setActiveIndex(0)}
               onClick={() => commit(nearest)}
             >
@@ -173,8 +185,8 @@ export default function SearchField({
                 key={b.id}
                 id={`${listId}-row-${row}`}
                 role="option"
-                aria-selected={activeIndex === row}
-                className={`search-option${activeIndex === row ? ' is-active' : ''}`}
+                aria-selected={highlightedIndex === row}
+                className={`search-option${highlightedIndex === row ? ' is-active' : ''}`}
                 onMouseEnter={() => setActiveIndex(row)}
                 onClick={() => commit(b)}
               >

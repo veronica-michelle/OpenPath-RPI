@@ -16,7 +16,7 @@ export default function EntrancePicker({ label, entrances, selectedId, onChange 
             onClick={() => onChange(entrance.id)}
             aria-pressed={entrance.id === selectedId}
           >
-            {entrance.wheelchair && (
+            {entrance.accessible === true && (
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <circle cx="12" cy="4" r="2" fill="currentColor" />
                 <path
@@ -29,7 +29,7 @@ export default function EntrancePicker({ label, entrances, selectedId, onChange 
                 />
               </svg>
             )}
-            {entrance.label}
+            {entrance.label || entrance.id}
           </button>
         ))}
       </div>

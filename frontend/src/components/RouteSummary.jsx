@@ -5,6 +5,7 @@ export default function RouteSummary({
   destinationName,
   navigating,
   liveTracking,
+  locationStatus,
   onStart,
   onStartLive,
   onEnd,
@@ -36,6 +37,9 @@ export default function RouteSummary({
         </svg>
         Elevation: {gain} ft ({route.steepness})
       </div>
+      {route.accessibility_notes?.map((note) => (
+        <p key={note} className="control-panel-hint">{note}</p>
+      ))}
 
       {active ? (
         <button type="button" className="route-summary-btn route-summary-btn-end" onClick={onEnd} data-no-pan>
@@ -46,8 +50,8 @@ export default function RouteSummary({
           <button type="button" className="route-summary-btn route-summary-btn-start" onClick={onStart} data-no-pan>
             Preview
           </button>
-          <button type="button" className="route-summary-btn route-summary-btn-live" onClick={onStartLive} data-no-pan>
-            Start
+          <button type="button" className="route-summary-btn route-summary-btn-live" onClick={onStartLive} disabled={locationStatus === 'locating'} data-no-pan>
+            {locationStatus === 'locating' ? 'Finding your location…' : 'Start'}
           </button>
         </div>
       )}

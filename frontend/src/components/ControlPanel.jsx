@@ -88,6 +88,11 @@ export default function ControlPanel({
           Nearby entrances are listed closest first.
         </p>
       )}
+      {locationStatus === 'error' && (
+        <p className="control-panel-hint" role="status">
+          Your location could not be found. Try the location button again or choose a starting point.
+        </p>
+      )}
 
       <StairsToggle checked={avoidStairs} onChange={onAvoidStairsChange} />
 
