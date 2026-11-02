@@ -1,6 +1,6 @@
 # JSON Data Structure
 
-The purpose of this README.md is to explain the thought process and reasoning for the structure of a *potential* JSON file format detailing the necessary information on nodes (either location or pathpoints) and edges (the distance between nodes).
+The purpose of this README is to explain the thought process and reasoning for the structure of the JSON file format detailing the necessary information on nodes (either location or pathpoints) and edges (the distance between nodes). Regarding edges, a distance formula has been proposed when calculating the distance. It also says what formula is to be used for the gradients.
 
 Originally the layout for both files (`locations.json` and `paths.json`) were based off the given workflow (`workflow.jpg`). That structure was then revised and is continuously being revised due to remarks by team members regarding future use of this project and scaling.
 
@@ -113,6 +113,39 @@ There is no viable way to automate the second part, unless there is something ni
 > [!NOTE]
 > Like mentioned previously, distance will also be in metric units (meters). And regarding the gradient for both nodes and edges, they will be in degrees.
 
+## Distance Formula
+
+The previous project, [RPI Atlas](https://github.com/rgtdthrd/RPI-Atlas), used the Haversine distance. However, as the campus spans a variety of numbers (265, 275, and 295 acres) on various sites, if we capped it at 300 acres, it would be roughly 1.21405 km^2. Which, if we assumed a perfect square, would mean the length of the campus is around ~1.10184 km.
+
+The point is, RPI is way to small to justify using the Haversine formula which is used for finding distance with the assumption that Earth is a perfect sphere. RPI is not big enough for curves to even impact distance calculations. Therefore, I suggest the Euclidean distance formula, specifically for 3D spaces to account for elevation.
+
+For the coordinates to work, they need to be converted to meters from degrees. A scale factor for both latitude and longitude are required, based on a center. Considering potential scalability of this project, I have set the center to be the bridge connecting the main campus and freshman hill (42.7293334, -73.6776311)
+
+Using length of one degree of latitude and longitude as shown on Table 7 in the [National Geospatial-Intelligence Agency American Practical Navigator (Vol. II, 2019)](https://www.dco.uscg.mil/Portals/9/NMC/pdfs/examinations/bowditch_Vol_2_2019.pdf) (pg. 130), the longitude scale factor is 111,093 m and the latitude scale factor is 81,541 m. This is going based off the 43th row on the table, which I got from rounding the latitude (42.7293334) to 43. Now, when calculating distances, the difference between the coordinates is multiplied by the scale factor, giving the actual distance in meters instead of degrees.
+
+Following the Cartesian plane, where longitude is $x$ and latitude is $y$, the math to get to the standard Euclidean formula for 2D is:
+
+$$
+\Delta x= \left(x_1-x_0 \right) * 111,093
+$$$$
+\Delta y= \left(y_1-y_0 \right) * 81,541
+$$$$
+Run= \sqrt{ \Delta x^2+ \Delta y^2}
+$$
+
+Afterwards, find the difference in elevation between the two points where $z$ represents elevation: $Rise=z_1-z_0$
+
+With both run and rise calculated (elevation will already be in meters, so no scale factor is required), both the distance and the gradient can be calculated with the 3D Euclidean and slope percentage formulas:
+
+$$
+d= \sqrt{Run^2+Rise^2}= \sqrt{ \Delta x^2+ \Delta y^2+ \Delta z^2}
+$$$$
+Gradient \ ( \%)= \left( \frac{Rise}{Run} \right) * 100
+$$
+
+> [!IMPORTANT]
+> While the JSON follows a latitude then longitude format, it's more common to have it as longitude first then latitude. Additionally, the distance formula described above follows that longitude, latitude format, associating longitude with x and latitude with y. Realistically, this should not cause too much of an issue as the only thing that differs is the scale factor. However, keep in mind of any potential reorderings to stick to the standard, either by me (Azrael Baram) or future maintainers.
+
 ## Thoughts and Future Planning
 
 Obviously, these formats should be approved however, I will still collect data as the information taken from [RPI Atlas](https://github.com/rgtdthrd/RPI-Atlas) is not entirely accurate (specifically building entrances are not marked themselves).
@@ -137,10 +170,12 @@ Link to similar past project: [RPI Atlas](https://github.com/rgtdthrd/RPI-Atlas)
 
 Link to the xlsx of the RPI Atlas data: [ATLAS_Graph_Data.xlsx](ATLAS_Graph_Data.xlsx)
 
+Link to the National Geospatial-Intelligence Agency (NGA), "American Practical Navigator" (Bowditch), Pub. No. 9, Vol. II, 2019 Edition: https://www.dco.uscg.mil/Portals/9/NMC/pdfs/examinations/bowditch_Vol_2_2019.pdf
+
 ## Contributor Information
 
 Contributor: Azrael Baram ([azzybar](https://github.com/azzybar/OpenPath-RPI))
 
 Upstream Repo: [OpenPath-RPI](https://github.com/veronica-michelle/OpenPath-RPI)
 
-Updated: 16 October 2026
+Updated: 02 November 2026
