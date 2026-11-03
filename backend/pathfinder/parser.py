@@ -138,6 +138,7 @@ for line in fp2:
         final = Connection(helper[0],helper[1],helper[2],float(helper[3]),helper[4])
         allconnections[helper[0]] = final
         G.add_edge(helper[1],helper[2])
+        list(G.adj[helper[1]])
     i = 0
 
 
@@ -153,10 +154,18 @@ for line in fp2:
 
 
 
+#start = input("starting point here: ")
+#end = input("ending point here: ")
+#restrictions = input("restrictions: ")
+
+#done = False
 
 
 
+#print(list(G.nodes))
 
+#print(list(G.edges))
+print(list(G.edges)[0]) # this works exactley how you think it does
 
 
 
