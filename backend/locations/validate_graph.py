@@ -10,6 +10,7 @@ Report only: intentional disconnected areas (all-mock) and locations that
 can only be reached by stairs.
 """
 
+import math
 import sys
 from collections import Counter
 from pathlib import Path
@@ -47,7 +48,7 @@ def components(graph, skip_edge_types=()):
 
 
 def _duplicates(values):
-    return sorted(value for value, count in Counter(values).items() if count > 1)
+    return sorted((value for value, count in Counter(values).items() if count > 1), key=repr)
 
 
 def validate(graph):
@@ -69,6 +70,16 @@ def validate(graph):
             errors.append(f"node {node.get('id')}: unknown type {node.get('type')!r}")
         if "lat" not in node or "lng" not in node:
             errors.append(f"node {node.get('id')}: missing lat/lng")
+        else:
+            for field, limit in (("lat", 90), ("lng", 180)):
+                value = node[field]
+                if (
+                    isinstance(value, bool)
+                    or not isinstance(value, (int, float))
+                    or not math.isfinite(value)
+                    or abs(value) > limit
+                ):
+                    errors.append(f"node {node.get('id')}: invalid {field}")
         if node.get("type") == "location" and not node.get("entrances"):
             errors.append(f"building {node.get('id')}: has no entrances")
         for entrance in node.get("entrances", []):
@@ -96,6 +107,14 @@ def validate(graph):
             errors.append(f"{label}: connects a node to itself")
         if edge.get("type") not in EDGE_TYPES:
             errors.append(f"{label}: unknown type {edge.get('type')!r}")
+        distance = edge.get("dist")
+        if distance is not None and (
+            isinstance(distance, bool)
+            or not isinstance(distance, (int, float))
+            or not math.isfinite(distance)
+            or distance < 0
+        ):
+            errors.append(f"{label}: distance must be a finite nonnegative number or null")
         edge_keys.append((frozenset((edge.get("a"), edge.get("b"))), edge.get("type")))
     for pair, edge_type in _duplicates(edge_keys):
         errors.append(f"duplicate {edge_type} edge between {' and '.join(sorted(pair))}")
@@ -150,7 +169,11 @@ def main(argv):
         return 1
     locations_path = Path(argv[1]) if len(argv) == 3 else LOCATIONS_PATH
     paths_path = Path(argv[2]) if len(argv) == 3 else PATHS_PATH
-    graph = load_graph(locations_path, paths_path)
+    try:
+        graph = load_graph(locations_path, paths_path)
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        print(f"Could not load map data: {error}")
+        return 1
 
     errors, notes = validate(graph)
     entrance_count = sum(len(node.get("entrances", [])) for node in graph.get("nodes", []))

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { bearingBetween, nearestPointOnRoute, haversineFeet } from './geo.js';
+import { bearingBetween, nearestPointOnRoute, haversineFeet, sampleAlongPathGeo } from './geo.js';
 
 const a = { lat: 42.73, lng: -73.68 };
 const north = { lat: 42.731, lng: -73.68 };
@@ -78,6 +78,9 @@ describe('nearestPointOnRoute edge cases', () => {
 });
 
 describe('haversineFeet', () => {
+  it('stays finite for antipodal coordinates', () => {
+    expect(Number.isFinite(haversineFeet({ lat: 0, lng: 0 }, { lat: 0, lng: 180 }))).toBe(true);
+  });
   it('is 0 for the same point', () => {
     expect(haversineFeet(a, a)).toBe(0);
   });
@@ -86,5 +89,25 @@ describe('haversineFeet', () => {
   });
   it('is the same in both directions', () => {
     expect(haversineFeet(a, east)).toBeCloseTo(haversineFeet(east, a), 5);
+  });
+});
+
+describe('measured route progress', () => {
+  it('uses measured segment distances for GPS progress', () => {
+    const route = [a, north, northEast];
+    expect(nearestPointOnRoute(north, route, [1000, 100]).traveledFt).toBeCloseTo(1000, 5);
+  });
+
+  it('uses the same measured distances in preview navigation', () => {
+    const { pos } = sampleAlongPathGeo([a, north, northEast], 0.5, [1000, 100]);
+    expect(pos.lng).toBe(a.lng);
+    expect(pos.lat).toBeCloseTo(a.lat + 0.00055, 7);
+  });
+
+  it('scales longitude when projecting a diagonal route at high latitude', () => {
+    const route = [{ lat: 60, lng: 0 }, { lat: 60.001, lng: 0.001 }];
+    const result = nearestPointOnRoute({ lat: 60.001, lng: 0 }, route);
+    expect(result.snapped.lat).toBeCloseTo(60.0008, 6);
+    expect(result.snapped.lng).toBeCloseTo(0.0008, 6);
   });
 });
