@@ -1,5 +1,24 @@
 import networkx as nx
 
+class Node:
+    def __init__(self, ID: str, name: str, latitude: float, longitude: float, Type: str):
+        self.ID = ID
+        self.name = name
+        self.latitude = latitude
+        self.longitude = longitude
+        self.Type = Type
+
+class Connection:
+    def __init__(self, ID: str, From: str, To: str, dist: float, Type: str):
+        self.ID = ID
+        self.From = From
+        self.To = To
+        self.dist = dist
+        self.Type = Type
+
+
+
+
 def checker(line, word):
     i = 0;
     for letter in line:
@@ -35,6 +54,12 @@ def contents(line, word):
 # put stuff below here
 G = nx.Graph()
 
+allnodes = {}
+
+allconnections = {}
+
+test = {}
+
 
 
 fp = open("dummyloc.json")
@@ -48,7 +73,7 @@ i = 0
 for line in fp:
 
     # makes a list of all of the necesary information
-    helper = ["null","null","null","null","null"]
+    helper = ["null","null","0","0","null"]
     while i < len(finder):
         result = "null"
         status = checker(line, finder[i])
@@ -65,6 +90,8 @@ for line in fp:
         i = i + 1
     if(i == len(finder)):
         # uses information in list to make node
+        final = Node(helper[0],helper[1],float(helper[2]),float(helper[3]),helper[4])
+        allnodes[helper[0]] = final
         G.add_node(helper[0])
     i = 0
 
@@ -78,7 +105,7 @@ finderadds = ('":"', '":"', '":"',  '":', '":"')
 i = 0
 
 for line in fp2:
-    helper = ["null","null","null","null","null"]
+    helper = ["null","null","null","0","null"]
     while i < len(finder):
         result = "null"
         status = checker(line, finder[i])
@@ -90,6 +117,8 @@ for line in fp2:
         print(finder[i] + ": " + result)
         i = i + 1
     if(i == len(finder)):
+        final = Connection(helper[0],helper[1],helper[2],float(helper[3]),helper[4])
+        allconnections[helper[0]] = final
         G.add_edge(helper[1],helper[2])
     i = 0
 
