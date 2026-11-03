@@ -92,3 +92,18 @@ for line in fp2:
     if(i == len(finder)):
         G.add_edge(helper[1],helper[2])
     i = 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
