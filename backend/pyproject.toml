@@ -1,0 +1,18 @@
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = ["**/migrations/*.py", ".venv"]
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "F",  # pyflakes
+    "I",  # import sorting
+    "UP", # pyupgrade
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Django's startapp boilerplate — imports are there for when models/admin
+# registrations are added, not unused in the usual sense.
+"*/admin.py" = ["F401"]
+"*/models.py" = ["F401"]

@@ -49,9 +49,10 @@ a retry.
 
 ## Map data
 
-The mock campus map, its format, and the labeled test scenarios (stairs,
-accessible entrances, unreachable areas, no accessible route) are described in
-[backend/locations/DATASET.md](backend/locations/DATASET.md).
+The app reads the shared `data/locations.json` and `data/paths.json` files.
+Their format is documented in [data/README.md](data/README.md). Docker includes
+and mounts the same directory. Set `OPENPATH_DATA_DIR` to use another data folder.
+The copies in `backend/locations/` remain unchanged.
 
 # Instructions:
 1. Choose or receive a GitHub issue.
