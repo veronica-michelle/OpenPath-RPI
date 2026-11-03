@@ -20,6 +20,7 @@ export default function App() {
   const [navigating, setNavigating] = useState(false);
   const [liveTracking, setLiveTracking] = useState(false);
   const { position: userPosition, status: locationStatus, start: startLocation } = useGeolocation();
+  const trackingActive = liveTracking && locationStatus === 'ready' && Boolean(userPosition);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -28,6 +29,7 @@ export default function App() {
         if (!Array.isArray(data.nodes) || !Array.isArray(data.edges)) {
           throw new Error('The map data response is incomplete.');
         }
+        if (!data.nodes.length) throw new Error('No campus map locations are available yet.');
         setMapData(data);
       })
       .catch((error) => {
@@ -56,13 +58,36 @@ export default function App() {
     setNavigating(false);
     setLiveTracking(false);
     setStartId(building?.id ?? null);
-    setStartEntranceId(building?.entrances?.[0]?.id ?? null);
+    setStartEntranceId(building?.nearestEntranceId ?? building?.entrances?.[0]?.id ?? null);
   };
   const handleEndChange = (building) => {
     setNavigating(false);
     setLiveTracking(false);
     setEndId(building?.id ?? null);
-    setEndEntranceId(building?.entrances?.[0]?.id ?? null);
+    setEndEntranceId(building?.nearestEntranceId ?? building?.entrances?.[0]?.id ?? null);
+  };
+
+  // Clicking a pin on the map is a shortcut for the same two fields: first
+  // click picks the start, the next click picks the end. Once both are set,
+  // re-clicking whichever pin is already picked clears just that one field
+  // (so you can swap it out) rather than discarding the other selection —
+  // clicking the start pin was clearing the destination, which reads as
+  // clearing the wrong field. Clicking any other, unpicked pin starts a
+  // fresh pick rather than doing nothing.
+  const handlePinClick = (building) => {
+    if (navigating || trackingActive) return;
+    if (!startId) {
+      handleStartChange(building);
+    } else if (!endId) {
+      handleEndChange(building);
+    } else if (building.id === startId) {
+      handleStartChange(null);
+    } else if (building.id === endId) {
+      handleEndChange(null);
+    } else {
+      handleStartChange(building);
+      handleEndChange(null);
+    }
   };
 
   useEffect(() => {
@@ -78,7 +103,10 @@ export default function App() {
       destinationEntranceId: endEntranceId,
       avoidStairs,
     }, controller.signal)
-      .then((value) => setRouteResult({ key: routeKey, value }))
+      .then((value) => {
+        setRouteFailure(null);
+        setRouteResult({ key: routeKey, value });
+      })
       .catch((error) => {
         if (error.name === 'AbortError') return;
         setRouteFailure({
@@ -117,11 +145,12 @@ export default function App() {
         startId={startId}
         endId={endId}
         navigating={navigating}
-        liveTracking={liveTracking}
+        liveTracking={trackingActive}
         destinationName={end?.name}
         userPosition={userPosition}
         locationStatus={locationStatus}
         onRequestLocation={startLocation}
+        onPinClick={handlePinClick}
       />
       <div className="app-overlay-layer">
         <CompassIndicator />
@@ -130,7 +159,8 @@ export default function App() {
             route={route}
             destinationName={end?.name}
             navigating={navigating}
-            liveTracking={liveTracking}
+            liveTracking={trackingActive}
+            locationStatus={locationStatus}
             onStart={() => setNavigating(true)}
             onStartLive={() => {
               startLocation();
@@ -142,7 +172,7 @@ export default function App() {
             }}
           />
         )}
-        {!navigating && !liveTracking && (
+        {!navigating && !trackingActive && (
           <ControlPanel
             buildings={buildings}
             start={start}
