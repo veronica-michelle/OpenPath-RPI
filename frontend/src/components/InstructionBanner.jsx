@@ -36,6 +36,17 @@ function ArriveFlag() {
 export default function InstructionBanner({ instruction, destinationName }) {
   if (!instruction) return null;
 
+  if (instruction.type === 'off-route') {
+    return (
+      <section className="instruction-banner" aria-live="polite" data-no-pan>
+        <div className="instruction-text">
+          <div className="instruction-primary">You are away from the route</div>
+          <div className="instruction-secondary">Return to the highlighted path to continue.</div>
+        </div>
+      </section>
+    );
+  }
+
   const isArrive = instruction.type === 'arrive';
   const remainingFt = instruction.remaining;
   const isClose = remainingFt < CLOSE_FT;
