@@ -50,6 +50,23 @@ def contents(line, word):
                     i = 0;
     return "null"
 
+def corddif(lat1,long1,lat2,log2):
+    final = 0
+    flat = 0
+    flong = 0
+    if(lat1 > lat2):
+        flat = lat1 - lat2
+    else:
+        flat = lat2 - lat1
+    if(long1 > long2):
+        flong = long1 - long2
+    else:
+        flong = long2 - long1
+
+    final = sqrt(flat^2 + flong^2)
+
+    return final
+
 
 # put stuff below here
 G = nx.Graph()
@@ -58,7 +75,8 @@ allnodes = {}
 
 allconnections = {}
 
-test = {}
+finalnodes = {}
+finalconnections = ()
 
 
 
@@ -91,7 +109,7 @@ for line in fp:
     if(i == len(finder)):
         # uses information in list to make node
         final = Node(helper[0],helper[1],float(helper[2]),float(helper[3]),helper[4])
-        allnodes[helper[0]] = final
+        allnodes[helper[1]] = final # stores it by name to allow for easy finding for inputing somthing
         G.add_node(helper[0])
     i = 0
 
@@ -121,6 +139,34 @@ for line in fp2:
         allconnections[helper[0]] = final
         G.add_edge(helper[1],helper[2])
     i = 0
+
+
+
+
+# make an A* algorythm
+
+
+
+# basically get a node; find all the nodes that are connected to it; then calculated the diffrence between each of those nodes, and the destination node.
+# remove any nodes that are invalid, so if stairs are invalid, then dont include those types of nodes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
