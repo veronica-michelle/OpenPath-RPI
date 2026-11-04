@@ -54,6 +54,10 @@ titled "Optional Items".
    text.
 16. Ensure all statements in this list apply to all screen sizes and orientations
    (e.g. computer, phone, tablet, landscape, portrait).
+17. Standard ADA wheelchair accessibility is defined as having a ramp at a rise/run
+   ratio of 1:12 in inches (4.76 degrees). That is, for every inch upwards, a foot
+   forwards is travelled. For personal use, the recommended maximum gradient is 3:12
+   in inches (14.04 degrees). 
 ----------------------------------------------------------------------------------
 Proper documentation will be required on how we account for disabilities.
 ----------------------------Optional Items----------------------------------------

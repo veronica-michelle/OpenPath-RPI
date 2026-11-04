@@ -83,3 +83,13 @@ color as described in Log 1 and Rule 6 of Accessibility.txt.
 As a rule of thumb, if a feature or important action seems
 inconvient for someone to use without using a mouse or trackpad,
 then find a way to make it more convenient. 
+
+Log 4 - 11/3/2026: Discussion Needed on Accessibility
+As I have continued to build ConceptualTests.txt, I have realized
+that we need to be clear on what settings are going to be established.
+We need it in writing what features will be added next. Will we have
+an "avoid" button for every feature? Will wheelchair mode be separate
+from "avoid steep hills"? Will we be able to toggle multiple "avoid"
+buttons at once? We need to discuss this soon and write down our
+conclusion. I won't be able to create ConceptualTests in advance without
+it.
