@@ -299,7 +299,7 @@
   position: absolute;
   top: 18px;
   left: 18px;
-  width: 300px;
+  width: 340px;
   max-width: calc(100vw - 36px);
   display: flex;
   align-items: center;
@@ -330,9 +330,7 @@
   font-weight: 700;
   color: #ffffff;
   letter-spacing: -0.01em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: break-word;
 }
 
 .instruction-secondary {
