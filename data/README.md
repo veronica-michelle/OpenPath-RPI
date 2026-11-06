@@ -126,11 +126,11 @@ Using length of one degree of latitude and longitude as shown on Table 7 in the 
 Following the Cartesian plane, where longitude is $x$ and latitude is $y$, the math to get to the standard Euclidean formula for 2D is:
 
 $$
-\Delta x= \left(x_1-x_0 \right) * 111,093
+\Delta{x} = \left(x_1 - x_0 \right) \times 111,093
 $$$$
-\Delta y= \left(y_1-y_0 \right) * 81,541
+\Delta{y} = \left(y_1 - y_0 \right) \times 81,541
 $$$$
-Run= \sqrt{ \Delta x^2+ \Delta y^2}
+\text{Run} = \sqrt{\Delta{x^2} + \Delta{y^2}}
 $$
 
 Afterwards, find the difference in elevation between the two points where $z$ represents elevation: $Rise=z_1-z_0$
@@ -138,9 +138,9 @@ Afterwards, find the difference in elevation between the two points where $z$ re
 With both run and rise calculated (elevation will already be in meters, so no scale factor is required), both the distance and the gradient can be calculated with the 3D Euclidean and slope percentage formulas:
 
 $$
-d= \sqrt{Run^2+Rise^2}= \sqrt{ \Delta x^2+ \Delta y^2+ \Delta z^2}
+\text{d} = \sqrt{Run^2 + Rise^2}= \sqrt{\Delta{x^2} + \Delta{y^2} + \Delta{z^2}}
 $$$$
-Gradient \ ( \%)= \left( \frac{Rise}{Run} \right) * 100
+\text{Gradient (\\%)} = \left(\frac{\text{Rise}}{\text{Run}} \right) \times 100
 $$
 
 > [!IMPORTANT]
