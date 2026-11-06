@@ -27,7 +27,7 @@ export default function ControlPanel({
   return (
     <section className="control-panel" aria-label="Route controls" data-no-pan>
       <header className="control-panel-header">
-        <span className="brand-wordmark">OpenPath</span>
+        <span className="brand-wordmark">OpenPath RPI</span>
         <span className="brand-subtitle">Accessible RPI Routes</span>
       </header>
 
