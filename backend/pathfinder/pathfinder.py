@@ -78,7 +78,15 @@ def findword(word,wordarray):
 
     return word
 
-def findnode(nextarray,endname,nodearray):
+
+def noneinlist(name,lister):
+    for thing in lister:
+        if(thing == name):
+            return 1
+
+    return 0
+
+def findnode(nextarray,endname,nodearray,helperlist):
     final = "NULL"
     dis = 99999
     newdis = 100000
@@ -86,16 +94,20 @@ def findnode(nextarray,endname,nodearray):
     # find every node connected to name using nextarray
 
     for helper in nextarray:
-        print(helper)
-        print(nodearray[helper].latitude)
-        print(nodearray[helper].longitude)
-        print(nodearray[endname].latitude)
-        print(nodearray[endname].longitude)
-        newdis = corddif(nodearray[helper].latitude,nodearray[helper].longitude,nodearray[endname].latitude,nodearray[endname].longitude)
-        print(newdis)
-        if(dis > newdis):
-            final = helper
-            dis = newdis
+
+        if(not noneinlist(helper,helperlist)):
+            print(helper)
+            print(nodearray[helper].latitude)
+            print(nodearray[helper].longitude)
+            print(nodearray[endname].latitude)
+            print(nodearray[endname].longitude)
+            newdis = corddif(nodearray[helper].latitude,nodearray[helper].longitude,nodearray[endname].latitude,nodearray[endname].longitude)
+            print(newdis)
+            if(dis > newdis):
+                final = helper
+                dis = newdis
+
+
     return final
 
 
@@ -109,11 +121,7 @@ allnodes = {}
 
 allconnections = {}
 
-finalnodes = {}
-finalconnections = ()
-
-
-wordarray = {}
+wordarray = {} # put all node names in here, so it can be used with a spell check later on
 
 
 
@@ -193,6 +201,11 @@ start = "NULL"
 endname = "NULL"
 
 
+pathtaken = []
+forbiddennodes = []
+
+
+
 #start = input("where are you? ")
 #end = input("where do you want to go? ")
 
@@ -205,10 +218,12 @@ curnode = allnodes[start]
 
 endnode = allnodes[endname]
 
-
+pathtaken.append(curname)
 
 
 while(curname != endname):
+    # curname to the path here
+
     print("current nodes name: " + curname)
 
     connectednodes = list(G.adj[curname])
@@ -216,25 +231,31 @@ while(curname != endname):
     print(connectednodes)
     print("}")
 
-    nextnodename = findnode(connectednodes,endname,allnodes)
+    helperlist = pathtaken + forbiddennodes
+
+    nextnodename = findnode(connectednodes,endname,allnodes,helperlist)
     # ADD IN A SYSTEM TO ACOMIDATE FOR POTENTIAL DOUBLING BACK
-    # BASICALLY MAKE IT SO IS STORES ALL NODES IT HAS BEEN TO, AND THEN DOSENT GO TO A NODE IF IT ALREADY HAS BEEN THERE
+    # BASICALLY MAKE IT SO IS STORES ALL NODES IT HAS BEEN TO, AND THEN DOSENT GO TO A NODE IF IT ALREADY HAS BEEN THERE, and also the forbidden nodes
 
-    print("the best connected node: " + nextnodename)
+    if(nextnodename == "NULL"):
+        print("the best connected node: " + nextnodename)
 
-    curname = nextnodename
-    curnode = allnodes[nextnodename]
+        forbiddennodes.append(curname)
+
+        curname = start
+        curnode = allnodes[start]
+        pathtaken = []
+    else:
+        print("the best connected node: " + nextnodename)
+
+        curname = nextnodename
+        curnode = allnodes[nextnodename]
+        pathtaken.append(curname)
 
 
+print(pathtaken)
 
-
-
-
-
-
-
-
-
+# when reaches dead end; restart the process, even emptying the pathtaken list, but add the last node that it got stuck at to forbiddennodes
 
 
 
