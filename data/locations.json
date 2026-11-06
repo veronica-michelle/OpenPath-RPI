@@ -2,6 +2,8 @@
     "L01": {
         "id": "L01",
         "name": "Carnegie Building",
+        "coordinates": [42.7304198, -73.6830735],
+        "elevation": 64.04,
         "entrances": [{
             "id": "L01A",
             "coordinates": [42.7304198, -73.6830735],
@@ -17,6 +19,8 @@
     "L02": {
         "id": "L02",
         "name": "Walker Laboratory",
+        "coordinates": [42.7308236, -73.6822905],
+        "elevation": 65.81,
         "entrances": [{
             "id": "L02A",
             "coordinates": [42.7308236, -73.6822905],
@@ -42,6 +46,8 @@
     "L03": {
         "id": "L03",
         "name": "Russell Sage Laboratory",
+        "coordinates": [42.7309112, -73.6821297],
+        "elevation": 65.38,
         "entrances": [{
             "id": "L03A",
             "coordinates": [42.7309112, -73.6821297],
@@ -77,6 +83,8 @@
     "L04": {
         "id": "L04",
         "name": "Pittsburgh Building",
+        "coordinates": [42.7310311, -73.6833420],
+        "elevation": 49.63,
         "entrances": [{
             "id": "L04A",
             "coordinates": [42.7310311, -73.6833420],
@@ -92,6 +100,8 @@
     "L05": {
         "id": "L05",
         "name": "EMPAC",
+        "coordinates": [42.7289147, -73.6832852],
+        "elevation": 64.78,
         "entrances": [{
             "id": "L05A",
             "coordinates": [42.7289147, -73.6832852],
@@ -107,6 +117,8 @@
     "L06": {
         "id": "L06",
         "name": "West Hall",
+        "coordinates": [42.7315650, -73.6830444],
+        "elevation": 44.77,
         "entrances": [{
             "id": "L06A",
             "coordinates": [42.7315650, -73.6830444],
@@ -132,6 +144,8 @@
     "L07": {
         "id": "L07",
         "name": "Amos Eaton Hall",
+        "coordinates": [42.7301469, -73.6825450],
+        "elevation": 69.53,
         "entrances": [{
             "id": "L07A",
             "coordinates": [42.7301824, -73.6822777],
@@ -157,6 +171,8 @@
     "L08": {
         "id": "L08",
         "name": "Lally Hall",
+        "coordinates": [42.7301258, -73.6818882],
+        "elevation": 72.56,
         "entrances": [{
             "id": "L08A",
             "coordinates": [42.7301258, -73.6818882],
@@ -172,6 +188,8 @@
     "L09": {
         "id": "L09",
         "name": "Folsom Library",
+        "coordinates": [42.7293208, -73.6823471],
+        "elevation": 74.11,
         "entrances": [{
             "id": "L09A",
             "coordinates": [42.7293208, -73.6823471],
@@ -187,6 +205,8 @@
     "L10": {
         "id": "L10",
         "name": "VCC",
+        "coordinates": [42.7292786, -73.6822100],
+        "elevation": 74.1,
         "entrances": [{
             "id": "L10A",
             "coordinates": [42.7292786, -73.6822100],
