@@ -67,6 +67,23 @@ export default function App() {
     setEndEntranceId(building?.nearestEntranceId ?? building?.entrances?.[0]?.id ?? null);
   };
 
+  // Swap only the start/end location values. Entrance picks are tied to the
+  // physical door a building has selected, not to the start/end slot, so a
+  // swap resets each side to its new building's first entrance — the same
+  // as picking that building fresh via handleStartChange/handleEndChange —
+  // rather than carrying the old entrance pick along with the location.
+  const handleSwap = () => {
+    if (!startId && !endId) return;
+    setNavigating(false);
+    setLiveTracking(false);
+    const newStart = buildings.find((building) => building.id === endId) ?? null;
+    const newEnd = buildings.find((building) => building.id === startId) ?? null;
+    setStartId(newStart?.id ?? null);
+    setStartEntranceId(newStart?.entrances?.[0]?.id ?? null);
+    setEndId(newEnd?.id ?? null);
+    setEndEntranceId(newEnd?.entrances?.[0]?.id ?? null);
+  };
+
   // Clicking a pin on the map is a shortcut for the same two fields: first
   // click picks the start, the next click picks the end. Once both are set,
   // re-clicking whichever pin is already picked clears just that one field
@@ -179,6 +196,7 @@ export default function App() {
             end={end}
             onStartChange={handleStartChange}
             onEndChange={handleEndChange}
+            onSwap={handleSwap}
             startEntranceId={startEntranceId}
             onStartEntranceChange={setStartEntranceId}
             endEntranceId={endEntranceId}

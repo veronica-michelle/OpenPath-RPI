@@ -299,7 +299,7 @@
   position: absolute;
   top: 18px;
   left: 18px;
-  width: 300px;
+  width: 340px;
   max-width: calc(100vw - 36px);
   display: flex;
   align-items: center;
@@ -330,9 +330,7 @@
   font-weight: 700;
   color: #ffffff;
   letter-spacing: -0.01em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: break-word;
 }
 
 .instruction-secondary {
@@ -403,6 +401,32 @@
   background: repeating-linear-gradient(to bottom, var(--map-border-strong) 0 3px, transparent 3px 6px);
 }
 
+.swap-button {
+  /* A normal row below everything else in the fields column (not absolutely
+     positioned over a field), so it can never sit behind or overlap either
+     search box regardless of how tall the entrance pickers make the column. */
+  align-self: center;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--map-field);
+  border: 1.5px solid var(--map-border-strong);
+  color: var(--ink-dim);
+  transition: background 160ms var(--ease-board), color 160ms var(--ease-board), border-color 160ms var(--ease-board), transform 160ms var(--ease-board);
+}
+.swap-button:hover {
+  background: var(--map-accent-soft);
+  color: var(--map-accent);
+  border-color: rgba(26, 115, 232, 0.28);
+}
+.swap-button:active {
+  transform: scale(0.92);
+}
+
 .control-panel-hint {
   margin: 0;
   font-size: 12px;
@@ -464,7 +488,7 @@
   background: var(--map-field);
   border: 1.5px solid transparent;
   border-radius: 8px;
-  padding: 10px 12px 10px 30px;
+  padding: 10px 30px 10px 30px;
   font-size: 14px;
   color: var(--ink);
   transition: border-color 160ms var(--ease-board), background 160ms var(--ease-board);
@@ -475,6 +499,25 @@
 .search-input:focus {
   background: #ffffff;
   border-color: var(--map-accent);
+}
+
+.search-clear {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: var(--map-border-strong);
+  color: #1f2328;
+  outline: none;
+  transition: background 140ms var(--ease-board);
+}
+.search-clear:hover {
+  background: var(--ink-faint);
 }
 
 .search-listbox {
@@ -598,6 +641,17 @@
   color: var(--ink-dim);
   transition: background 160ms var(--ease-board), color 160ms var(--ease-board), border-color 160ms var(--ease-board);
 }
+.entrance-chip.is-accessible {
+  color: var(--accessible);
+}
+.entrance-chip.is-inaccessible {
+  background: var(--alert-soft);
+  color: var(--alert);
+}
+.entrance-chip.is-unverified {
+  color: var(--ink-faint);
+}
+
 .entrance-chip.is-active {
   background: var(--map-accent-soft);
   color: var(--map-accent);

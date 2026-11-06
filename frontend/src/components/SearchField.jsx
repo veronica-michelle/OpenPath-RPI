@@ -52,6 +52,10 @@ export default function SearchField({
 
   useEffect(() => {
     setText(value?.name ?? '');
+    // An external change (e.g. the swap button) can land while this field's
+    // own blur-commit timer is still pending from a moment ago; without this
+    // the stale timer fires afterward and overwrites the fresh value.
+    clearTimeout(blurTimer.current);
   }, [value]);
 
   const ranked = useMemo(
@@ -71,6 +75,12 @@ export default function SearchField({
   const commit = useCallback((building) => {
     onChange(building);
     setText(building ? building.name : '');
+    setOpen(false);
+  }, [onChange]);
+
+  const clear = useCallback(() => {
+    onChange(null);
+    setText('');
     setOpen(false);
   }, [onChange]);
 
@@ -152,6 +162,22 @@ export default function SearchField({
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
       />
+      {text !== '' && (
+        <button
+          type="button"
+          className="search-clear"
+          aria-label={`Clear ${label.toLowerCase()}`}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            clearTimeout(blurTimer.current);
+          }}
+          onClick={clear}
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 5l14 14M19 5L5 19" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+          </svg>
+        </button>
+      )}
       {open && (options.length > 0 || showNearest) && (
         <ul
           id={listId}
