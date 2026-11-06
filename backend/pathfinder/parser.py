@@ -1,4 +1,6 @@
 import networkx as nx
+import math
+import string
 
 class Node:
     def __init__(self, ID: str, name: str, latitude: float, longitude: float, Type: str):
@@ -7,6 +9,9 @@ class Node:
         self.latitude = latitude
         self.longitude = longitude
         self.Type = Type
+# maybe set up a map per node class that states the type of connection between nodes
+
+
 
 class Connection:
     def __init__(self, ID: str, From: str, To: str, dist: float, Type: str):
@@ -50,22 +55,51 @@ def contents(line, word):
                     i = 0;
     return "null"
 
-def corddif(lat1,long1,lat2,log2):
+def corddif(lat1,long1,lat2,long2):
     final = 0
     flat = 0
     flong = 0
-    if(lat1 > lat2):
+    if(lat1 > lat2): # gets diffrence in latitude
         flat = lat1 - lat2
     else:
         flat = lat2 - lat1
-    if(long1 > long2):
+
+
+    if(long1 > long2): # gets diffrence in longitude
         flong = long1 - long2
     else:
         flong = long2 - long1
 
-    final = sqrt(flat^2 + flong^2)
+    final = math.sqrt(flat*flat + flong*flong) # a^2 + b^2 = c^2
 
     return final
+
+def findword(word,wordarray):
+
+    return word
+
+def findnode(nextarray,endname,nodearray):
+    final = "NULL"
+    dis = 99999
+    newdis = 100000
+
+    # find every node connected to name using nextarray
+
+    for helper in nextarray:
+        print(helper)
+        print(nodearray[helper].latitude)
+        print(nodearray[helper].longitude)
+        print(nodearray[endname].latitude)
+        print(nodearray[endname].longitude)
+        newdis = corddif(nodearray[helper].latitude,nodearray[helper].longitude,nodearray[endname].latitude,nodearray[endname].longitude)
+        print(newdis)
+        if(dis > newdis):
+            final = helper
+            dis = newdis
+    return final
+
+
+
 
 
 # put stuff below here
@@ -77,6 +111,10 @@ allconnections = {}
 
 finalnodes = {}
 finalconnections = ()
+
+
+wordarray = {}
+
 
 
 
@@ -110,7 +148,9 @@ for line in fp:
         # uses information in list to make node
         final = Node(helper[0],helper[1],float(helper[2]),float(helper[3]),helper[4])
         allnodes[helper[1]] = final # stores it by name to allow for easy finding for inputing somthing
-        G.add_node(helper[0])
+
+
+        G.add_node(helper[1]) # this uses the name of the node as the identifier instead of the ID
     i = 0
 
 
@@ -137,9 +177,64 @@ for line in fp2:
     if(i == len(finder)):
         final = Connection(helper[0],helper[1],helper[2],float(helper[3]),helper[4])
         allconnections[helper[0]] = final
-        G.add_edge(helper[1],helper[2])
-        list(G.adj[helper[1]])
+
+        G.add_edge(helper[1],helper[2]) # connects nodes based off of names
+
+        print(list(G.adj[helper[1]]))
     i = 0
+
+
+current = "NULL"
+
+restriction = "NULL"
+
+start = "NULL"
+
+endname = "NULL"
+
+
+#start = input("where are you? ")
+#end = input("where do you want to go? ")
+
+start = "Node A"
+end =  "Node D"
+
+curname = start
+endname = end
+curnode = allnodes[start]
+
+endnode = allnodes[endname]
+
+
+
+
+while(curname != endname):
+    print("current nodes name: " + curname)
+
+    connectednodes = list(G.adj[curname])
+    print("connected nodes: {")
+    print(connectednodes)
+    print("}")
+
+    nextnodename = findnode(connectednodes,endname,allnodes)
+    # ADD IN A SYSTEM TO ACOMIDATE FOR POTENTIAL DOUBLING BACK
+    # BASICALLY MAKE IT SO IS STORES ALL NODES IT HAS BEEN TO, AND THEN DOSENT GO TO A NODE IF IT ALREADY HAS BEEN THERE
+
+    print("the best connected node: " + nextnodename)
+
+    curname = nextnodename
+    curnode = allnodes[nextnodename]
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -165,7 +260,6 @@ for line in fp2:
 #print(list(G.nodes))
 
 #print(list(G.edges))
-print(list(G.edges)[0]) # this works exactley how you think it does
 
 
 
