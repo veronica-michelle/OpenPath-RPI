@@ -1,52 +1,76 @@
 {
-    "E0001": {
-        "from": "L01",
-        "to": "L02",
-        "distance": null,
+    "E0###": {
+        "from": "",
+        "to": "",
+        "distance": 0.0,
         "features": {
             "paved": false,
             "stairs": false,
             "ramp": false,
             "closed": false,
             "gradient": 0.0
+        }
+    },
+    "E0001": {
+        "from": "N001",
+        "to": "N048",
+        "distance": 3.847,
+        "features": {
+            "paved": true,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 5.467
         }
     },
     "E0002": {
-        "from": "L01",
-        "to": "L03",
-        "distance": null,
+        "from": "N048",
+        "to": "N049",
+        "distance": 2.921,
         "features": {
-            "paved": false,
+            "paved": true,
             "stairs": false,
             "ramp": false,
             "closed": false,
-            "gradient": 0.0
+            "gradient": 4.111
         }
     },
     "E0003": {
-        "from": "L01",
-        "to": "L04",
-        "distance": null,
+        "from": "N049",
+        "to": "N050",
+        "distance": 3.440,
         "features": {
             "paved": false,
             "stairs": false,
             "ramp": false,
             "closed": false,
-            "gradient": 0.0
+            "gradient": 6.116
         }
     },
     "E0004": {
+<<<<<<< HEAD
         "from": "L02",
         "to": "L03",
         "distance": null,
+||||||| parent of 99d557a (feat(data): Fix nodes and add some edges)
+    },"E0004": {
+        "from": "L02",
+        "to": "L03",
+        "distance": null,
+=======
+        "from": "N050",
+        "to": "L03C",
+        "distance": 5.545,
+>>>>>>> 99d557a (feat(data): Fix nodes and add some edges)
         "features": {
             "paved": false,
             "stairs": false,
             "ramp": false,
             "closed": false,
-            "gradient": 0.0
+            "gradient": 7.051
         }
     },
+<<<<<<< HEAD
     "E0005": {
         "from": "L01",
         "to": "L01A",
