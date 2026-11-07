@@ -1,0 +1,38 @@
+{
+  "route_name": "Pittsburgh Building to Blitman Residence Commons",
+  "campus": "Rensselaer Polytechnic Institute, Troy, NY",
+  "mode": "walking",
+  "coordinate_system": "WGS84 (latitude, longitude)",
+  "waypoints": [
+    {
+      "index": 1,
+      "name": "Pittsburgh Building (approximate)",
+      "latitude": 42.73145,
+      "longitude": -73.68255
+    },
+    {
+      "index": 2,
+      "name": "Near West Hall / Sage Avenue",
+      "latitude": 42.73166,
+      "longitude": -73.68312
+    },
+    {
+      "index": 3,
+      "name": "Sage Avenue westbound",
+      "latitude": 42.7315,
+      "longitude": -73.68385
+    },
+    {
+      "index": 4,
+      "name": "Approach to Sixth Avenue",
+      "latitude": 42.73131,
+      "longitude": -73.68525
+    },
+    {
+      "index": 5,
+      "name": "Blitman Residence Commons",
+      "latitude": 42.73116,
+      "longitude": -73.68577
+    }
+  ]
+}
