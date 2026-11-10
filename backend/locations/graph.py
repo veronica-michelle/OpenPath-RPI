@@ -82,7 +82,6 @@ def _point_fields(point):
         "elevation": point["elevation"] * FEET_PER_METER,
     }
 
-
 """Turns the 2 saved objects into the node and edge lists used by routes.
 Edges connect building IDs or path-point IDs. A building starts at its first
 entrance unless the request names another entrance. Feature, details, and other

@@ -16,6 +16,153 @@ from unittest.mock import mock_open, patch
 from rest_framework.test import APITestCase
 
 from . import graph as graph_module
+<<<<<<< HEAD
+from .validate_graph import validate
+
+
+# These contrived examples cover a direct stair path, a regular detour, and a closed path.
+LOCATIONS_DATA = {
+    "L01": {
+        "id": "L01",
+        "name": "Test Hall",
+        "entrances": [
+            {
+                "id": "L01A",
+                "coordinates": [42.0, -73.0],
+                "elevation": 10.0,
+                "features": {
+                    "accessible": True,
+                    "stairs": False,
+                    "ramp": True,
+                    "buttons": [False, True],
+                },
+            },
+            {
+                "id": "L01B",
+                "coordinates": [42.0001, -73.0],
+                "elevation": 10.5,
+                "features": {
+                    "accessible": False,
+                    "stairs": True,
+                    "ramp": False,
+                    "buttons": [False, False],
+                },
+            },
+        ],
+    },
+    "L02": {
+        "id": "L02",
+        "name": "Test Library",
+        "entrances": [
+            {
+                "id": "L02A",
+                "coordinates": [42.0, -72.999],
+                "elevation": 12.0,
+                "features": {
+                    "accessible": True,
+                    "stairs": False,
+                    "ramp": False,
+                    "buttons": [True, False],
+                },
+            }
+        ],
+    },
+    "L03": {
+        "id": "L03",
+        "name": "Disconnected Building",
+        "entrances": [
+            {
+                "id": "L03A",
+                "coordinates": [42.001, -72.999],
+                "elevation": 13.0,
+                "features": {
+                    "accessible": None,
+                    "stairs": False,
+                    "ramp": False,
+                    "buttons": [False, False],
+                },
+            }
+        ],
+    },
+    "L04": {
+        "id": "L04",
+        "name": "Isolated Building",
+        "entrances": [
+            {
+                "id": "L04A",
+                "coordinates": [42.002, -72.998],
+                "elevation": 14.0,
+                "features": {
+                    "accessible": False,
+                    "stairs": False,
+                    "ramp": False,
+                    "buttons": [False, False],
+                },
+            }
+        ],
+    },
+    "N001": {"id": "N001", "coordinates": [42.0, -72.9995], "elevation": 11.0},
+}
+
+PATHS_DATA = {
+    "E00001": {
+        "from": "L01",
+        "to": "L02",
+        "distance": 1.0,
+        "features": {
+            "paved": True,
+            "stairs": True,
+            "ramp": False,
+            "closed": False,
+            "gradient": 0.0,
+        },
+    },
+    "E00002": {
+        "from": "L01",
+        "to": "N001",
+        "features": {
+            "paved": True,
+            "stairs": False,
+            "ramp": False,
+            "closed": False,
+            "gradient": 0.0,
+        },
+    },
+    "E00003": {
+        "from": "N001",
+        "to": "L02",
+        "distance": None,
+        "features": {
+            "paved": True,
+            "stairs": False,
+            "ramp": False,
+            "closed": False,
+            "gradient": 0.0,
+        },
+    },
+    "E00004": {
+        "from": "L02",
+        "to": "L03",
+        "distance": None,
+        "features": {
+            "paved": False,
+            "stairs": False,
+            "ramp": False,
+            "closed": True,
+            "gradient": 0.0,
+        },
+    },
+}
+
+# Load a fresh copy of the data so that tests cannot modify shared examples
+def make_graph():
+    with patch(
+        "locations.graph.Path.open",
+        mock_open(),
+    ), patch(
+        "locations.graph.json.load",
+        side_effect=[copy.deepcopy(LOCATIONS_DATA), copy.deepcopy(PATHS_DATA)],
+=======
 from .edge_calculator import fill_paths, measure_edge
 from .validate_graph import validate
 
@@ -165,6 +312,7 @@ def make_graph():
             "locations.graph.json.load",
             side_effect=[copy.deepcopy(LOCATIONS_DATA), copy.deepcopy(PATHS_DATA)],
         ),
+>>>>>>> ed0f7ad8629d68d286e701e593b624e205388058
     ):
         return graph_module.load_graph("locations.json", "paths.json")
 
@@ -181,6 +329,13 @@ class ControlledGraphAPITestCase(APITestCase):
         self.addCleanup(graph_patch.stop)
         self.addCleanup(view_map_patch.stop)
 
+<<<<<<< HEAD
+# Check that the loader appropriately generates a graph from the node and edge JSON files
+class GraphLoaderTests(TestCase):
+    def load_files(self, locations, paths):
+        with patch("locations.graph.Path.open", mock_open()), patch(
+            "locations.graph.json.load", side_effect=[locations, paths]
+=======
 
 # Check that the loader appropriately generates a graph from the node and edge JSON files
 class GraphLoaderTests(TestCase):
@@ -188,6 +343,7 @@ class GraphLoaderTests(TestCase):
         with (
             patch("locations.graph.Path.open", mock_open()),
             patch("locations.graph.json.load", side_effect=[locations, paths]),
+>>>>>>> ed0f7ad8629d68d286e701e593b624e205388058
         ):
             return graph_module.load_graph("locations.json", "paths.json")
 
@@ -226,7 +382,10 @@ class GraphLoaderTests(TestCase):
         with self.assertRaisesRegex(ValueError, "needs at least one entrance"):
             self.load_files(locations, copy.deepcopy(PATHS_DATA))
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> ed0f7ad8629d68d286e701e593b624e205388058
 # Check the API endpoint used to draw the map.
 class MapGraphViewTests(ControlledGraphAPITestCase):
     def test_returns_nodes_and_edges_with_valid_endpoints(self):
@@ -236,7 +395,14 @@ class MapGraphViewTests(ControlledGraphAPITestCase):
         node_ids = {node["id"] for node in response.data["nodes"]}
         self.assertTrue(any(node["type"] == "path" for node in response.data["nodes"]))
         self.assertTrue(
+<<<<<<< HEAD
+            all(
+                edge["a"] in node_ids and edge["b"] in node_ids
+                for edge in response.data["edges"]
+            )
+=======
             all(edge["a"] in node_ids and edge["b"] in node_ids for edge in response.data["edges"])
+>>>>>>> ed0f7ad8629d68d286e701e593b624e205388058
         )
 
 
@@ -253,7 +419,10 @@ class LocationListViewTests(ControlledGraphAPITestCase):
 
     # Check route requests for ordinary, blocked, and invalid trips.
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> ed0f7ad8629d68d286e701e593b624e205388058
 class RouteViewTests(ControlledGraphAPITestCase):
     def route(self, **overrides):
         request = {"start_id": "L01", "destination_id": "L02", **overrides}
@@ -316,7 +485,18 @@ class RouteViewTests(ControlledGraphAPITestCase):
         response = self.client.post("/api/route/", {}, format="json")
         self.assertEqual(response.status_code, 400)
 
+    def test_invalid_entrance_id_returns_400(self):
+        response = self.route(start_entrance_id="L01Z", destination_entrance_id="L02B")
+        self.assertEqual(response.status_code, 400)
 
+<<<<<<< HEAD
+    def test_invalid_destination_id_returns_400(self):
+        response = self.route(start_entrance_id="L01A", destination_entrance_id="L02Z")
+        self.assertEqual(response.status_code, 400)
+
+
+=======
+>>>>>>> ed0f7ad8629d68d286e701e593b624e205388058
 class ValidateGraphTests(TestCase):
     # Attempt validating a mock graph independent of the changing campus data
 

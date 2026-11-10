@@ -107,7 +107,9 @@ export default function BoardMap({
   onRequestLocation,
   onPinClick,
 }) {
-  const nodesById = useMemo(() => Object.fromEntries(graphNodes.map((node) => [node.id, node])), [graphNodes]);
+  const nodesById = useMemo(() => Object.fromEntries(
+    graphNodes.flatMap((node) => [node, ...(node.entrances ?? [])]).map((node) => [node.id, node]),
+  ), [graphNodes]);
   const mapRef = useRef(null);
   const puckMarkerRef = useRef(null);
   const pendingRecenter = useRef(false);

@@ -1,11 +1,20 @@
-import networkx as nx
-import pandas as pd
+import json
 
-# Load excel file and invididual sheets into pandas dataframes
-masterData = pd.ExcelFile("../../data/ATLAS_Graph_Data.xlsx")
-landmarksData = pd.read_excel(masterData, sheet_name="Landmarks")
-nodesData = pd.read_excel(masterData, sheet_name="Nodes")
-edgesData = pd.read_excel(masterData, sheet_name="Edges")
+import networkx as nx
+
+try:
+    with open("../../data/locations.json") as f:
+        locations = json.load(f)
+except FileNotFoundError:
+    print("Location data file not found.")
+    locations = {}
+
+try:
+    with open("../../data/paths.json") as f:
+        paths = json.load(f)
+except FileNotFoundError:
+    print("Path data file not found.")
+    paths = {}
 
 
 class Node:
@@ -15,6 +24,7 @@ class Node:
         self.longitude = longitude
 
     # Should be close enough that the curvature of the earth doesn't matter for our purposes
+    # Should add more filters in later weeks (i.e. accessibility, stairs, ramps, etc.)
     def dist(self, other: "Node") -> float:
         return (
             (self.latitude - other.latitude) ** 2 + (self.longitude - other.longitude) ** 2
@@ -26,50 +36,81 @@ G = nx.Graph()
 
 nodes = {}
 
-# Add Landmarks and have nonzero size so we can see them on the rendered graph
-for _, row in landmarksData.iterrows():
-    node = Node(row["Name"], row["Latitude"], row["Longitude"])
-    nodes[row["Name"]] = node
-    G.add_node(row["Name"], weight=0, size=10, pos=(row["Latitude"], row["Longitude"]))
+# Map of entrance ID to building name for easy lookup
+endpoints = {}
 
-# Add Nodes and have zero size so these are not visible on the rendered graph,
-# but they are still part of the networkx graph
-for _, row in nodesData.iterrows():
-    node = Node(row["Name"], row["Latitude"], row["Longitude"])
-    nodes[row["Name"]] = node
-    G.add_node(row["Name"], weight=0, size=0, pos=(row["Latitude"], row["Longitude"]))
+for _, location_data in locations.items():
+    # Buildings have a "name" field, while nodes do not.
+    # We will use this to differentiate between the two.
+    if "name" in location_data:
+        name = location_data["name"]
+
+        location_id = location_data["id"]
+        endpoints[location_id] = name
+        lat, lon = location_data["coordinates"]
+        node = Node(location_id, lat, lon)
+        nodes[location_id] = node
+        G.add_node(node, weight=0, size=0, pos=(lat, lon))
+
+        for entrance in location_data["entrances"]:
+            entrance_id = entrance["id"]
+            lat, lon = entrance["coordinates"]
+
+            node = Node(entrance_id, lat, lon)
+
+            nodes[entrance_id] = node
+            G.add_node(node, weight=0, size=0, pos=(lat, lon))
+    else:
+        node_id = location_data["id"]
+        lat, lon = location_data["coordinates"]
+
+        node = Node(node_id, lat, lon)
+
+        nodes[node_id] = node
+        G.add_node(node, weight=0, size=0, pos=(lat, lon))
 
 # Add Edges and weight them by the distance between the two nodes
-for _, row in edgesData.iterrows():
-    node1 = nodes[row["Node 1 Name"]]
-    node2 = nodes[row["Node 2 Name"]]
-    G.add_edge(node1.name, node2.name, weight=node1.dist(node2))
+for _, path in paths.items():
+    from_node = nodes[path["from"]]
+    to_node = nodes[path["to"]]
+    G.add_edge(from_node, to_node, weight=from_node.dist(to_node))
 
-# Run Dijkstra's algorithm to find the shortest path between all pairs of nodes
-# in the graph. This will be used to find the shortest path between any two
-# landmarks.
-paths = nx.shortest_path(G)
+# Calculate weighted shortest paths using Dijkstra
+paths = dict(nx.all_pairs_dijkstra_path(G, weight="weight"))
 
 landmark_hits = {}
 
-for path in paths:
-    origin = path[0]
-    if origin not in landmarksData["Name"].values:
+for origin, destinations in paths.items():
+    origin_id = origin.name
+
+    if origin_id not in endpoints:
         continue
 
-    # print(f"Shortest paths from {origin}:")
-    destinations = path[1]
-
     for destination, path in destinations.items():
-        if destination not in landmarksData["Name"].values:
+        destination_id = destination.name
+
+        if origin_id == destination_id:
             continue
 
-        # print(f"Shortest path from {origin} to {destination}: {path}")
-        landmark_hits[origin] = landmark_hits.get(origin, 0) + 1
+        # Not an endpoint we want.
+        if destination_id not in endpoints:
+            continue
 
-# print("\nLandmark hits:")
+        origin_name = endpoints[origin_id]
+        destination_name = endpoints[destination_id]
+
+        print(
+            f"Shortest path from {origin_name} "
+            f"to {destination_name}: "
+            f"{[node.name for node in path]}"
+        )
+
+        landmark_hits[origin_id] = landmark_hits.get(origin_id, 0) + 1
+
+print("\nLandmark hits:")
 for landmark, hits in landmark_hits.items():
-    # print(f"{landmark}: {hits} hits")
+    landmark_name = endpoints[landmark]
+    print(f"{landmark_name}: {hits} hits")
     pass
 
 
@@ -79,10 +120,10 @@ try:
     assert min(landmark_hits.values()) > 0, (
         "No landmarks were hit in the paths. Check the graph and data."
     )
-    assert max(landmark_hits.values()) < len(landmarksData), (
+    assert max(landmark_hits.values()) < len(endpoints), (
         "Some landmarks were hit too many times. Check the graph and data."
     )
-    assert len(landmark_hits) == len(landmarksData), (
+    assert len(landmark_hits) == len(endpoints), (
         "Not all landmarks were hit in the paths. Check the graph and data."
     )
     assert min(landmark_hits.values()) == max(landmark_hits.values()), (

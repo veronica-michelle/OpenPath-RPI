@@ -86,7 +86,17 @@ def noneinlist(name,lister):
 
     return 0
 
-def findnode(nextarray,endname,nodearray,helperlist):
+def wordinarray(word,array):
+
+    i = 0
+    while (i < len(array)):
+        if(array[i] == word):
+            return 1
+        i = i + 1
+    return 0
+
+
+def findnode(curname,nextarray,endname,nodearray,helperlist,allconnections,invalid): # in the future, replace this with a array or vecotr of stings of invalid paths
     final = "NULL"
     dis = 99999
     newdis = 100000
@@ -96,17 +106,18 @@ def findnode(nextarray,endname,nodearray,helperlist):
     for helper in nextarray:
 
         if(not noneinlist(helper,helperlist)):
-            print(helper)
-            print(nodearray[helper].latitude)
-            print(nodearray[helper].longitude)
-            print(nodearray[endname].latitude)
-            print(nodearray[endname].longitude)
-            newdis = corddif(nodearray[helper].latitude,nodearray[helper].longitude,nodearray[endname].latitude,nodearray[endname].longitude)
-            print(newdis)
-            if(dis > newdis):
-                final = helper
-                dis = newdis
-
+            #print(helper)
+            #print(nodearray[helper].latitude)
+            #print(nodearray[helper].longitude)
+            #print(nodearray[endname].latitude)
+            #print(nodearray[endname].longitude)
+            #print(allconnections[helper+curname].Type)
+            if(not wordinarray(allconnections[helper+curname].Type,invalid)):
+                newdis = corddif(nodearray[helper].latitude,nodearray[helper].longitude,nodearray[endname].latitude,nodearray[endname].longitude)
+            #print(newdis)
+                if(dis > newdis):
+                    final = helper
+                    dis = newdis
 
     return final
 
@@ -126,7 +137,7 @@ wordarray = {} # put all node names in here, so it can be used with a spell chec
 
 
 
-fp = open("dummyloc.json")
+fp = open("loctest1.json")
 
 finder = ("id","name","lat","long","type")
 finderadds = ('":"', '":"', '":',  '":', '":"')
@@ -144,13 +155,13 @@ for line in fp:
         if status == "good":
 
             result = contents(line, finder[i] + finderadds[i] )
-            print(result)
+            #print(result)
             # gets a stores information in lit
             helper[i] = result
 
         if result == "null":
             break
-        print(finder[i] + ": " + result)
+        #print(finder[i] + ": " + result)
         i = i + 1
     if(i == len(finder)):
         # uses information in list to make node
@@ -162,7 +173,7 @@ for line in fp:
     i = 0
 
 
-fp2 = open("dummypath.json")
+fp2 = open("pathtest1.json")
 
 finder = ("id","from","to","dist","type")
 finderadds = ('":"', '":"', '":"',  '":', '":"')
@@ -180,15 +191,16 @@ for line in fp2:
             helper[i] = result
         if result == "null":
             break
-        print(finder[i] + ": " + result)
+        #print(finder[i] + ": " + result)
         i = i + 1
     if(i == len(finder)):
         final = Connection(helper[0],helper[1],helper[2],float(helper[3]),helper[4])
-        allconnections[helper[0]] = final
+        allconnections[helper[1]+helper[2]] = final
+        allconnections[helper[2]+helper[1]] = final
 
         G.add_edge(helper[1],helper[2]) # connects nodes based off of names
 
-        print(list(G.adj[helper[1]]))
+        #print(list(G.adj[helper[1]]))
     i = 0
 
 
@@ -210,7 +222,9 @@ forbiddennodes = []
 #end = input("where do you want to go? ")
 
 start = "Node A"
-end =  "Node D"
+end =  "Node X"
+invalid = {}
+invalid[0] = "construction"
 
 curname = start
 endname = end
@@ -224,21 +238,21 @@ pathtaken.append(curname)
 while(curname != endname):
     # curname to the path here
 
-    print("current nodes name: " + curname)
+    #print("current nodes name: " + curname)
 
     connectednodes = list(G.adj[curname])
-    print("connected nodes: {")
-    print(connectednodes)
-    print("}")
+    #print("connected nodes: {")
+    #print(connectednodes)
+    #print("}")
 
     helperlist = pathtaken + forbiddennodes
 
-    nextnodename = findnode(connectednodes,endname,allnodes,helperlist)
+    nextnodename = findnode(curname,connectednodes,endname,allnodes,helperlist,allconnections,invalid)
     # ADD IN A SYSTEM TO ACOMIDATE FOR POTENTIAL DOUBLING BACK
     # BASICALLY MAKE IT SO IS STORES ALL NODES IT HAS BEEN TO, AND THEN DOSENT GO TO A NODE IF IT ALREADY HAS BEEN THERE, and also the forbidden nodes
 
     if(nextnodename == "NULL"):
-        print("the best connected node: " + nextnodename)
+        #print("the best connected node: " + nextnodename)
 
         forbiddennodes.append(curname)
 
@@ -246,13 +260,15 @@ while(curname != endname):
         curnode = allnodes[start]
         pathtaken = []
     else:
-        print("the best connected node: " + nextnodename)
+        #print("the best connected node: " + nextnodename)
 
         curname = nextnodename
         curnode = allnodes[nextnodename]
         pathtaken.append(curname)
 
 
+
+print("final path from start to finish is: ")
 print(pathtaken)
 
 # when reaches dead end; restart the process, even emptying the pathtaken list, but add the last node that it got stuck at to forbiddennodes
