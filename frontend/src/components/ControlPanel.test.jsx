@@ -101,3 +101,63 @@ describe('ControlPanel wiring', () => {
     expect(h.onAvoidStairsChange).toHaveBeenCalledWith(true);
   });
 });
+
+describe('ControlPanel location messages', () => {
+  it.each([
+    ['denied', /blocked/i],
+    ['unsupported', /cannot share location/i],
+    ['locating', /finding your location/i],
+    ['ready', /closest first/i],
+    ['error', /could not be found/i],
+  ])('shows the %s message as a status', (status, pattern) => {
+    setup({ locationStatus: status });
+    expect(screen.getByText(pattern).getAttribute('role')).toBe('status');
+  });
+
+  it('shows no location message while idle', () => {
+    setup({ locationStatus: 'idle' });
+    expect(screen.queryAllByRole('status')).toHaveLength(0);
+  });
+
+  it('shows only one location message at a time', () => {
+    setup({ locationStatus: 'denied' });
+    expect(screen.getAllByRole('status')).toHaveLength(1);
+  });
+});
+
+describe('ControlPanel route messages', () => {
+  it('announces loading as a status', () => {
+    setup({ routeLoading: true });
+    expect(screen.getByText(/finding a route/i).getAttribute('role')).toBe('status');
+  });
+
+  it('shows a failed request as an alert with the reason', () => {
+    setup({ routeError: 'timeout' });
+    expect(screen.getByRole('alert').textContent).toBe('Route request failed: timeout');
+  });
+
+  it('shows the default no-path message as an alert', () => {
+    setup({ noRouteWarning: true });
+    expect(screen.getByRole('alert').textContent).toMatch(/no accessible path/i);
+  });
+
+  it('shows the backend\'s message instead when there is one', () => {
+    setup({ noRouteWarning: true, noRouteMessage: 'No stair-free route found' });
+    expect(screen.getByRole('alert').textContent).toBe('No stair-free route found');
+  });
+
+  it('does not report a failed request as "no path"', () => {
+    setup({ routeError: 'server down', noRouteWarning: false });
+    expect(screen.queryByText(/no accessible path/i)).toBeNull();
+  });
+
+  it('warns when start and destination are the same', () => {
+    setup({ sameBuildingWarning: true });
+    expect(screen.getByRole('alert').textContent).toMatch(/choose two different locations/i);
+  });
+
+  it('shows no alerts when everything is fine', () => {
+    setup();
+    expect(screen.queryAllByRole('alert')).toHaveLength(0);
+  });
+});
