@@ -1,7 +1,7 @@
 {
     "E0001": {
-        "from": "L01",
-        "to": "L02",
+        "from": "L01A",
+        "to": "N008",
         "distance": null,
         "features": {
             "paved": false,
@@ -12,8 +12,8 @@
         }
     },
     "E0002": {
-        "from": "L01",
-        "to": "L03",
+        "from": "N008",
+        "to": "N007",
         "distance": null,
         "features": {
             "paved": false,
@@ -24,8 +24,8 @@
         }
     },
     "E0003": {
-        "from": "L01",
-        "to": "L04",
+        "from": "N007",
+        "to": "N006",
         "distance": null,
         "features": {
             "paved": false,
@@ -36,8 +36,8 @@
         }
     },
     "E0004": {
-        "from": "L02",
-        "to": "L03",
+        "from": "N006",
+        "to": "N005",
         "distance": null,
         "features": {
             "paved": false,
@@ -48,8 +48,8 @@
         }
     },
     "E0005": {
-        "from": "L01",
-        "to": "L01A",
+        "from": "N005",
+        "to": "N002",
         "distance": null,
         "features": {
             "paved": false,
@@ -60,8 +60,8 @@
         }
     },
     "E0006": {
-        "from": "L02",
-        "to": "L02A",
+        "from": "N002",
+        "to": "N001",
         "distance": null,
         "features": {
             "paved": false,
@@ -72,8 +72,8 @@
         }
     },
     "E0007": {
-        "from": "L02",
-        "to": "L02B",
+        "from": "N001",
+        "to": "N003",
         "distance": null,
         "features": {
             "paved": false,
@@ -84,8 +84,8 @@
         }
     },
     "E0008": {
-        "from": "L03",
-        "to": "L03A",
+        "from": "N003",
+        "to": "N004",
         "distance": null,
         "features": {
             "paved": false,
@@ -96,8 +96,8 @@
         }
     },
     "E0009": {
-        "from": "L03",
-        "to": "L03B",
+        "from": "L02A",
+        "to": "N001",
         "distance": null,
         "features": {
             "paved": false,
@@ -108,8 +108,8 @@
         }
     },
     "E0010": {
-        "from": "L03",
-        "to": "L03C",
+        "from": "L02B",
+        "to": "N002",
         "distance": null,
         "features": {
             "paved": false,
@@ -120,8 +120,8 @@
         }
     },
     "E0011": {
-        "from": "L04",
-        "to": "L04A",
+        "from": "L03A",
+        "to": "N001",
         "distance": null,
         "features": {
             "paved": false,
@@ -132,8 +132,8 @@
         }
     },
     "E0012": {
-        "from": "L05",
-        "to": "L05A",
+        "from": "L03B",
+        "to": "N004",
         "distance": null,
         "features": {
             "paved": false,
@@ -144,8 +144,8 @@
         }
     },
     "E0013": {
-        "from": "L06",
-        "to": "L06A",
+        "from": "L03C",
+        "to": "N003",
         "distance": null,
         "features": {
             "paved": false,
@@ -156,8 +156,8 @@
         }
     },
     "E0014": {
-        "from": "L06",
-        "to": "L06B",
+        "from": "L04A",
+        "to": "L01A",
         "distance": null,
         "features": {
             "paved": false,
@@ -168,8 +168,8 @@
         }
     },
     "E0015": {
-        "from": "L07",
-        "to": "L07A",
+        "from": "L05A",
+        "to": "L01A",
         "distance": null,
         "features": {
             "paved": false,
@@ -180,8 +180,8 @@
         }
     },
     "E0016": {
-        "from": "L07",
-        "to": "L07B",
+        "from": "L06A",
+        "to": "L04A",
         "distance": null,
         "features": {
             "paved": false,
@@ -192,8 +192,8 @@
         }
     },
     "E0017": {
-        "from": "L08",
-        "to": "L08A",
+        "from": "L06B",
+        "to": "L04A",
         "distance": null,
         "features": {
             "paved": false,
@@ -204,8 +204,8 @@
         }
     },
     "E0018": {
-        "from": "L09",
-        "to": "L09A",
+        "from": "L07A",
+        "to": "N005",
         "distance": null,
         "features": {
             "paved": false,
@@ -216,8 +216,44 @@
         }
     },
     "E0019": {
-        "from": "L10",
-        "to": "L10A",
+        "from": "L07B",
+        "to": "N008",
+        "distance": null,
+        "features": {
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
+    },
+    "E0020": {
+        "from": "L08A",
+        "to": "N005",
+        "distance": null,
+        "features": {
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
+    },
+    "E0021": {
+        "from": "L09A",
+        "to": "L07A",
+        "distance": null,
+        "features": {
+            "paved": false,
+            "stairs": false,
+            "ramp": false,
+            "closed": false,
+            "gradient": 0.0
+        }
+    },
+    "E0022": {
+        "from": "L10A",
+        "to": "L09A",
         "distance": null,
         "features": {
             "paved": false,
