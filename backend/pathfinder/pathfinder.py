@@ -122,7 +122,19 @@ def findnode(curname,nextarray,endname,nodearray,helperlist,allconnections,inval
     return final
 
 
+# to-do list
+# rewrite the code that parses the json file
+#   specfically when shit is poorly written to acomidate for human stupididty
+# make shit more effective
 
+
+
+
+
+
+
+
+# THE CODE STARTS HERE FUCK FACE
 
 
 # put stuff below here
@@ -255,6 +267,11 @@ while(curname != endname):
         #print("the best connected node: " + nextnodename)
 
         forbiddennodes.append(curname)
+
+        if(start == curname):
+            print("yeah that aint happening")
+            break
+
 
         curname = start
         curnode = allnodes[start]
