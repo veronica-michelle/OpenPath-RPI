@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import SearchField from './SearchField.jsx';
 
 afterEach(cleanup);
@@ -137,5 +137,134 @@ describe('SearchField with a location', () => {
     open(input);
     fireEvent.change(input, { target: { value: 'sa' } });
     expect(screen.queryByText('Nearest entrance')).toBeNull();
+  });
+});
+
+describe('SearchField filtering', () => {
+  it('leaves out the excluded building', () => {
+    const { input } = setup({ excludeId: 'lally' });
+    open(input);
+    expect(rows()).not.toContain('Lally Hall');
+    expect(rows().length).toBe(3);
+  });
+
+  it('puts names that start with the query before names that only contain it', () => {
+    const { input } = setup();
+    open(input);
+    fireEvent.change(input, { target: { value: 'l' } });
+    expect(rows()).toEqual(['Lally Hall', 'Amos Eaton Hall', 'Carnegie Building', 'Sage Lab']);
+  });
+
+  it('ignores upper and lower case', () => {
+    const { input } = setup();
+    open(input);
+    fireEvent.change(input, { target: { value: 'SAGE' } });
+    expect(rows()).toEqual(['Sage Lab']);
+  });
+
+  it('shows an empty message when nothing matches', () => {
+    const { input } = setup();
+    open(input);
+    fireEvent.change(input, { target: { value: 'zzz' } });
+    expect(screen.getByText('no match on the board')).toBeTruthy();
+    expect(screen.queryByRole('listbox')).toBeNull();
+  });
+
+  it('clears the selection when the text is emptied', () => {
+    const { input, onChange } = setup({ value: listBuildings[1] });
+    fireEvent.change(input, { target: { value: '' } });
+    expect(onChange).toHaveBeenCalledWith(null);
+  });
+});
+
+describe('SearchField selecting', () => {
+  it('selects a building on click', () => {
+    const { input, onChange } = setup();
+    open(input);
+    fireEvent.click(screen.getByText('Lally Hall'));
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ id: 'lally' }));
+    expect(screen.queryByRole('listbox')).toBeNull();
+  });
+
+  it('selects the nearest building from the shortcut row', () => {
+    const { input, onChange } = setup({ userPosition: nearLally, showNearestShortcut: true });
+    open(input);
+    fireEvent.click(screen.getByText('Nearest entrance'));
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ id: 'lally' }));
+  });
+});
+
+describe('SearchField keyboard', () => {
+  it('moves the highlight with the arrow keys', () => {
+    const { input } = setup();
+    open(input);
+    const options = () => screen.getAllByRole('option');
+    expect(options()[0].getAttribute('aria-selected')).toBe('true');
+    fireEvent.keyDown(input, { key: 'ArrowDown' });
+    expect(options()[1].getAttribute('aria-selected')).toBe('true');
+    fireEvent.keyDown(input, { key: 'ArrowUp' });
+    expect(options()[0].getAttribute('aria-selected')).toBe('true');
+  });
+
+  it('stops at the first and last rows', () => {
+    const { input } = setup();
+    open(input);
+    for (let i = 0; i < 10; i++) fireEvent.keyDown(input, { key: 'ArrowDown' });
+    const options = screen.getAllByRole('option');
+    expect(options[options.length - 1].getAttribute('aria-selected')).toBe('true');
+    for (let i = 0; i < 10; i++) fireEvent.keyDown(input, { key: 'ArrowUp' });
+    expect(screen.getAllByRole('option')[0].getAttribute('aria-selected')).toBe('true');
+  });
+
+  it('selects the highlighted row with Enter', () => {
+    const { input, onChange } = setup();
+    open(input);
+    fireEvent.keyDown(input, { key: 'ArrowDown' });
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ id: 'carnegie' }));
+  });
+
+  it('selects the nearest building with Enter when the shortcut row is highlighted', () => {
+    const { input, onChange } = setup({ userPosition: nearLally, showNearestShortcut: true });
+    open(input);
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ id: 'lally' }));
+  });
+
+  it('closes the list with Escape', () => {
+    const { input } = setup();
+    open(input);
+    fireEvent.keyDown(input, { key: 'Escape' });
+    expect(screen.queryByRole('listbox')).toBeNull();
+    expect(input.getAttribute('aria-expanded')).toBe('false');
+  });
+});
+
+describe('SearchField leaving the field', () => {
+  afterEach(() => vi.useRealTimers());
+
+  it('selects a building when the typed text exactly matches its name', () => {
+    vi.useFakeTimers();
+    const { input, onChange } = setup();
+    open(input);
+    fireEvent.change(input, { target: { value: 'lally hall' } });
+    fireEvent.blur(input);
+    act(() => {
+      vi.advanceTimersByTime(150);
+    });
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ id: 'lally' }));
+  });
+
+  it('reverts partial text to the current selection', () => {
+    vi.useFakeTimers();
+    const { input, onChange } = setup({ value: null });
+    open(input);
+    fireEvent.change(input, { target: { value: 'zzz' } });
+    fireEvent.blur(input);
+    act(() => {
+      vi.advanceTimersByTime(150);
+    });
+    expect(input.value).toBe('');
+    expect(onChange).not.toHaveBeenCalled();
   });
 });
