@@ -17,6 +17,7 @@ import json
 import logging
 import math
 import os
+import re
 from functools import lru_cache
 from pathlib import Path
 
@@ -30,6 +31,7 @@ PRACTICE_DATA_PATH = Path(__file__).with_name("practice_data")
 FEET_PER_METER = 3.28084
 WALK_SPEED_MPH = 2.5
 logger = logging.getLogger(__name__)
+_TRAILING_COMMA_RE = re.compile(r",(?=\s*[}\]])")
 
 
 def get_graph():
@@ -85,10 +87,8 @@ def _point_fields(point):
 
 def load_graph(locations_path, paths_path):
     """Preserve nested buildings and doors; paths refer to physical point IDs."""
-    with Path(locations_path).open(encoding="utf-8") as locations_file:
-        locations = json.load(locations_file)
-    with Path(paths_path).open(encoding="utf-8") as paths_file:
-        paths = json.load(paths_file)
+    locations = _load_json(Path(locations_path))
+    paths = _load_json(Path(paths_path))
     if not isinstance(locations, dict):
         raise ValueError("locations.json must be a JSON object keyed by node IDs")
     if not isinstance(paths, dict):
@@ -154,6 +154,18 @@ def load_graph(locations_path, paths_path):
             }
         )
     return {"nodes": nodes, "edges": edges}
+
+
+def _load_json(path):
+    try:
+        with path.open(encoding="utf-8") as handle:
+            return json.load(handle)
+    except json.JSONDecodeError:
+        text = path.read_text(encoding="utf-8")
+        cleaned = _TRAILING_COMMA_RE.sub("", text)
+        if cleaned == text:
+            raise
+        return json.loads(cleaned)
 
 
 def routing_nodes(graph):
