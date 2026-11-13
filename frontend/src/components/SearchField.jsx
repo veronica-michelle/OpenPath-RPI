@@ -47,6 +47,7 @@ export default function SearchField({
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const blurTimer = useRef(null);
+  const inputRef = useRef(null);
   const inputId = useId();
   const listId = useId();
 
@@ -136,6 +137,7 @@ export default function SearchField({
         {label}
       </label>
       <input
+        ref={inputRef}
         id={inputId}
         className="search-input"
         type="text"
@@ -152,6 +154,23 @@ export default function SearchField({
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
       />
+      {(text || value) && (
+        <button
+          type="button"
+          className="search-clear"
+          aria-label={`Clear ${label.toLowerCase()}`}
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => {
+            clearTimeout(blurTimer.current);
+            commit(null);
+            setActiveIndex(0);
+            inputRef.current?.focus();
+            setOpen(true);
+          }}
+        >
+          <span aria-hidden="true">×</span>
+        </button>
+      )}
       {open && (options.length > 0 || showNearest) && (
         <ul
           id={listId}

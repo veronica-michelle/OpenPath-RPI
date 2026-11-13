@@ -1,11 +1,11 @@
 """Read the 2 campus data files and prepare map data for the app.
 
 locations.json holds buildings, entrances, and points along paths.
-paths.json holds the connections between building or path-point IDs.
+paths.json holds connections using entrance or path-point IDs.
+Buildings are named groups of doors, never walkable graph vertices.
 
 The app expects a list of nodes and a list of edges, so this file translates
-the saved fields into that shape and preserves existing route behavior and
-metadata.
+the saved fields into that shape while preserving nested entrances and metadata.
 
 The route distances and current summary use meters and feet in different areas.
 The data loader keeps the source elevation in meters and also supplies the feet
@@ -45,13 +45,13 @@ def get_graph():
 @lru_cache(maxsize=1)
 def _get_graph(locations_path, paths_path, locations_modified, paths_modified):
     graph = load_graph(locations_path, paths_path)
-    node_ids = {node["id"] for node in graph["nodes"]}
+    node_ids = set(routing_nodes(graph))
     edges = []
     for edge in graph["edges"]:
         if edge["a"] not in node_ids or edge["b"] not in node_ids:
             # Ignore broken links here so the map still shows valid data.
             logger.warning(
-                "Skipping path %s: endpoint does not exist (%s -> %s)",
+                "Skipping path %s: endpoints must be entrance or path IDs (%s -> %s)",
                 edge["id"],
                 edge["a"],
                 edge["b"],
@@ -82,16 +82,9 @@ def _point_fields(point):
         "elevation": point["elevation"] * FEET_PER_METER,
     }
 
-"""Turns the 2 saved objects into the node and edge lists used by routes.
-Edges connect building IDs or path-point IDs. A building starts at its first
-entrance unless the request names another entrance. Feature, details, and other
-saved fields remain attached to the returned items. If a path has no distance,
-the route finder estimates a distance from its endpoints' locations.
-"""
-
 
 def load_graph(locations_path, paths_path):
-
+    """Preserve nested buildings and doors; paths refer to physical point IDs."""
     with Path(locations_path).open(encoding="utf-8") as locations_file:
         locations = json.load(locations_file)
     with Path(paths_path).open(encoding="utf-8") as paths_file:
@@ -131,6 +124,8 @@ def load_graph(locations_path, paths_path):
         else:
             nodes.append({**location, **_point_fields(location), "type": "path"})
 
+    # Reject collisions before any ID lookup can silently replace a door.
+    routing_nodes({"nodes": nodes})
     edges = []
     for edge_id, path in paths.items():
         features = path["features"]
@@ -159,6 +154,52 @@ def load_graph(locations_path, paths_path):
             }
         )
     return {"nodes": nodes, "edges": edges}
+
+
+def routing_nodes(graph):
+    """Index physical points without changing the stored or API data structure.
+
+    Buildings remain picker metadata. No implicit building-to-door or door-to-door
+    edges are created: only paths.json can establish a walkable connection.
+    """
+    nodes = {}
+    reserved_ids = {node["id"] for node in graph["nodes"]}
+    for node in graph["nodes"]:
+        if "entrances" in node or node.get("type") == "location":
+            points = [
+                {
+                    **entrance,
+                    "type": "entrance",
+                    "name": node.get("name", node["id"]),
+                    "mock": entrance.get("mock", node.get("mock", False)),
+                }
+                for entrance in node.get("entrances", [])
+            ]
+        else:
+            points = [node]
+        for point in points:
+            point_id = point["id"]
+            if point_id in nodes or (point is not node and point_id in reserved_ids):
+                raise ValueError(f"duplicate routing node id: {point_id}")
+            nodes[point_id] = point
+    return nodes
+
+
+def _resolve_endpoint(locations, location_id, entrance_id):
+    location = locations.get(location_id)
+    if location is None:
+        return None
+    entrances = location.get("entrances", [])
+    if entrances:
+        if not entrance_id:
+            return entrances[0]["id"]
+        return next((item["id"] for item in entrances if item["id"] == entrance_id), None)
+    return None if entrance_id else location_id
+
+
+def _has_stairs(node):
+    features = node.get("features", {})
+    return bool(features.get("stairs") and not features.get("ramp"))
 
 
 # Read the Conceptual Graph files used by the routing practice checks.
@@ -241,36 +282,14 @@ def _find_node_path(
     destination_entrance_id="",
 ):
     graph = get_graph()
-    nodes = {node["id"]: node for node in graph["nodes"]}
+    locations = {node["id"]: node for node in graph["nodes"]}
+    nodes = routing_nodes(graph)
+    start_id = _resolve_endpoint(locations, start_id, start_entrance_id)
+    destination_id = _resolve_endpoint(locations, destination_id, destination_entrance_id)
     if start_id not in nodes or destination_id not in nodes:
         return None
-
-    # Choose doors before measuring edges so route choice and elevation agree
-    # with the endpoints shown to the user. Do not modify the cached graph.
-    for location_id, entrance_id in (
-        (start_id, start_entrance_id),
-        (destination_id, destination_entrance_id),
-    ):
-        location = nodes[location_id]
-        entrances = location.get("entrances", [])
-        entrance = next((item for item in entrances if item["id"] == entrance_id), None)
-        if entrance_id and entrance is None:
-            return None
-        if entrance is None and entrances:
-            entrance = entrances[0]
-        if entrance:
-            features = entrance.get("features", {})
-            if avoid_stairs and features.get("stairs") and not features.get("ramp"):
-                return None
-            nodes[location_id] = {
-                **location,
-                "_entrance_stairs": bool(features.get("stairs") and not features.get("ramp")),
-                **{
-                    key: entrance[key]
-                    for key in ("lat", "lng", "elevation", "elevation_m")
-                    if key in entrance
-                },
-            }
+    if avoid_stairs and any(_has_stairs(nodes[key]) for key in (start_id, destination_id)):
+        return None
 
     # Treat each usable edge as a 2-way connection between its node IDs.
     adjacency = {node_id: [] for node_id in nodes}
@@ -282,6 +301,8 @@ def _find_node_path(
             continue
         a, b = nodes.get(edge["a"]), nodes.get(edge["b"])
         if not a or not b:
+            continue
+        if avoid_stairs and (_has_stairs(a) or _has_stairs(b)):
             continue
         weight = edge.get("dist")
         if weight is None:
@@ -349,7 +370,7 @@ def construction_blocks_route(
     )
 
 
-# Build the route response and move its endpoints to any selected entrances.
+# Build the route response directly from physical entrance and path points.
 def find_route(
     start_id, destination_id, avoid_stairs=False, start_entrance_id="", destination_entrance_id=""
 ):
@@ -385,14 +406,14 @@ def find_route(
     distance_ft = distance_m * FEET_PER_METER
     minutes = max(1, round(distance_m / 1609.344 / WALK_SPEED_MPH * 60))
     grade = elevation_gain / distance_ft if distance_ft else 0
-    destination_name = nodes[destination_id]["name"]
+    destination_name = nodes[node_ids[-1]].get("name", destination_id)
     maneuvers = _build_maneuvers(points, segment_distances_m)
     return {
         "nodeIds": node_ids,
         "points": points,
         "route_points": points,
         "usedStairs": any(edge.get("type") == "stairs" for edge in edges)
-        or any(nodes[node_id].get("_entrance_stairs") for node_id in (start_id, destination_id)),
+        or any(_has_stairs(nodes[node_id]) for node_id in node_ids),
         "distanceFt": distance_ft,
         "total_distance_m": distance_m,
         "segmentDistancesFt": [distance * FEET_PER_METER for distance in segment_distances_m],
