@@ -5,9 +5,35 @@ import math
 from unittest import TestCase
 from unittest.mock import patch
 
+from rest_framework.test import APITestCase
+
 from . import graph
+from .edge_calculator import fill_paths, measure_edge
 from .tests import LOCATIONS_DATA, PATHS_DATA, ControlledGraphAPITestCase
 from .validate_graph import validate
+
+
+class PlaceholderDataEndpointTests(APITestCase):
+    """Exercise the configured data files through the actual API endpoints."""
+
+    def test_map_exposes_valid_entrance_and_path_connections(self):
+        response = self.client.get("/api/map/")
+        self.assertEqual(response.status_code, 200)
+        points = graph.routing_nodes(response.data)
+        self.assertTrue(response.data["edges"])
+        self.assertTrue(all(e["a"] in points and e["b"] in points for e in response.data["edges"]))
+        self.assertTrue(
+            any(e["a"].startswith("N") or e["b"].startswith("N") for e in response.data["edges"])
+        )
+
+    def test_route_between_buildings_uses_entrances_and_path_points(self):
+        response = self.client.post(
+            "/api/route/", {"start_id": "L01", "destination_id": "L03"}, format="json"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["nodeIds"][0], "L01A")
+        self.assertEqual(response.data["nodeIds"][-1], "L03A")
+        self.assertTrue(any(node.startswith("N") for node in response.data["nodeIds"]))
 
 
 class RouteIntegrationTests(ControlledGraphAPITestCase):
@@ -28,6 +54,7 @@ class RouteIntegrationTests(ControlledGraphAPITestCase):
         self.assertAlmostEqual(route["maneuvers"][-1]["atDistance"], route["distanceFt"])
 
     def test_selected_entrance_controls_elevation_without_mutating_cached_map(self):
+        self.graph["edges"].append({"a": "L01B", "b": "L02A", "type": "path"})
         before = copy.deepcopy(self.graph)
         response = self.route(start_entrance_id="L01B")
         self.assertEqual(response.status_code, 200)
@@ -39,22 +66,62 @@ class RouteIntegrationTests(ControlledGraphAPITestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn("Unknown start entrance", response.data["detail"])
 
+    def test_disconnected_door_does_not_borrow_another_doors_paths(self):
+        self.assertEqual(self.route().status_code, 200)
+        response = self.route(start_entrance_id="L01B")
+        self.assertEqual(response.status_code, 404)
+        self.assertIn("No available route", response.data["detail"])
+
+    def test_destination_door_uses_its_own_paths_in_both_directions(self):
+        self.graph["edges"].append({"a": "L01B", "b": "N001", "type": "path"})
+        forward = self.route(start_entrance_id="L01B")
+        reverse = self.route(start_id="L02", destination_id="L01", destination_entrance_id="L01B")
+        self.assertEqual(forward.status_code, 200)
+        self.assertEqual(reverse.status_code, 200)
+        self.assertEqual(forward.data["nodeIds"], ["L01B", "N001", "L02A"])
+        self.assertEqual(reverse.data["nodeIds"], list(reversed(forward.data["nodeIds"])))
+
+    def test_building_does_not_create_an_unrecorded_connection_between_doors(self):
+        self.graph["edges"] = [
+            {"a": "L02A", "b": "L01A", "type": "path"},
+            {"a": "L01B", "b": "L03A", "type": "path"},
+        ]
+        response = self.route(start_id="L02", destination_id="L03")
+        self.assertEqual(response.status_code, 404)
+
+    def test_door_stairs_are_checked_in_the_middle_of_a_route(self):
+        self.graph["edges"] = [
+            {"a": "L02A", "b": "L01B", "type": "path"},
+            {"a": "L01B", "b": "L03A", "type": "path"},
+        ]
+        response = self.route(start_id="L02", destination_id="L03")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data["usedStairs"])
+        response = self.route(start_id="L02", destination_id="L03", avoid_stairs=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_building_ids_are_not_walkable_vertices(self):
+        self.graph["edges"] = [{"a": "L01", "b": "L02", "type": "path"}]
+        self.assertEqual(self.route().status_code, 404)
+
     def test_stairs_only_door_cannot_be_a_stairs_free_route(self):
         response = self.route(start_entrance_id="L01B", avoid_stairs=True)
         self.assertEqual(response.status_code, 404)
         self.assertNotIn("Construction blocks", response.data["detail"])
 
     def test_ramp_at_door_allows_stairs_free_route(self):
+        self.graph["edges"].append({"a": "L01B", "b": "L02A", "type": "path"})
         self.graph["nodes"][0]["entrances"][1]["features"]["ramp"] = True
         response = self.route(start_entrance_id="L01B", avoid_stairs=True)
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.data["usedStairs"])
 
     def test_stairs_only_door_is_reported_even_on_a_flat_path(self):
+        self.graph["edges"].append({"a": "L01B", "b": "L02A", "type": "path"})
         self.graph["edges"][0]["type"] = "path"
         self.assertTrue(self.route(start_entrance_id="L01B").data["usedStairs"])
 
-    def test_selected_door_changes_unmeasured_route_choice(self):
+    def test_selected_door_uses_its_recorded_connections(self):
         self.graph["nodes"] = [
             {
                 "id": "L01",
@@ -66,7 +133,13 @@ class RouteIntegrationTests(ControlledGraphAPITestCase):
                     {"id": "east", "lat": 42.0, "lng": -72.998, "features": {}},
                 ],
             },
-            {"id": "L02", "name": "Library", "lat": 42.002, "lng": -72.999},
+            {
+                "id": "L02",
+                "name": "Library",
+                "lat": 42.002,
+                "lng": -72.999,
+                "entrances": [{"id": "L02A", "lat": 42.002, "lng": -72.999}],
+            },
             {"id": "west-path", "lat": 42.001, "lng": -73.0},
             {"id": "east-path", "lat": 42.001, "lng": -72.998},
         ]
@@ -76,10 +149,10 @@ class RouteIntegrationTests(ControlledGraphAPITestCase):
         self.graph["edges"] = [
             {"a": a, "b": b, "type": "path"}
             for a, b in [
-                ("L01", "west-path"),
-                ("L01", "east-path"),
-                ("west-path", "L02"),
-                ("east-path", "L02"),
+                ("west", "west-path"),
+                ("east", "east-path"),
+                ("west-path", "L02A"),
+                ("east-path", "L02A"),
             ]
         ]
         self.assertIn("west-path", self.route(start_entrance_id="west").data["nodeIds"])
@@ -87,6 +160,61 @@ class RouteIntegrationTests(ControlledGraphAPITestCase):
 
 
 class DataValidationTests(TestCase):
+    def test_loader_preserves_the_nested_source_format_and_door_connections(self):
+        locations, paths = copy.deepcopy(LOCATIONS_DATA), copy.deepcopy(PATHS_DATA)
+        before = copy.deepcopy((locations, paths))
+        loaded = self.load_files(locations, paths)
+        self.assertEqual((locations, paths), before)
+        self.assertEqual(loaded["edges"][0]["a"], "L01A")
+        self.assertEqual(loaded["edges"][0]["b"], "L02A")
+        self.assertEqual(loaded["nodes"][0]["entrances"][1]["id"], "L01B")
+        self.assertNotIn("L01", graph.routing_nodes(loaded))
+        self.assertIn("L01B", graph.routing_nodes(loaded))
+
+    def test_runtime_keeps_nested_door_edges_and_logs_invalid_building_edges(self):
+        paths = copy.deepcopy(PATHS_DATA)
+        paths["placeholder"] = {**paths["E00001"], "from": "L01"}
+        loaded = self.load_files(copy.deepcopy(LOCATIONS_DATA), paths)
+        graph._get_graph.cache_clear()
+        self.addCleanup(graph._get_graph.cache_clear)
+        with patch("locations.graph.load_graph", return_value=loaded):
+            with self.assertLogs("locations.graph", level="WARNING") as logs:
+                result = graph._get_graph("locations.json", "paths.json", 0, 0)
+        self.assertEqual(len(result["edges"]), len(PATHS_DATA))
+        self.assertIn("placeholder", logs.output[0])
+        self.assertIn("entrance or path IDs", logs.output[0])
+        self.assertEqual(result["edges"][0]["a"], "L01A")
+
+    def test_validator_reports_building_placeholder_and_disconnected_door(self):
+        paths = copy.deepcopy(PATHS_DATA)
+        paths["E00001"]["from"] = "L01"
+        loaded = self.load_files(copy.deepcopy(LOCATIONS_DATA), paths)
+        errors, _ = validate(loaded)
+        self.assertTrue(any("unresolved building endpoint 'L01'" in error for error in errors))
+        self.assertTrue(any("unreachable" in error and "L01B" in error for error in errors))
+        self.assertFalse(any("missing node 'L02A'" in error for error in errors))
+
+    def test_duplicate_door_ids_and_collisions_are_rejected(self):
+        for duplicate in ("L01A", "L01", "N001"):
+            with self.subTest(duplicate=duplicate):
+                locations = copy.deepcopy(LOCATIONS_DATA)
+                locations["L01"]["entrances"][1]["id"] = duplicate
+                with self.assertRaisesRegex(ValueError, "duplicate routing node id"):
+                    self.load_files(locations, copy.deepcopy(PATHS_DATA))
+
+    def test_edge_calculator_rejects_building_and_preserves_placeholder(self):
+        paths = copy.deepcopy(PATHS_DATA)
+        paths["E00001"]["from"] = "L01"
+        before = copy.deepcopy(paths["E00001"])
+        problems = fill_paths(LOCATIONS_DATA, paths)
+        self.assertIn("use an entrance id", problems["E00001"])
+        self.assertEqual(paths["E00001"], before)
+
+    def test_edge_calculator_measures_specified_door_not_nearest_door(self):
+        a_distance, _ = measure_edge(LOCATIONS_DATA, "L01A", "N001")
+        b_distance, _ = measure_edge(LOCATIONS_DATA, "L01B", "N001")
+        self.assertGreater(b_distance, a_distance)
+
     def test_invalid_distance_is_reported_and_not_routed(self):
         for distance in (-1, math.nan, math.inf, "100", True):
             with self.subTest(distance=distance):

@@ -15,7 +15,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from .graph import LOCATIONS_PATH, PATHS_PATH, load_graph
+from .graph import LOCATIONS_PATH, PATHS_PATH, _has_stairs, load_graph, routing_nodes
 
 NODE_TYPES = {"location", "entrance", "path"}
 EDGE_TYPES = {"path", "stairs", "construction"}
@@ -24,9 +24,15 @@ SCENARIO_EXPECTS = {"route", "no_route"}
 
 def components(graph, skip_edge_types=()):
     """Connected groups of node ids, largest first. Edges to missing nodes are ignored."""
-    neighbors = {node["id"]: set() for node in graph["nodes"]}
+    points = routing_nodes(graph)
+    neighbors = {node_id: set() for node_id in points}
     for edge in graph["edges"]:
         if edge.get("type") in skip_edge_types:
+            continue
+        if "stairs" in skip_edge_types and (
+            edge.get("features", {}).get("stairs")
+            or any(_has_stairs(points.get(edge.get(end), {})) for end in ("a", "b"))
+        ):
             continue
         if edge.get("a") in neighbors and edge.get("b") in neighbors:
             neighbors[edge["a"]].add(edge["b"])
@@ -62,8 +68,6 @@ def validate(graph):
     for node_id in _duplicates(node_ids):
         errors.append(f"duplicate node id: {node_id}")
     known_nodes = set(node_ids)
-    mock_ids = {node["id"] for node in nodes if node.get("mock")}
-
     entrance_ids = []
     for node in nodes:
         if node.get("type") not in NODE_TYPES:
@@ -97,11 +101,34 @@ def validate(graph):
     for entrance_id in sorted(set(entrance_ids) & known_nodes):
         errors.append(f"entrance id {entrance_id} is also used as a node id")
 
+    try:
+        points = routing_nodes(graph)
+    except ValueError as error:
+        errors.append(str(error))
+        return errors, notes
+    known_nodes = set(points)
+    mock_ids = {node_id for node_id, point in points.items() if point.get("mock")}
+    building_ids = {node["id"] for node in nodes if "entrances" in node}
+    for node_id, point in points.items():
+        if node_id not in entrance_ids:
+            continue
+        for field, limit in (("lat", 90), ("lng", 180)):
+            value = point.get(field)
+            if (
+                isinstance(value, bool)
+                or not isinstance(value, (int, float))
+                or not math.isfinite(value)
+                or abs(value) > limit
+            ):
+                errors.append(f"entrance {node_id}: invalid {field}")
+
     edge_keys = []
     for index, edge in enumerate(edges):
         label = f"edge #{index} ({edge.get('a')} - {edge.get('b')})"
         for end in ("a", "b"):
-            if edge.get(end) not in known_nodes:
+            if edge.get(end) in building_ids:
+                errors.append(f"{label}: unresolved building endpoint {edge[end]!r}")
+            elif edge.get(end) not in known_nodes:
                 errors.append(f"{label}: points at missing node {edge.get(end)!r}")
         if edge.get("a") == edge.get("b"):
             errors.append(f"{label}: connects a node to itself")
@@ -156,7 +183,7 @@ def validate(graph):
             key=lambda group: len(group & campus),
         )
         for node_id in sorted(campus - stairs_free_campus):
-            if node_id in locations:
+            if points[node_id].get("type") == "entrance":
                 kind = "mock" if node_id in mock_ids else "real"
                 notes.append(f"no stairs-free route from campus ({kind}): {node_id}")
 
