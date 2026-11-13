@@ -26,6 +26,9 @@
   --ink-dim: #5f6a70;
   --ink-faint: #9099a0;
   --panel-bg: #ffffff;
+  --on-accent: #ffffff;
+  --field-border: transparent;
+  --label-halo: #ffffff;
 
   --alert: #d93025;
   --alert-soft: #fdecea;
@@ -91,4 +94,45 @@ button {
 }
 *::-webkit-scrollbar-track {
   background: transparent;
+}
+
+:root[data-theme='dark'] {
+  --map-ground: oklch(20% 0.01 250);
+  --map-quad: oklch(32% 0.05 146);
+  --map-quad-canopy: oklch(40% 0.07 146);
+  --map-water: oklch(30% 0.05 235);
+  --map-water-edge: oklch(40% 0.07 235);
+  --map-building: oklch(28% 0.012 250);
+  --map-path: #3a4046;
+  --map-path-casing: oklch(24% 0.01 250);
+  --map-path-stairs: oklch(60% 0.012 250);
+  --map-accent: #8ab4f8;
+  --map-accent-soft: rgba(138, 180, 248, 0.18);
+  --map-border: oklch(30% 0.01 250);
+  --map-border-strong: oklch(40% 0.012 250);
+  --map-field: oklch(36% 0.012 250);
+  --field-border: transparent;
+
+  --pin-idle: #8d969c;
+  --pin-transit: #a7b0b6;
+  --pin-end: #f28b82;
+
+  --ink: #e8eaed;
+  --ink-dim: #b4bcc2;
+  --ink-faint: #9aa3aa;
+  --panel-bg: #1f2328;
+
+  --alert: #f28b82;
+  --alert-soft: #3c1f1c;
+
+  --on-accent: #0b1f3a;
+  --label-halo: #0f1216;
+  color-scheme: dark;
+}
+
+.leaflet-container {
+  background: var(--map-ground);
+}
+:root[data-theme='dark'] .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9);
 }
