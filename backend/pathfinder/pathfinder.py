@@ -125,7 +125,9 @@ def findnode(curname,nextarray,endname,nodearray,helperlist,allconnections,inval
 # to-do list
 # rewrite the code that parses the json file
 #   specfically when shit is poorly written to acomidate for human stupididty
-# make shit more effective
+# write code to find the shortest path
+#   basically after finding the first possible path, restarrt the current path thing, and add the second to last path to the forbiden path code.
+#   maybe make an array of possible paths people could choose from
 
 
 
