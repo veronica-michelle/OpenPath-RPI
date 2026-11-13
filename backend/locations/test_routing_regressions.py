@@ -1,9 +1,10 @@
 """Routing regressions for measured lengths and entrance selection."""
 
 import copy
+import json
 import math
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import mock_open, patch
 
 from rest_framework.test import APITestCase
 
@@ -237,13 +238,24 @@ class DataValidationTests(TestCase):
 
     def load_files(self, locations, paths):
         with (
-            patch("locations.graph.Path.open"),
-            patch(
-                "locations.graph.json.load",
-                side_effect=[locations, paths],
-            ),
+            patch("locations.graph.Path.open", mock_open()),
+            patch("locations.graph.json.load", side_effect=[locations, paths]),
         ):
             return graph.load_graph("locations.json", "paths.json")
+
+    def test_loader_accepts_trailing_commas_in_data_files(self):
+        locations = copy.deepcopy(LOCATIONS_DATA)
+        malformed_paths = json.dumps(copy.deepcopy(PATHS_DATA))[:-1] + ",}"
+        with (
+            patch("locations.graph.Path.open", mock_open()),
+            patch(
+                "locations.graph.json.load",
+                side_effect=[locations, json.JSONDecodeError("bad json", malformed_paths, 0)],
+            ),
+            patch("locations.graph.Path.read_text", return_value=malformed_paths),
+        ):
+            loaded = graph.load_graph("locations.json", "paths.json")
+        self.assertTrue(loaded["edges"])
 
     def test_mismatched_node_key_is_rejected_before_edges_are_linked(self):
         locations = copy.deepcopy(LOCATIONS_DATA)
