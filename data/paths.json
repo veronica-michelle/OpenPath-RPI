@@ -47,4 +47,16 @@
             "gradient": 6.116
         }
     },
+    "E0004": {
+        "from": "N050",
+        "to": "L03C",
+        "distance": 5.545,
+        "features": {
+            "paved": true,
+            "stairs": true,
+            "ramp": false,
+            "closed": false,
+            "gradient": 7.051
+        }
+    },
 }
