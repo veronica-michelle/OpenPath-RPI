@@ -1,0 +1,51 @@
+.about-page {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  background: var(--map-ground);
+  color: var(--ink);
+}
+.about-main {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+  line-height: 1.6;
+}
+.about-main h1 {
+  margin: 0 0 1rem;
+  font-size: 2rem;
+  color: var(--map-accent);
+}
+.about-main h1:focus {
+  outline: none;
+}
+.about-main h2 {
+  margin: 2rem 0 0.5rem;
+  font-size: 1.25rem;
+}
+.about-main a {
+  color: var(--map-accent);
+  text-decoration: underline;
+}
+.about-back {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+
+.control-panel-footer {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--map-border);
+  font-size: 0.85rem;
+}
+.control-panel-footer a {
+  color: var(--map-accent);
+  text-decoration: underline;
+}
+
+.about-main ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+}
+.about-main li + li {
+  margin-top: 0.35rem;
+}
