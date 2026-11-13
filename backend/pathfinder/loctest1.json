@@ -1,0 +1,15 @@
+[
+  {"id":"node-a","name":"Node A","lat":0,"long":0,"type":"entrance","verified":true},
+  {"id":"node-b","name":"Node B","lat":5,"long":0,"type":"entrance","verified":true},
+  {"id":"node-c","name":"Node C","lat":5,"long":3,"type":"entrance","verified":true},
+  {"id":"node-d","name":"Node D","lat":10,"long":0,"type":"entrance","verified":true},
+  {"id":"node-e","name":"Node E","lat":7.5,"long":2.75,"type":"entrance","verified":true},
+  {"id":"node-f","name":"Node F","lat":16.5,"long":2.75,"type":"entrance","verified":true},
+  {"id":"node-g","name":"Node G","lat":16.5,"long":0.75,"type":"entrance","verified":true},
+  {"id":"node-h","name":"Node H","lat":0.389192,"long":8.26692,"type":"entrance","verified":true},
+  {"id":"node-v","name":"Node V","lat":15.40217,"long":10.65217,"type":"entrance","verified":true},
+  {"id":"node-w","name":"Node W","lat":19.37283,"long":10.16861,"type":"entrance","verified":true},
+  {"id":"node-x","name":"Node X","lat":14.59828,"long":14.81708,"type":"entrance","verified":true},
+  {"id":"node-y","name":"Node Y","lat":21.56414,"long":15.75414,"type":"entrance","verified":true},
+  {"id":"node-z","name":"Node Z","lat":30,"long":30,"type":"entrance","verified":true}
+]
