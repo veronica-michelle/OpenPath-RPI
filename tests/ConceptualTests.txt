@@ -27,4 +27,21 @@ Represented by AdvConceptualGraph.jpg
 9. Attempt to find a path from Node E to Node Y, with and without the avoid stairs toggle. This
    is a test that the addition of new features hasn't overridden the priority of avoiding closed
    paths.
- 
+Part 3: White Box Testing - Using the understanding of our current algorithm (If a location has
+   multiple entrances, it will be referred to with a number added onto the Node letter)
+10. Run a path from Node A to Node X. This should test whether the closest node to the
+   destination node isn't prioritized when that closest node doesn't have a path to the
+   destination.
+11. Run two paths, one from Node F to Node G, and another from Node J to Node G. As they both
+   will stop at different entrances of G(G1 & G2), this should be able to prove that all 
+   entrances are accounted for as valid endpoints for a given location.
+12. Run a path from Node D to Node K, no restrictions.This should go D -> E -> 1 -> F -> 
+   G1 -> G2 -> K1. This should prove that pathfinding can use both entrance nodes and standard
+   path nodes in the pathfinding.
+13. Run a path from Node L to Node G1 while avoiding only steep slopes. This should take path
+   L -> J -> K2 -> K1 -> G2 -> G1. This is a basic test of the toggle to avoid steep slopes.
+14. Go from Node G1 to Node I1 while avoiding only stairs. This should go G1 -> G2 -> J -> I2 ->
+    I1.
+15. Go from Node L to Node K2 while avoiding only unpaved roads. This should go L -> J -> G2 ->
+   K1 -> K2. This, alongside tests 13 & 14, work to ensure that paths can go through building
+   entrances while also avoiding specific conditions.
