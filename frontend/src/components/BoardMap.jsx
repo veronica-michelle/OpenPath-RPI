@@ -99,6 +99,8 @@ export default function BoardMap({
   graphEdges,
   startId,
   endId,
+  startEntranceId,
+  endEntranceId,
   navigating,
   liveTracking,
   destinationName,
@@ -107,7 +109,9 @@ export default function BoardMap({
   onRequestLocation,
   onPinClick,
 }) {
-  const nodesById = useMemo(() => Object.fromEntries(graphNodes.map((node) => [node.id, node])), [graphNodes]);
+  const nodesById = useMemo(() => Object.fromEntries(
+    graphNodes.flatMap((node) => [node, ...(node.entrances ?? [])]).map((node) => [node.id, node]),
+  ), [graphNodes]);
   const mapRef = useRef(null);
   const puckMarkerRef = useRef(null);
   const pendingRecenter = useRef(false);
@@ -416,11 +420,13 @@ export default function BoardMap({
             label area, so clicking near a pin's name still pans the map */}
         {buildings.map((b) => {
           const kind = b.id === startId ? 'start' : b.id === endId ? 'end' : onNode?.has(b.id) ? 'transit' : 'idle';
+          const entranceId = b.id === startId ? startEntranceId : b.id === endId ? endEntranceId : null;
+          const position = b.entrances?.find((entrance) => entrance.id === entranceId) ?? b;
           return (
             <Marker
               key={b.id}
               alt={b.name}
-              position={[b.lat, b.lng]}
+              position={[position.lat, position.lng]}
               icon={buildPinIcon(kind, b.name)}
               eventHandlers={onPinClick ? { click: () => onPinClick(b) } : undefined}
             />

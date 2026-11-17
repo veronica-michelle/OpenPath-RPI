@@ -8,7 +8,7 @@ Originally the layout for both files (`locations.json` and `paths.json`) were ba
 
 The intended organization of this file is for all nodes that specify a location (building) will be listed first, with nodes for pathpoints (sidewalks, intersections, start/end of stairs, ramps, etc.) following after.
 
-Buildings will have an id that is to be used by the pathfinder, a name for displaying to users, an array of entrances, each with its own id and information, in order to find, not only the shortest path, but also the most accessible. The features list four variables: accessible, which refers to inside the building; the presence or absence of stairs and/or a ramp; and buttons, which contains a boolean array. The first element representing the outside push button and the second for the inside one.
+Buildings have an id for selecting the location, a name for displaying to users, an array of entrances, each with its own id and information, in order to find, not only the shortest path, but also the most accessible. The features list four variables: accessible, which refers to inside the building; the presence or absence of stairs and/or a ramp; and buttons, which contains a boolean array. The first element representing the outside push button and the second for the inside one.
 
 Path nodes only have id, coordinations, and elevation fields (in meters). The entrances for the location nodes will also have coordinates and an elevation node (in meters). For the coordinates, they will be organized latitude first then longitude (latitude, longitude) The purpose for this is to calculate an approximate gradient between two points, that will be stored by a corresponding edge.
 
@@ -104,7 +104,7 @@ The edges follow a similar layout to the workflow (`workflow.jpg`) with some cha
 }
 ```
 
-In terms of naming, each edge will be prefixed with E0, followed by a three digit number, starting from 001 to 999. Since edges are entirely separate, or should be at least, from the nodes, there is no worry over the same number being used. Regarding location nodes, the main id will be listed in the edge, and it is up to the pathfinder to go through that location's array of entrances and find the most suitable one.
+In terms of naming, each edge will be prefixed with E0, followed by a three digit number, starting from 001 to 999. Since edges are entirely separate, or should be at least, from the nodes, there is no worry over the same number being used. For buildings, edges must reference a specific entrance id (for example, `L02B`), never the building id (`L02`). The backend indexes the nested entrances as individual routing points without changing this JSON structure. It flags building-id placeholders as invalid instead of guessing entrance A or the nearest door. Doors in the same building are connected only when an explicit path records that connection.
 
 For time sake, I will personally fill out the locations.json for the buildings listed in the [ARN.txt](/docs/ARN.txt) file. Then I will record all path nodes that are reasonable and near each building and do the following calculations for the corresponding edges.
 

@@ -144,6 +144,8 @@ export default function App() {
         graphEdges={mapData.edges}
         startId={startId}
         endId={endId}
+        startEntranceId={startEntranceId}
+        endEntranceId={endEntranceId}
         navigating={navigating}
         liveTracking={trackingActive}
         destinationName={end?.name}
