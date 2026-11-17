@@ -128,11 +128,8 @@ def findnode(curname,nextarray,endname,nodearray,helperlist,allconnections,inval
 # write code to find the shortest path
 #   basically after finding the first possible path, restarrt the current path thing, and add the second to last path to the forbiden path code.
 #   maybe make an array of possible paths people could choose from
-
-
-
-
-
+# make it store all the id's that share the same name in a singular array per name
+#   additionally, for the distance job, make it check every loaction in the name array for the destination your trying to get to.
 
 
 
@@ -149,6 +146,11 @@ allconnections = {}
 wordarray = {} # put all node names in here, so it can be used with a spell check later on
 
 
+
+
+
+sharednames = {}
+sharednameschecker = {}
 
 
 fp = open("loctest1.json")
@@ -180,10 +182,15 @@ for line in fp:
     if(i == len(finder)):
         # uses information in list to make node
         final = Node(helper[0],helper[1],float(helper[2]),float(helper[3]),helper[4])
-        allnodes[helper[1]] = final # stores it by name to allow for easy finding for inputing somthing
+        allnodes[helper[0]] = final # stores it by id to allow for easy finding for inputing somthing
 
 
-        G.add_node(helper[1]) # this uses the name of the node as the identifier instead of the ID
+        G.add_node(helper[0]) # this uses the name of the node as the identifier instead of the ID
+
+        sharednameschecker[helper[1]] = 1
+        sharednames[helper[1]] = []
+        sharednames[helper[1]].append(helper[0])
+
     i = 0
 
 
@@ -235,8 +242,8 @@ forbiddennodes = []
 #start = input("where are you? ")
 #end = input("where do you want to go? ")
 
-start = "Node A"
-end =  "Node X"
+start = "node-a"
+end =  "node-x"
 invalid = {}
 invalid[0] = "construction"
 
