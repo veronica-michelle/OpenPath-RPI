@@ -6,8 +6,8 @@ Rewrites paths.json in place and prints each edge it measured.
 Distance is the straight-line distance in meters and is only filled in when
 it is missing, so a hand-measured distance for a curved path is kept.
 Gradient is always recalculated: degrees of slope going from `from` to `to`
-(positive is uphill). Edges name buildings by their id, so a building end
-uses whichever of its entrances is closest to the other end.
+(positive is uphill). Endpoints must name an exact entrance or path point.
+Building IDs are invalid because they do not specify a physical connection.
 Everything else (paved, stairs, ramp, closed) is left for a person to set.
 """
 
@@ -19,23 +19,25 @@ from pathlib import Path
 from .geo import haversine_meters
 
 
-def _endpoints(locations, node_id):
-    """(lat, lng, elevation) points an edge can attach to for this id."""
-    if node_id not in locations:
-        raise KeyError(f"unknown node id {node_id!r}")
-    node = locations[node_id]
-    points = node.get("entrances", [node])
-    return [(*point["coordinates"], point["elevation"]) for point in points]
+def _endpoint(locations, node_id):
+    """Resolve an exact door or path point without guessing a building's door."""
+    if node_id in locations:
+        node = locations[node_id]
+        if "entrances" in node:
+            raise KeyError(f"building id {node_id!r} is not a path endpoint; use an entrance id")
+        return node
+    for location in locations.values():
+        for entrance in location.get("entrances", []):
+            if entrance["id"] == node_id:
+                return entrance
+    raise KeyError(f"unknown node id {node_id!r}")
 
 
 def measure_edge(locations, from_id, to_id):
     """Return (distance in meters, gradient in degrees) between two node ids."""
-    distance, start, end = min(
-        (haversine_meters(a[0], a[1], b[0], b[1]), a, b)
-        for a in _endpoints(locations, from_id)
-        for b in _endpoints(locations, to_id)
-    )
-    rise = end[2] - start[2]
+    start, end = _endpoint(locations, from_id), _endpoint(locations, to_id)
+    distance = haversine_meters(*start["coordinates"], *end["coordinates"])
+    rise = end["elevation"] - start["elevation"]
     gradient = math.degrees(math.atan2(rise, distance)) if distance else 0.0
     return distance, gradient
 

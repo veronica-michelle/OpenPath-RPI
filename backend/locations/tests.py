@@ -105,8 +105,8 @@ LOCATIONS_DATA = {
 
 PATHS_DATA = {
     "E00001": {
-        "from": "L01",
-        "to": "L02",
+        "from": "L01A",
+        "to": "L02A",
         "distance": 1.0,
         "features": {
             "paved": True,
@@ -117,7 +117,7 @@ PATHS_DATA = {
         },
     },
     "E00002": {
-        "from": "L01",
+        "from": "L01A",
         "to": "N001",
         "features": {
             "paved": True,
@@ -129,7 +129,7 @@ PATHS_DATA = {
     },
     "E00003": {
         "from": "N001",
-        "to": "L02",
+        "to": "L02A",
         "distance": None,
         "features": {
             "paved": True,
@@ -140,8 +140,8 @@ PATHS_DATA = {
         },
     },
     "E00004": {
-        "from": "L02",
-        "to": "L03",
+        "from": "L02A",
+        "to": "L03A",
         "distance": None,
         "features": {
             "paved": False,
@@ -233,7 +233,7 @@ class MapGraphViewTests(ControlledGraphAPITestCase):
         response = self.client.get("/api/map/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data["nodes"]), len(LOCATIONS_DATA))
-        node_ids = {node["id"] for node in response.data["nodes"]}
+        node_ids = set(graph_module.routing_nodes(response.data))
         self.assertTrue(any(node["type"] == "path" for node in response.data["nodes"]))
         self.assertTrue(
             all(edge["a"] in node_ids and edge["b"] in node_ids for edge in response.data["edges"])
@@ -262,7 +262,7 @@ class RouteViewTests(ControlledGraphAPITestCase):
     def test_returns_route_and_summary(self):
         response = self.route()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["nodeIds"], ["L01", "L02"])
+        self.assertEqual(response.data["nodeIds"], ["L01A", "L02A"])
         self.assertEqual(response.data["route_points"], response.data["points"])
         self.assertGreater(response.data["total_distance_m"], 0)
         self.assertGreater(response.data["distanceFt"], 0)
@@ -271,7 +271,7 @@ class RouteViewTests(ControlledGraphAPITestCase):
     def test_missing_distance_is_estimated_from_coordinates(self):
         response = self.route(avoid_stairs=True)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["nodeIds"], ["L01", "N001", "L02"])
+        self.assertEqual(response.data["nodeIds"], ["L01A", "N001", "L02A"])
         self.assertGreater(response.data["total_distance_m"], 0)
         self.assertFalse(response.data["usedStairs"])
 
@@ -286,7 +286,8 @@ class RouteViewTests(ControlledGraphAPITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.data["usedStairs"])
 
-    def test_selected_entrances_adjust_route_endpoints(self):
+    def test_selected_entrances_use_their_own_connections(self):
+        self.graph["edges"].append({"a": "L01B", "b": "L02A", "type": "path"})
         response = self.route(start_entrance_id="L01B", destination_entrance_id="L02A")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["points"][0], {"lat": 42.0001, "lng": -73.0})
@@ -316,6 +317,14 @@ class RouteViewTests(ControlledGraphAPITestCase):
         response = self.client.post("/api/route/", {}, format="json")
         self.assertEqual(response.status_code, 400)
 
+    def test_invalid_entrance_id_returns_400(self):
+        response = self.route(start_entrance_id="L01Z", destination_entrance_id="L02B")
+        self.assertEqual(response.status_code, 400)
+
+    def test_invalid_destination_id_returns_400(self):
+        response = self.route(start_entrance_id="L01A", destination_entrance_id="L02Z")
+        self.assertEqual(response.status_code, 400)
+
 
 class ValidateGraphTests(TestCase):
     # Attempt validating a mock graph independent of the changing campus data
@@ -341,8 +350,8 @@ class ValidateGraphTests(TestCase):
             {"id": "p1", "lat": 42.0, "lng": -72.9995, "type": "path"},
         ],
         "edges": [
-            {"a": "hall", "b": "p1", "type": "path"},
-            {"a": "p1", "b": "lab", "type": "path"},
+            {"a": "hall-a", "b": "p1", "type": "path"},
+            {"a": "p1", "b": "lab-a", "type": "path"},
         ],
     }
 
@@ -384,19 +393,19 @@ class ValidateGraphTests(TestCase):
     def test_reports_disconnected_real_and_mock_nodes(self):
         graph = self.graph()
         graph["edges"] = graph["edges"][:1]
-        self.assert_error(graph, "unreachable from campus (not marked mock): lab")
+        self.assert_error(graph, "unreachable from campus (not marked mock): lab-a")
 
         graph["nodes"][1]["mock"] = True
         errors, notes = validate(graph)
         self.assertEqual(errors, [])
-        self.assertIn("intentional disconnected area (mock): lab", notes)
+        self.assertIn("intentional disconnected area (mock): lab-a", notes)
 
     def test_reports_location_reachable_only_by_stairs(self):
         graph = self.graph()
         graph["edges"][1]["type"] = "stairs"
         errors, notes = validate(graph)
         self.assertEqual(errors, [])
-        self.assertIn("no stairs-free route from campus (real): lab", notes)
+        self.assertIn("no stairs-free route from campus (real): lab-a", notes)
 
 
 class EdgeCalculatorTests(TestCase):
@@ -435,17 +444,17 @@ class EdgeCalculatorTests(TestCase):
         _, downhill = measure_edge(self.locations(), "N001", "N002")
         self.assertAlmostEqual(downhill, -gradient)
 
-    def test_building_uses_entrance_closest_to_other_end(self):
+    def test_measures_exact_nested_entrance(self):
         locations = self.locations()
         locations["N001"]["coordinates"] = [42.7319, -73.6800]  # next to L01B
-        distance, gradient = measure_edge(locations, "L01", "N001")
+        distance, gradient = measure_edge(locations, "L01B", "N001")
         self.assertLess(distance, 12)
         self.assertLess(gradient, 0)  # L01B (64 m) down to N001 (62 m)
 
     def test_fills_missing_distance_and_keeps_measured_one(self):
         paths = {
             "E0001": self.edge("N002", "N001"),
-            "E0002": self.edge("N001", "L01", distance=150.0),
+            "E0002": self.edge("N001", "L01B", distance=150.0),
         }
         self.assertEqual(fill_paths(self.locations(), paths), {})
         self.assertEqual(paths["E0001"]["distance"], 111.19)

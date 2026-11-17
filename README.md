@@ -54,6 +54,25 @@ Their format is documented in [data/README.md](data/README.md). Docker includes
 and mounts the same directory. Set `OPENPATH_DATA_DIR` to use another data folder.
 The copies in `backend/locations/` remain unchanged.
 
+Routing uses path points and individual entrances. Buildings remain named groups
+of doors in the existing JSON format. Path `from` and `to` fields must name
+entrance IDs (such as `L02B`) or path-point IDs (such as `N001`). Building IDs
+(such as `L02`) are invalid path endpoints; the backend never guesses a door
+for them. The validator reports these links, the runtime logs and excludes them,
+and the distance calculator reports them without measuring them. Selecting a
+different door does not move an edge, and doors in the same building have no
+implicit connection.
+Requests still select a building and optionally an entrance; omitting the entrance
+uses the first listed door. A disconnected selected door returns no route.
+The map and route responses preserve their structure; route `nodeIds` identify
+the actual doors and path points. Run `python -m locations.validate_graph` from
+`backend/` to report missing references and disconnected entrances.
+
+The current path connections are fictional placeholders for development and
+have not been verified as real walkways or accessibility information. Many
+path points still have no connections. Replace the placeholders with surveyed
+data before using the app for navigation.
+
 # Instructions:
 1. Choose or receive a GitHub issue.
 2. Create a branch for that issue.
