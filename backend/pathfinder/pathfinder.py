@@ -96,7 +96,7 @@ def wordinarray(word,array):
     return 0
 
 
-def findnode(curname,nextarray,endname,nodearray,helperlist,allconnections,invalid): # in the future, replace this with a array or vecotr of stings of invalid paths
+def findnode(curname,nextarray,nodearray,helperlist,allconnections,invalid, desirednodes): # in the future, replace this with a array or vecotr of stings of invalid paths
     final = "NULL"
     dis = 99999
     newdis = 100000
@@ -104,20 +104,18 @@ def findnode(curname,nextarray,endname,nodearray,helperlist,allconnections,inval
     # find every node connected to name using nextarray
 
     for helper in nextarray:
+        # next array is all of the nodes names for possible nexts
 
-        if(not noneinlist(helper,helperlist)):
-            #print(helper)
-            #print(nodearray[helper].latitude)
-            #print(nodearray[helper].longitude)
-            #print(nodearray[endname].latitude)
-            #print(nodearray[endname].longitude)
-            #print(allconnections[helper+curname].Type)
-            if(not wordinarray(allconnections[helper+curname].Type,invalid)):
-                newdis = corddif(nodearray[helper].latitude,nodearray[helper].longitude,nodearray[endname].latitude,nodearray[endname].longitude)
-            #print(newdis)
-                if(dis > newdis):
-                    final = helper
-                    dis = newdis
+
+        for helper2 in desirednodes:
+            if(not noneinlist(helper,helperlist)):
+            # make a loop through all the nodes in desirednodes, and get the distance between each of them and the current node helper
+                if(not wordinarray(allconnections[helper+curname].Type,invalid)):
+                    newdis = corddif(nodearray[helper].latitude,nodearray[helper].longitude,nodearray[helper2].latitude,nodearray[helper2].longitude)
+                #print(newdis)
+                    if(dis > newdis):
+                        final = helper
+                        dis = newdis
 
     return final
 
@@ -187,10 +185,6 @@ for line in fp:
 
         G.add_node(helper[0]) # this uses the name of the node as the identifier instead of the ID
 
-        sharednameschecker[helper[1]] = 1
-        sharednames[helper[1]] = []
-        sharednames[helper[1]].append(helper[0])
-
     i = 0
 
 
@@ -243,20 +237,30 @@ forbiddennodes = []
 #end = input("where do you want to go? ")
 
 start = "node-a"
-end =  "node-x"
+end =  "Node H"
 invalid = {}
 invalid[0] = "construction"
 
-curname = start
-endname = end
-curnode = allnodes[start]
+desirednodes = []
 
-endnode = allnodes[endname]
+for noder in allnodes:
+    if(allnodes[noder].name == end):
+        desirednodes.append(allnodes[noder].ID)
+
+for helpest in desirednodes:
+    print(helpest)
+
+
+
+
+curname = start
+
+curnode = allnodes[start]
 
 pathtaken.append(curname)
 
 
-while(curname != endname):
+while(not wordinarray(curname, desirednodes)):
     # curname to the path here
 
     #print("current nodes name: " + curname)
@@ -268,7 +272,7 @@ while(curname != endname):
 
     helperlist = pathtaken + forbiddennodes
 
-    nextnodename = findnode(curname,connectednodes,endname,allnodes,helperlist,allconnections,invalid)
+    nextnodename = findnode(curname,connectednodes,allnodes,helperlist,allconnections,invalid,desirednodes)
     # ADD IN A SYSTEM TO ACOMIDATE FOR POTENTIAL DOUBLING BACK
     # BASICALLY MAKE IT SO IS STORES ALL NODES IT HAS BEEN TO, AND THEN DOSENT GO TO A NODE IF IT ALREADY HAS BEEN THERE, and also the forbidden nodes
 
