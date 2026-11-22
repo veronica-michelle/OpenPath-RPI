@@ -1,16 +1,4 @@
 {
-    "E0###": {
-        "from": "",
-        "to": "",
-        "distance": 0.0,
-        "features": {
-            "paved": false,
-            "stairs": false,
-            "ramp": false,
-            "closed": false,
-            "gradient": 0.0
-        }
-    },
     "E0001": {
         "from": "N001",
         "to": "N048",
@@ -58,5 +46,5 @@
             "closed": false,
             "gradient": 7.051
         }
-    },
+    }
 }
