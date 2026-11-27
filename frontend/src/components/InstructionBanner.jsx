@@ -38,7 +38,8 @@ export default function InstructionBanner({ instruction, destinationName }) {
 
   if (instruction.type === 'off-route') {
     return (
-      <section className="instruction-banner" aria-live="polite" data-no-pan>
+      <section className="instruction-banner" data-no-pan>
+        <span className="visually-hidden" role="status" aria-live="polite">You are away from the route. Return to the highlighted path.</span>
         <div className="instruction-text">
           <div className="instruction-primary">You are away from the route</div>
           <div className="instruction-secondary">Return to the highlighted path to continue.</div>
@@ -63,7 +64,10 @@ export default function InstructionBanner({ instruction, destinationName }) {
   }
 
   return (
-    <section className="instruction-banner" aria-live="polite" data-no-pan>
+    <section className="instruction-banner" data-no-pan>
+      <span className="visually-hidden" role="status" aria-live="polite">
+        {isArrive ? `Arrive at ${destinationName}` : `Turn ${magnitudeLabel(instruction.magnitude)}${instruction.direction}`}
+      </span>
       <div className="instruction-arrow">
         {isArrive ? <ArriveFlag /> : <TurnArrow direction={instruction.direction} magnitude={instruction.magnitude} />}
       </div>

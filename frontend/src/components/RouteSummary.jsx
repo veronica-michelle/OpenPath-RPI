@@ -2,6 +2,7 @@ import { formatDistance } from '../utils/metrics.js';
 
 export default function RouteSummary({
   route,
+  startName,
   destinationName,
   navigating,
   liveTracking,
@@ -14,6 +15,15 @@ export default function RouteSummary({
 
   const minutes = route.minutes;
   const active = navigating || liveTracking;
+  const maneuvers = route.maneuvers ?? [];
+  const directions = maneuvers.length
+    ? [
+        `Start at ${startName ?? 'the selected entrance'}.`,
+        ...maneuvers.map((step) => step.type === 'arrive'
+          ? `After ${formatDistance(step.atDistance)}, arrive at ${destinationName ?? 'the destination'}.`
+          : `After ${formatDistance(step.atDistance)}, turn ${step.magnitude ? `${step.magnitude} ` : ''}${step.direction}.`),
+      ]
+    : route.directions ?? [];
 
   return (
     <section className="route-summary" aria-label="Route summary" data-no-pan>
@@ -30,6 +40,20 @@ export default function RouteSummary({
         </svg>
         Distance: {formatDistance(route.distanceFt)}
       </div>
+      {Number.isFinite(route.elevationGainFt) && (
+        <div className="route-summary-row">
+          Elevation: {Math.round(route.elevationGainFt)} ft{route.steepness ? ` (${route.steepness})` : ''}
+        </div>
+      )}
+      {directions.length > 0 && (
+        <details className="route-directions">
+          <summary>Written directions</summary>
+          <ol>{directions.map((step, index) => <li key={index}>{step}</li>)}</ol>
+        </details>
+      )}
+      {(route.accessibility_notes ?? []).map((note, index) => (
+        <p className="route-provisional" key={index}>{note}</p>
+      ))}
 
       {active ? (
         <button type="button" className="route-summary-btn route-summary-btn-end" onClick={onEnd} data-no-pan>

@@ -31,6 +31,19 @@ export default function ControlPanel({
         <span className="brand-subtitle">Accessible RPI Routes</span>
       </header>
 
+      {routeLoading && <p className="control-panel-hint" role="status">Finding a route…</p>}
+      {routeError && <p className="control-panel-warning" role="alert">Route request failed: {routeError}</p>}
+      {sameBuildingWarning && (
+        <p className="control-panel-warning" role="alert">
+          You are not going anywhere: choose two different locations.
+        </p>
+      )}
+      {noRouteWarning && (
+        <p className="control-panel-warning" role="alert">
+          {noRouteMessage || 'No accessible path found between these buildings.'}
+        </p>
+      )}
+
       <div className="control-panel-fields">
         <SearchField
           label="Starting point"
@@ -112,23 +125,6 @@ export default function ControlPanel({
 
       <StairsToggle checked={avoidStairs} onChange={onAvoidStairsChange} />
 
-      {routeLoading && (
-        <p className="control-panel-hint" role="status">Finding a route…</p>
-      )}
-      {routeError && (
-        <p className="control-panel-warning" role="alert">Route request failed: {routeError}</p>
-      )}
-
-      {sameBuildingWarning && (
-        <p className="control-panel-warning" role="alert">
-          You are not going anywhere: choose two different locations.
-        </p>
-      )}
-      {noRouteWarning && (
-        <p className="control-panel-warning" role="alert">
-          {noRouteMessage || 'No accessible path found between these buildings.'}
-        </p>
-      )}
       <footer className="control-panel-footer">
         <a href="#/about">About OpenPath RPI</a>
       </footer>
