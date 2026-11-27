@@ -13,7 +13,6 @@ export default function RouteSummary({
   if (!route) return null;
 
   const minutes = route.minutes;
-  const gain = Math.round(route.elevationGainFt);
   const active = navigating || liveTracking;
 
   return (
@@ -30,12 +29,6 @@ export default function RouteSummary({
           <path d="M12 2v20M2 12h20" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" transform="rotate(45 12 12)" />
         </svg>
         Distance: {formatDistance(route.distanceFt)}
-      </div>
-      <div className="route-summary-row">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M4 18 10 8l4 6 3-4 3 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        Elevation: {gain} ft ({route.steepness})
       </div>
 
       {active ? (
