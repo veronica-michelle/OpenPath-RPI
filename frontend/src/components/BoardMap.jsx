@@ -99,6 +99,8 @@ export default function BoardMap({
   graphEdges,
   startId,
   endId,
+  startEntranceId,
+  endEntranceId,
   navigating,
   liveTracking,
   destinationName,
@@ -107,7 +109,9 @@ export default function BoardMap({
   onRequestLocation,
   onPinClick,
 }) {
-  const nodesById = useMemo(() => Object.fromEntries(graphNodes.map((node) => [node.id, node])), [graphNodes]);
+  const nodesById = useMemo(() => Object.fromEntries(
+    graphNodes.flatMap((node) => [node, ...(node.entrances ?? [])]).map((node) => [node.id, node]),
+  ), [graphNodes]);
   const mapRef = useRef(null);
   const puckMarkerRef = useRef(null);
   const pendingRecenter = useRef(false);
@@ -421,11 +425,13 @@ export default function BoardMap({
           // idle pin could out-rank a chosen start/end pin and silently eat
           // its clicks. Force selection state to win the stacking order.
           const zIndexOffset = kind === 'start' || kind === 'end' ? 1000 : kind === 'transit' ? 500 : 0;
+          const entranceId = b.id === startId ? startEntranceId : b.id === endId ? endEntranceId : null;
+          const position = b.entrances?.find((entrance) => entrance.id === entranceId) ?? b;
           return (
             <Marker
               key={b.id}
               alt={b.name}
-              position={[b.lat, b.lng]}
+              position={[position.lat, position.lng]}
               icon={buildPinIcon(kind, b.name)}
               zIndexOffset={zIndexOffset}
               eventHandlers={onPinClick ? { click: () => onPinClick(b) } : undefined}
