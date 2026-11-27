@@ -54,8 +54,8 @@ titled "Optional Items".
    text.
 16. Ensure all statements in this list apply to all screen sizes and orientations
    (e.g. computer, phone, tablet, landscape, portrait).
-----------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
 Proper documentation will be required on how we account for disabilities.
-----------------------------Optional Items----------------------------------------
+----------------------------Optional Items---------------------------------------------
 *3. An audio transcription summarizing the current route displayed to the user by
    our program.

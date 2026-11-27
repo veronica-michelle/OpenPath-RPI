@@ -113,6 +113,9 @@ export default function ControlPanel({
           {noRouteMessage || 'No accessible path found between these buildings.'}
         </p>
       )}
+      <footer className="control-panel-footer">
+        <a href="#/about">About OpenPath RPI</a>
+      </footer>
     </section>
   );
 }
