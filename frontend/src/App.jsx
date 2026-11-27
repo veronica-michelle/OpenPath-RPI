@@ -5,6 +5,8 @@ import BoardMap from './components/BoardMap.jsx';
 import CompassIndicator from './components/CompassIndicator.jsx';
 import ControlPanel from './components/ControlPanel.jsx';
 import RouteSummary from './components/RouteSummary.jsx';
+import useTheme from './hooks/useTheme.js';
+import ThemeToggle from './components/ThemeToggle.jsx';
 
 export default function App() {
   const [mapData, setMapData] = useState(null);
@@ -21,6 +23,7 @@ export default function App() {
   const [liveTracking, setLiveTracking] = useState(false);
   const { position: userPosition, status: locationStatus, start: startLocation } = useGeolocation();
   const trackingActive = liveTracking && locationStatus === 'ready' && Boolean(userPosition);
+  const { theme, toggle } = useTheme();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -156,6 +159,7 @@ export default function App() {
       />
       <div className="app-overlay-layer">
         <CompassIndicator />
+        <ThemeToggle theme={theme} onToggle={toggle} />
         {!routeLoading && route && (
           <RouteSummary
             route={route}
