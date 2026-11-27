@@ -1,8 +1,5 @@
-// Accessibility status per entrance is real survey data from the backend
-// (`accessible: true | false | null`), not a cosmetic flag — surfacing it
-// here is the whole point of letting someone choose an entrance at all.
-// `null` means unverified, never "assume accessible" (see DATASET.md): it
-// gets a quiet, distinct treatment, not silence and not a false positive.
+// The backend supplies provisional entrance accessibility flags. None of the
+// campus entrance data has been verified on site.
 
 function AccessibleIcon() {
   return (
@@ -50,10 +47,10 @@ function UnverifiedIcon() {
 
 function accessibilityMeta(entrance) {
   if (entrance.accessible === true) {
-    return { icon: <AccessibleIcon />, chipClass: 'is-accessible', statusText: 'wheelchair accessible' };
+    return { icon: <AccessibleIcon />, chipClass: 'is-accessible', statusText: 'marked wheelchair accessible in provisional data' };
   }
   if (entrance.accessible === false) {
-    return { icon: <InaccessibleIcon />, chipClass: 'is-inaccessible', statusText: 'not wheelchair accessible' };
+    return { icon: <InaccessibleIcon />, chipClass: 'is-inaccessible', statusText: 'marked not wheelchair accessible in provisional data' };
   }
   return { icon: <UnverifiedIcon />, chipClass: 'is-unverified', statusText: 'accessibility not verified' };
 }

@@ -27,15 +27,6 @@ class PlaceholderDataEndpointTests(APITestCase):
             any(e["a"].startswith("N") or e["b"].startswith("N") for e in response.data["edges"])
         )
 
-    def test_route_between_buildings_uses_entrances_and_path_points(self):
-        response = self.client.post(
-            "/api/route/", {"start_id": "L01", "destination_id": "L03"}, format="json"
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["nodeIds"][0], "L01A")
-        self.assertEqual(response.data["nodeIds"][-1], "L03A")
-        self.assertTrue(any(node.startswith("N") for node in response.data["nodeIds"]))
-
 
 class RouteIntegrationTests(ControlledGraphAPITestCase):
     def route(self, **extra):

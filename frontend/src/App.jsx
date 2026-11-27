@@ -154,9 +154,15 @@ export default function App() {
   }
 
   const noRouteWarning = Boolean(startId && endId && !sameBuilding && routeNotFound);
+  const routeAnnouncement = route
+    ? `Route found from ${start?.name} to ${end?.name}. ${Math.round(route.distanceFt)} feet. ${route.accessibility_notes?.join(' ') ?? ''}`
+    : '';
 
   return (
     <div className="app-shell">
+      <div className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+        {routeAnnouncement}
+      </div>
       <BoardMap
         route={route}
         buildings={buildings}
@@ -180,6 +186,7 @@ export default function App() {
         {!routeLoading && route && (
           <RouteSummary
             route={route}
+            startName={start?.name}
             destinationName={end?.name}
             navigating={navigating}
             liveTracking={trackingActive}
@@ -215,7 +222,9 @@ export default function App() {
             }}
             sameBuildingWarning={sameBuilding}
             noRouteWarning={noRouteWarning}
-            noRouteMessage={noRouteWarning ? activeRouteFailure?.message : null}
+            noRouteMessage={noRouteWarning
+              ? `${activeRouteFailure?.message ?? 'No route recorded.'} Campus connections are incomplete; an unavailable route is not evidence that no accessible path exists.`
+              : null}
             routeLoading={routeLoading}
             routeError={routeError}
             userPosition={userPosition}

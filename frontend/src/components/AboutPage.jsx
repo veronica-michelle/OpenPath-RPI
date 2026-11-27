@@ -13,12 +13,7 @@ export default function AboutPage() {
   const heading = useRef(null);
 
   useEffect(() => {
-    const previous = document.title;
-    document.title = 'About OpenPath RPI';
     heading.current?.focus();
-    return () => {
-      document.title = previous;
-    };
   }, []);
 
   return (
@@ -28,16 +23,14 @@ export default function AboutPage() {
         <h1 ref={heading} tabIndex={-1}>About OpenPath RPI</h1>
 
         <p>
-          OpenPath RPI is a mobile-friendly web app for finding accessible routes across the RPI
-          campus. Unlike regular navigation apps, it takes accessibility needs into account, such
-          as stairs, entrances and steep paths. You choose a starting point, a destination and your
-          accessibility preferences, and you get a route on an interactive map with written
-          directions.
+          OpenPath RPI is a pilot campus navigation app. It can route only along connections
+          recorded in the shared campus data. That graph is incomplete, and its paths and
+          accessibility details have not been verified on site. Do not rely on it for travel.
+          You can choose entrances and avoid recorded stairs when a route is available.
         </p>
         <p>
-          The site is built to support keyboard navigation, screen readers, mobile devices and
-          enlarged text. Our long-term goal is reliable accessible navigation across the whole
-          campus.
+          The map has text route information and keyboard controls. Our long-term goal is reliable,
+          verified accessible navigation across campus.
         </p>
 
         <h2>An RCOS project</h2>
