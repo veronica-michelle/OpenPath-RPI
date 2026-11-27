@@ -831,9 +831,22 @@
   border: 1px solid var(--map-border-strong);
   border-radius: 999px;
 }
-.theme-toggle.is-expanded {
+.theme-toggle-label {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  transition: max-width 180ms ease, opacity 180ms ease;
+}
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
   gap: 8px;
   padding-inline: 12px;
+}
+.theme-toggle:hover .theme-toggle-label,
+.theme-toggle:focus-visible .theme-toggle-label {
+  max-width: 120px;
+  opacity: 1;
 }
 
 .visually-hidden {
